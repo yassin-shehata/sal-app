@@ -54,35 +54,36 @@ except ImportError as e: # if one of the required packages wasn't found, try to 
         print("okay, exiting now.")
         sys.exit()
 def cl_startup(period_ms):
-    godirect = GoDirect()
-    devices = godirect.list_devices()
-    
-    if not devices:
-        raise RuntimeError("No GoDirect devices found. Make sure the sensor is connected and powered.")
-    print("🔍 Detected devices:", devices)
-    print("No physical devices. Falling back to fake.")
-    from fake_sensor import FakeDevice, FakeSensor, FakeGoDirect
-    device = FakeDevice()
-    sensors = [FakeSensor()]
-    godirect = FakeGoDirect()
-    return device, sensors, godirect
+    try:
+        godirect = GoDirect(use_ble=False)  # use USB mode
+        devices = godirect.list_devices()
 
+        if not devices:
+            raise RuntimeError("No GoDirect devices found. Make sure the sensor is connected and powered.")
+        
+        for dev_info in devices:
+            try:
+                device = godirect.get_device(dev_info)
+                if device._device is None:
+                    continue
+                sensor_indices = list(range(len(device.sensors)))
+                sensors = device.enable_sensors(sensor_indices)
+                device.start(period=period_ms)
+                return device, sensors, godirect
+            except Exception as e:
+                print(f"⚠️ Skipped device due to error: {e}")
+                continue
 
-    for dev_info in devices:
-        try:
-            device = godirect.get_device(dev_info)
-            print(f"Trying device: {dev_info}")
-            if device._device is None:
-                continue  # skip uninitialized device
-            sensor_indices = list(range(len(device.sensors)))
-            sensors = device.enable_sensors(sensor_indices)
-            device.start(period=period_ms)
-            return device, sensors, godirect
-        except Exception as e:
-            print(f"⚠️ Skipped device due to error: {e}")
-            continue
+        raise RuntimeError("No usable GoDirect device could be initialized.")
 
-    raise RuntimeError("No usable GoDirect device could be initialized.")
+    except Exception as e:
+        print("No physical devices. Falling back to fake.")
+        from fake_sensor import FakeDevice, FakeSensor, FakeGoDirect
+        device = FakeDevice()
+        sensors = [FakeSensor()]
+        godirect = FakeGoDirect()
+        return device, sensors, godirect
+
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -381,35 +382,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.lbl_progress_status.setVisible(True)
         self.update_progress(0, "Preparing to setup system")
         QTimer.singleShot(500, lambda: None)
+        self.update_progress(20, "Skipping Python check (manual config)")
 
-        self.update_progress(10, "Checking for Python")
-
-        QTimer.singleShot(500, lambda: None)
-
-        _, cmdout = subprocess.getstatusoutput("python --version")
-        if re.search(r"Python 3\\.\\d+\\.\\d+", cmdout):
-            self.update_progress(20, "Python Detected")
-
-        else:
-            self.update_progress(20, "Installing Python...")
-            _, cmdout = subprocess.getstatusoutput("python-installer.exe /passive InstallAllUsers=1 PrependPath=1")
-            self.lbl_progress_status.setText(f"Command Output: {cmdout}")
-            if "not recognized" in cmdout:
-                QMessageBox.critical(self, "Connection", "Python installation error [code 01.01]")
-                self.txt_system_note.setText(
-                    """Python installation error [code 01.01]
-    Unable to install Python automatically.
-    1. Install Python 3.11 manually.
-    2. Restart system and try again.
-    !!! Contact technician if issue persists !!!""")
-                self.lbl_system_note_sign.setText("REQUIRED")
-                self.setCircleColour(self.indicator_system_note, "yellow")
-                self.setCircleColour(self.indicator_connection, "red")
-                self.txt_system_note.setVisible(True)
-                self.bar_progress.setVisible(False)
-                self.lbl_progress_status.setVisible(False)
-                self.btn_system_connect.setEnabled(True)
-                return
+        
             # I'm on (mac) subprocess.call(["reload.cmd"], shell=True)
         
         self.update_progress(40,"Checking for godirect python module")
