@@ -412,8 +412,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addLayout(self.horizontalLayout_5)
 
         self.r_squared_input = QComboBox(self.data_frame)
-        self.r_squared_input.addItem("")
-        self.r_squared_input.addItem("")
         self.r_squared_input.setObjectName(u"r_squared_input")
         sizePolicy9.setHeightForWidth(self.r_squared_input.sizePolicy().hasHeightForWidth())
         self.r_squared_input.setSizePolicy(sizePolicy9)
@@ -900,11 +898,6 @@ class Ui_MainWindow(object):
         self.options_horizontal_layout.addWidget(self.moisture_label)
 
         self.moisture_combobox = QComboBox(self.options)
-        self.moisture_combobox.addItem("")
-        self.moisture_combobox.addItem("")
-        self.moisture_combobox.addItem("")
-        self.moisture_combobox.addItem("")
-        self.moisture_combobox.addItem("")
         self.moisture_combobox.setObjectName(u"moisture_combobox")
         self.moisture_combobox.setMinimumSize(QSize(150, 28))
         self.moisture_combobox.setMaximumSize(QSize(150, 26))
@@ -924,10 +917,6 @@ class Ui_MainWindow(object):
         self.options_horizontal_layout.addWidget(self.buffer_range_label)
 
         self.buffer_range_combobox = QComboBox(self.options)
-        self.buffer_range_combobox.addItem("")
-        self.buffer_range_combobox.addItem("")
-        self.buffer_range_combobox.addItem("")
-        self.buffer_range_combobox.addItem("")
         self.buffer_range_combobox.setObjectName(u"buffer_range_combobox")
         self.buffer_range_combobox.setMinimumSize(QSize(150, 28))
         self.buffer_range_combobox.setMaximumSize(QSize(150, 26))
@@ -960,13 +949,8 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_10.addWidget(self.stabilization_time_label)
 
-        self.stabilization_time_input = QTextEdit(self.options_frame)
+        self.stabilization_time_input = QSpinBox(self.options_frame)
         self.stabilization_time_input.setObjectName(u"stabilization_time_input")
-        self.stabilization_time_input.setEnabled(False)
-        self.stabilization_time_input.setMinimumSize(QSize(150, 28))
-        self.stabilization_time_input.setMaximumSize(QSize(150, 26))
-        self.stabilization_time_input.setFrameShape(QFrame.Shape.Box)
-        self.stabilization_time_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         self.horizontalLayout_10.addWidget(self.stabilization_time_input)
 
@@ -980,8 +964,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_10.addWidget(self.baseline_label)
 
         self.baseline_combobox = QComboBox(self.options_frame)
-        self.baseline_combobox.addItem("")
-        self.baseline_combobox.addItem("")
         self.baseline_combobox.setObjectName(u"baseline_combobox")
         self.baseline_combobox.setMinimumSize(QSize(150, 28))
         self.baseline_combobox.setMaximumSize(QSize(150, 26))
@@ -1297,7 +1279,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(0)
+        self.sample_measurement_tab_widget.setCurrentIndex(3)
         self.tabWidget.setCurrentIndex(7)
 
 
@@ -1321,9 +1303,6 @@ class Ui_MainWindow(object):
         self.cl_conc_label.setText(QCoreApplication.translate("MainWindow", u"Cl Conc. in Liquid (mg/L)", None))
         self.r_squared_label.setText(QCoreApplication.translate("MainWindow", u"R squared:", None))
         self.r_squared_label_2.setText("")
-        self.r_squared_input.setItemText(0, QCoreApplication.translate("MainWindow", u"Potential", None))
-        self.r_squared_input.setItemText(1, QCoreApplication.translate("MainWindow", u"Concentration", None))
-
         self.refresh_plot_button.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
         self.sample_measurement_label.setText(QCoreApplication.translate("MainWindow", u"2. Sample Measurement", None))
         self.reset_button_measurement.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
@@ -1359,24 +1338,10 @@ class Ui_MainWindow(object):
         self.chloride_label.setText(QCoreApplication.translate("MainWindow", u"Chloride (mg/kg)", None))
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.guideline), QCoreApplication.translate("MainWindow", u"Guideline", None))
         self.moisture_label.setText(QCoreApplication.translate("MainWindow", u"Moisture (%)", None))
-        self.moisture_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"Dry (0)", None))
-        self.moisture_combobox.setItemText(1, QCoreApplication.translate("MainWindow", u"Damp (1-25)", None))
-        self.moisture_combobox.setItemText(2, QCoreApplication.translate("MainWindow", u"Moist (26-50)", None))
-        self.moisture_combobox.setItemText(3, QCoreApplication.translate("MainWindow", u"Wet (51-75)", None))
-        self.moisture_combobox.setItemText(4, QCoreApplication.translate("MainWindow", u"Saturated (76-99)", None))
-
         self.buffer_range_label.setText(QCoreApplication.translate("MainWindow", u"Buffer (%)", None))
-        self.buffer_range_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"20", None))
-        self.buffer_range_combobox.setItemText(1, QCoreApplication.translate("MainWindow", u"30", None))
-        self.buffer_range_combobox.setItemText(2, QCoreApplication.translate("MainWindow", u"40", None))
-        self.buffer_range_combobox.setItemText(3, QCoreApplication.translate("MainWindow", u"50", None))
-
         self.advanced_parameters_checkbox.setText(QCoreApplication.translate("MainWindow", u"Advanced Parameters", None))
         self.stabilization_time_label.setText(QCoreApplication.translate("MainWindow", u"Stabilization Time (s)", None))
         self.baseline_label.setText(QCoreApplication.translate("MainWindow", u"Baseline", None))
-        self.baseline_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"Yes", None))
-        self.baseline_combobox.setItemText(1, QCoreApplication.translate("MainWindow", u"No", None))
-
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.options), QCoreApplication.translate("MainWindow", u"Options", None))
         self.std_check_button.setText(QCoreApplication.translate("MainWindow", u"STD check", None))
         self.average_potential_label.setText(QCoreApplication.translate("MainWindow", u"Average Potential (mV)", None))
