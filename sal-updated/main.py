@@ -98,7 +98,6 @@ class Window(QMainWindow, Ui_MainWindow):
         
         self.ion_timer = None
         super().__init__()
-        self.ui = Ui_MainWindow()
         self.setupUi(self) 
         from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
         from matplotlib.figure import Figure
@@ -483,10 +482,10 @@ class Window(QMainWindow, Ui_MainWindow):
     def STD10MeasurementButtonPushed(self):
         # Disable Buttons for Update
         self.SetEnableButtonsIon("off")
-        self.ui.STD10MeasurementButton.setEnabled(False)
-        self.ui.STD100MeasurementButton.setEnabled(False)
-        self.ui.STD1000MeasurementButton.setEnabled(False)
-        self.ui.STD5000MeasurementButton.setEnabled(False)
+        self.STD10MeasurementButton.setEnabled(False)
+        self.STD100MeasurementButton.setEnabled(False)
+        self.STD1000MeasurementButton.setEnabled(False)
+        self.STD5000MeasurementButton.setEnabled(False)
 
         # Confirm 10 ppm solution placement
         std_check = QMessageBox.question(
@@ -494,9 +493,9 @@ class Window(QMainWindow, Ui_MainWindow):
             QMessageBox.Yes | QMessageBox.No
         )
         if std_check == QMessageBox.No:
-            self.ui.SystemNoteTextArea.setPlainText("Before collecting the 10 ppm standard solution, place the correct standard solution.")
-            self.ui.SystemNoteSignLabel.setText("REQUIRED")
-            self.ui.SystemNoteLamp.setStyleSheet("background-color: yellow")
+            self.SystemNoteTextArea.setPlainText("Before collecting the 10 ppm standard solution, place the correct standard solution.")
+            self.SystemNoteSignLabel.setText("REQUIRED")
+            self.SystemNoteLamp.setStyleSheet("background-color: yellow")
             self.SetEnableButtonsIon("on")
             return
         elif std_check == QMessageBox.Yes:
@@ -510,46 +509,46 @@ class Window(QMainWindow, Ui_MainWindow):
             QMessageBox.Yes | QMessageBox.No
         )
         if stab_choice == QMessageBox.Yes:
-            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.ui.StabilizationTimeEditField.value(), self)
+            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             dlg.setWindowTitle("Sensor Stabilization Timer")
             dlg.setWindowModality(Qt.ApplicationModal)
             dlg.setCancelButtonText("Stop Timer")
             dlg.setAutoClose(True)
             dlg.setMinimumDuration(0)
 
-            for i in range(1, self.ui.StabilizationTimeEditField.value() + 1):
+            for i in range(1, self.StabilizationTimeEditField.value() + 1):
                 if dlg.wasCanceled():
                     dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
                     break
-                time_r = self.ui.StabilizationTimeEditField.value() - i
+                time_r = self.StabilizationTimeEditField.value() - i
                 dlg.setValue(i)
                 dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
                 QCoreApplication.processEvents()
                 time.sleep(1)
 
-            dlg.setValue(self.ui.StabilizationTimeEditField.value())
+            dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
 
         # Start Progress Gauge
-        self.ui.SystemNoteTextArea.setVisible(False)
-        self.ui.ProgressGauge.setVisible(True)
-        self.ui.ProgressGaugeLabel.setVisible(True)
-        self.ui.ProgressGauge.setValue(0)
-        self.ui.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+        self.SystemNoteTextArea.setVisible(False)
+        self.ProgressGauge.setVisible(True)
+        self.ProgressGaugeLabel.setVisible(True)
+        self.ProgressGauge.setValue(0)
+        self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
         time.sleep(0.5)
 
         # Start plotting
         self.StartPlotting()
 
-        self.ui.ProgressGauge.setValue(20)
-        self.ui.ProgressGaugeLabel.setText("Collecting Data...")
+        self.ProgressGauge.setValue(20)
+        self.ProgressGaugeLabel.setText("Collecting Data...")
         time.sleep(0.5)
 
         for i in range(1, 101):
-            self.ui.ProgressGauge.setValue(20 + int(60 * i / 100))
-            self.ui.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
+            self.ProgressGauge.setValue(20 + int(60 * i / 100))
+            self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
             time.sleep(self.SamplingPeriod)
 
         self.Rawdata = self.IonData[-100:, 1]
@@ -567,40 +566,40 @@ class Window(QMainWindow, Ui_MainWindow):
             if remeasure == QMessageBox.No:
                 break
             elif remeasure == QMessageBox.Yes:
-                dlg = QProgressDialog("Stabilizing the sensor", "Stop Timer", 0, self.ui.StabilizationTimeEditField.value(), self)
+                dlg = QProgressDialog("Stabilizing the sensor", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
                 dlg.setWindowTitle("Sensor Stabilization Timer")
                 dlg.setCancelButtonText("Stop Timer")
                 dlg.setWindowModality(Qt.ApplicationModal)
                 dlg.setAutoClose(True)
 
-                for i in range(1, self.ui.StabilizationTimeEditField.value() + 1):
+                for i in range(1, self.StabilizationTimeEditField.value() + 1):
                     if dlg.wasCanceled():
                         dlg.setLabelText("Stopping Timer...")
                         time.sleep(1)
                         break
-                    time_r = self.ui.StabilizationTimeEditField.value() - i
+                    time_r = self.StabilizationTimeEditField.value() - i
                     dlg.setValue(i)
                     dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
                     QCoreApplication.processEvents()
                     time.sleep(1)
 
-                dlg.setValue(self.ui.StabilizationTimeEditField.value())
+                dlg.setValue(self.StabilizationTimeEditField.value())
                 dlg.setLabelText("Finishing...")
                 time.sleep(1)
 
-                self.ui.ProgressGauge.setValue(0)
-                self.ui.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+                self.ProgressGauge.setValue(0)
+                self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
                 time.sleep(0.5)
 
                 self.StartPlotting()
 
-                self.ui.ProgressGauge.setValue(20)
-                self.ui.ProgressGaugeLabel.setText("Collecting Data...")
+                self.ProgressGauge.setValue(20)
+                self.ProgressGaugeLabel.setText("Collecting Data...")
                 time.sleep(0.5)
 
                 for i in range(1, 101):
-                    self.ui.ProgressGauge.setValue(20 + int(60 * i / 100))
-                    self.ui.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
+                    self.ProgressGauge.setValue(20 + int(60 * i / 100))
+                    self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
                     time.sleep(self.SamplingPeriod)
 
                 self.Rawdata = self.IonData[-100:, 1]
@@ -608,50 +607,50 @@ class Window(QMainWindow, Ui_MainWindow):
                 err = np.abs(self.Rawdata - avg) / avg
 
         # Final calculations
-        self.ui.ProgressGauge.setValue(80)
-        self.ui.ProgressGaugeLabel.setText("Calculating data for 10 ppm STD solution")
+        self.ProgressGauge.setValue(80)
+        self.ProgressGaugeLabel.setText("Calculating data for 10 ppm STD solution")
         time.sleep(0.5)
 
         std_val = np.mean(self.Rawdata)
-        self.ui.STD10ppmEditField.setValue(std_val)
+        self.STD10ppmEditField.setValue(std_val)
         self.STD10ppm = std_val
         self.STDValues[0, 0] = std_val
 
         if self.ReadyForCalibration():
-            self.ui.CalibrationCurveFittingButton.setEnabled(True)
+            self.CalibrationCurveFittingButton.setEnabled(True)
         else:
-            self.ui.CalibrationCurveFittingButton.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
 
-        self.ui.ProgressGauge.setValue(100)
-        self.ui.ProgressGaugeLabel.setText("Finishing...")
+        self.ProgressGauge.setValue(100)
+        self.ProgressGaugeLabel.setText("Finishing...")
         time.sleep(1)
 
         # System Note Update
-        self.ui.SystemNoteTextArea.setVisible(True)
-        self.ui.ProgressGauge.setVisible(False)
-        self.ui.ProgressGaugeLabel.setVisible(False)
-        self.ui.SystemNoteTextArea.setPlainText("The value of 10 ppm standard solution has been successfully collected.")
-        self.ui.SystemNoteSignLabel.setText("SUCCEED")
-        self.ui.SystemNoteLamp.setStyleSheet("background-color: green")
+        self.SystemNoteTextArea.setVisible(True)
+        self.ProgressGauge.setVisible(False)
+        self.ProgressGaugeLabel.setVisible(False)
+        self.SystemNoteTextArea.setPlainText("The value of 10 ppm standard solution has been successfully collected.")
+        self.SystemNoteSignLabel.setText("SUCCEED")
+        self.SystemNoteLamp.setStyleSheet("background-color: green")
 
         # Reactivate all buttons
-        self.ui.SystemConnectionButton.setEnabled(True)
-        self.ui.STD10MeasurementButton.setEnabled(True)
-        self.ui.STD100MeasurementButton.setEnabled(True)
-        self.ui.STD1000MeasurementButton.setEnabled(True)
-        self.ui.STD5000MeasurementButton.setEnabled(True)
+        self.SystemConnectionButton.setEnabled(True)
+        self.STD10MeasurementButton.setEnabled(True)
+        self.STD100MeasurementButton.setEnabled(True)
+        self.STD1000MeasurementButton.setEnabled(True)
+        self.STD5000MeasurementButton.setEnabled(True)
 
     def STD100MeasurementButtonPushed(self):
     # Disable Buttons for Update
         self.SetEnableButtonsIon("off")
-        self.ui.STD10MeasurementButton.setEnabled(False)
-        self.ui.STD100MeasurementButton.setEnabled(False)
-        self.ui.STD1000MeasurementButton.setEnabled(False)
-        self.ui.STD5000MeasurementButton.setEnabled(False)
+        self.STD10MeasurementButton.setEnabled(False)
+        self.STD100MeasurementButton.setEnabled(False)
+        self.STD1000MeasurementButton.setEnabled(False)
+        self.STD5000MeasurementButton.setEnabled(False)
 
         # Confirm correct 100 ppm standard solution
         std_check = QMessageBox.question(
-            self.ui,
+            self,
             "STD Check",
             "Is 100 ppm standard solution correct??",
             QMessageBox.Yes | QMessageBox.No,
@@ -659,9 +658,9 @@ class Window(QMainWindow, Ui_MainWindow):
         )
 
         if std_check == QMessageBox.No:
-            self.ui.SystemNoteTextArea.setPlainText("Before collecting the 100 ppm standard solution, place the correct standard solution.")
-            self.ui.SystemNoteSignLabel.setText("REQUIRED")
-            self.ui.SystemNoteLamp.setStyleSheet("background-color: yellow")
+            self.SystemNoteTextArea.setPlainText("Before collecting the 100 ppm standard solution, place the correct standard solution.")
+            self.SystemNoteSignLabel.setText("REQUIRED")
+            self.SystemNoteLamp.setStyleSheet("background-color: yellow")
             self.SetEnableButtonsIon("on")
             return
 
@@ -670,7 +669,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Sensor stabilization prompt
         stability_timer = QMessageBox.question(
-            self.ui,
+            self,
             "Sensor Stabilization",
             "Have you stabilized the sensor yet?\nIf not, do so and start the Timer.\nOtherwise, Skip this step to get started.",
             QMessageBox.Yes | QMessageBox.No,
@@ -678,41 +677,41 @@ class Window(QMainWindow, Ui_MainWindow):
         )
 
         if stability_timer == QMessageBox.Yes:  # Timer
-            progress = QProgressDialog("Preparing to setup timer...", "Stop Timer", 0, self.ui.StabilizationTimeEditField.value(), self.ui)
+            progress = QProgressDialog("Preparing to setup timer...", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             progress.setWindowTitle("Sensor Stabilization Timer")
             progress.setWindowModality(Qt.WindowModal)
             progress.setMinimumDuration(0)
-            for i in range(1, self.ui.StabilizationTimeEditField.value() + 1):
+            for i in range(1, self.StabilizationTimeEditField.value() + 1):
                 if progress.wasCanceled():
                     progress.setLabelText("Stopping Timer...")
                     time.sleep(1)
                     break
-                time_r = self.ui.StabilizationTimeEditField.value() - i
+                time_r = self.StabilizationTimeEditField.value() - i
                 progress.setValue(i)
                 progress.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
                 time.sleep(1)
-            progress.setValue(self.ui.StabilizationTimeEditField.value())
+            progress.setValue(self.StabilizationTimeEditField.value())
             progress.setLabelText("Finishing...")
             time.sleep(1)
             progress.close()
 
         # Start progress bar
-        self.ui.SystemNoteTextArea.setVisible(False)
-        self.ui.ProgressGauge.setVisible(True)
-        self.ui.ProgressGaugeLabel.setVisible(True)
-        self.ui.ProgressGauge.setValue(0)
-        self.ui.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stabilization")
+        self.SystemNoteTextArea.setVisible(False)
+        self.ProgressGauge.setVisible(True)
+        self.ProgressGaugeLabel.setVisible(True)
+        self.ProgressGauge.setValue(0)
+        self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stabilization")
         time.sleep(0.5)
 
         self.StartPlotting()
 
         # Collect 100 data points
-        self.ui.ProgressGauge.setValue(20)
-        self.ui.ProgressGaugeLabel.setText("Collecting Data...")
+        self.ProgressGauge.setValue(20)
+        self.ProgressGaugeLabel.setText("Collecting Data...")
         time.sleep(0.5)
         for i in range(1, 101):
-            self.ui.ProgressGauge.setValue(20 + 60 * i / 100)
-            self.ui.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
+            self.ProgressGauge.setValue(20 + 60 * i / 100)
+            self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
             time.sleep(self.SamplingPeriod)
 
         self.Rawdata = [row[1] for row in self.IonData[-100:]]
@@ -722,7 +721,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # Stability check
         while all(e > self.StabilityError for e in err):
             stability_timer = QMessageBox.question(
-                self.ui,
+                self,
                 "Sensor Stabilization",
                 "Sensor was not stable during the measurement.\nDo you want to remeasure the sample?\nClick Remeasurement or Skip.",
                 QMessageBox.Yes | QMessageBox.No,
@@ -731,34 +730,34 @@ class Window(QMainWindow, Ui_MainWindow):
             if stability_timer == QMessageBox.No:
                 break
             elif stability_timer == QMessageBox.Yes:
-                progress = QProgressDialog("Stabilizing the sensor", "Stop Timer", 0, self.ui.StabilizationTimeEditField.value(), self.ui)
+                progress = QProgressDialog("Stabilizing the sensor", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
                 progress.setWindowTitle("Sensor Stabilization Timer")
                 progress.setWindowModality(Qt.WindowModal)
                 progress.setMinimumDuration(0)
-                for i in range(1, self.ui.StabilizationTimeEditField.value() + 1):
+                for i in range(1, self.StabilizationTimeEditField.value() + 1):
                     if progress.wasCanceled():
                         progress.setLabelText("Stopping Timer...")
                         time.sleep(1)
                         break
-                    time_r = self.ui.StabilizationTimeEditField.value() - i
+                    time_r = self.StabilizationTimeEditField.value() - i
                     progress.setValue(i)
                     progress.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
                     time.sleep(1)
-                progress.setValue(self.ui.StabilizationTimeEditField.value())
+                progress.setValue(self.StabilizationTimeEditField.value())
                 progress.setLabelText("Finishing...")
                 time.sleep(1)
                 progress.close()
 
-                self.ui.ProgressGauge.setValue(0)
-                self.ui.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stabilization")
+                self.ProgressGauge.setValue(0)
+                self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stabilization")
                 time.sleep(0.5)
                 self.StartPlotting()
-                self.ui.ProgressGauge.setValue(20)
-                self.ui.ProgressGaugeLabel.setText("Collecting Data...")
+                self.ProgressGauge.setValue(20)
+                self.ProgressGaugeLabel.setText("Collecting Data...")
                 time.sleep(0.5)
                 for i in range(1, 101):
-                    self.ui.ProgressGauge.setValue(20 + 60 * i / 100)
-                    self.ui.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
+                    self.ProgressGauge.setValue(20 + 60 * i / 100)
+                    self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
                     time.sleep(self.SamplingPeriod)
 
                 self.Rawdata = [row[1] for row in self.IonData[-100:]]
@@ -766,52 +765,52 @@ class Window(QMainWindow, Ui_MainWindow):
                 err = [abs(val - avg) / avg for val in self.Rawdata]
 
         # Final calculations
-        self.ui.ProgressGauge.setValue(80)
-        self.ui.ProgressGaugeLabel.setText("Calculating data for 100 ppm STD solution")
+        self.ProgressGauge.setValue(80)
+        self.ProgressGaugeLabel.setText("Calculating data for 100 ppm STD solution")
         time.sleep(0.5)
 
         result = sum(self.Rawdata) / len(self.Rawdata)
-        self.ui.STD100ppmEditField.setValue(result)
+        self.STD100ppmEditField.setValue(result)
         self.STD100ppm = result
         self.STDValues[0][1] = result
 
         if self.ReadyForCalibration():
-            self.ui.CalibrationCurveFittingButton.setEnabled(True)
+            self.CalibrationCurveFittingButton.setEnabled(True)
         else:
-            self.ui.CalibrationCurveFittingButton.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
 
-        self.ui.ProgressGauge.setValue(100)
-        self.ui.ProgressGaugeLabel.setText("Finishing...")
+        self.ProgressGauge.setValue(100)
+        self.ProgressGaugeLabel.setText("Finishing...")
         time.sleep(1)
 
-        self.ui.SystemNoteTextArea.setVisible(True)
-        self.ui.ProgressGauge.setVisible(False)
-        self.ui.ProgressGaugeLabel.setVisible(False)
-        self.ui.SystemNoteTextArea.setPlainText("The value of 100 ppm standard solution has been successfully collected.")
-        self.ui.SystemNoteSignLabel.setText("SUCCEED")
-        self.ui.SystemNoteLamp.setStyleSheet("background-color: green")
+        self.SystemNoteTextArea.setVisible(True)
+        self.ProgressGauge.setVisible(False)
+        self.ProgressGaugeLabel.setVisible(False)
+        self.SystemNoteTextArea.setPlainText("The value of 100 ppm standard solution has been successfully collected.")
+        self.SystemNoteSignLabel.setText("SUCCEED")
+        self.SystemNoteLamp.setStyleSheet("background-color: green")
 
         # Reactivate buttons
-        self.ui.SystemConnectionButton.setEnabled(True)
-        self.ui.STD10MeasurementButton.setEnabled(True)
-        self.ui.STD100MeasurementButton.setEnabled(True)
-        self.ui.STD1000MeasurementButton.setEnabled(True)
-        self.ui.STD5000MeasurementButton.setEnabled(True)
+        self.SystemConnectionButton.setEnabled(True)
+        self.STD10MeasurementButton.setEnabled(True)
+        self.STD100MeasurementButton.setEnabled(True)
+        self.STD1000MeasurementButton.setEnabled(True)
+        self.STD5000MeasurementButton.setEnabled(True)
     
     def STD1000MeasurementButtonPushed(self):
         # Disable Buttons for Update
         self.SetEnableButtonsIon("off")
-        self.ui.STD10MeasurementButton.setEnabled(False)
-        self.ui.STD100MeasurementButton.setEnabled(False)
-        self.ui.STD1000MeasurementButton.setEnabled(False)
-        self.ui.STD5000MeasurementButton.setEnabled(False)
+        self.STD10MeasurementButton.setEnabled(False)
+        self.STD100MeasurementButton.setEnabled(False)
+        self.STD1000MeasurementButton.setEnabled(False)
+        self.STD5000MeasurementButton.setEnabled(False)
 
         # Confirm 1000 ppm standard solution
         std_check = QMessageBox.question(self, "STD Check", "Is 1000 ppm standard solution correct??")
         if std_check == QMessageBox.No:
-            self.ui.SystemNoteTextArea.setPlainText("Before collecting the 1000 ppm standard solution, place the correct standard solution.")
-            self.ui.SystemNoteSignLabel.setText("REQUIRED")
-            self.ui.SystemNoteLamp.setStyleSheet("background-color: yellow")
+            self.SystemNoteTextArea.setPlainText("Before collecting the 1000 ppm standard solution, place the correct standard solution.")
+            self.SystemNoteSignLabel.setText("REQUIRED")
+            self.SystemNoteLamp.setStyleSheet("background-color: yellow")
             self.SetEnableButtonsIon("on")
             return
 
@@ -820,47 +819,47 @@ class Window(QMainWindow, Ui_MainWindow):
         # Sensor stabilization check
         stability_check = QMessageBox.question(self, "Sensor Stabilization", "Have you stabilized the sensor yet?\nIf not, start the Timer. Otherwise, skip.")
         if stability_check == QMessageBox.Yes:  # Timer
-            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.ui.StabilizationTimeEditField.value(), self)
+            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             dlg.setWindowTitle("Sensor Stabilization Timer")
             dlg.setAutoClose(False)
             dlg.setCancelButtonText("Stop Timer")
             dlg.setMinimumDuration(0)
 
-            for i in range(self.ui.StabilizationTimeEditField.value()):
+            for i in range(self.StabilizationTimeEditField.value()):
                 if dlg.wasCanceled():
                     dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
                     break
-                time_r = self.ui.StabilizationTimeEditField.value() - i
+                time_r = self.StabilizationTimeEditField.value() - i
                 dlg.setValue(i)
                 dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
                 QApplication.processEvents()
                 time.sleep(1)
 
-            dlg.setValue(self.ui.StabilizationTimeEditField.value())
+            dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
             dlg.close()
 
         # Show progress
-        self.ui.SystemNoteTextArea.hide()
-        self.ui.ProgressGauge.setVisible(True)
-        self.ui.ProgressGaugeLabel.setVisible(True)
-        self.ui.ProgressGauge.setValue(0)
-        self.ui.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+        self.SystemNoteTextArea.hide()
+        self.ProgressGauge.setVisible(True)
+        self.ProgressGaugeLabel.setVisible(True)
+        self.ProgressGauge.setValue(0)
+        self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
         time.sleep(0.5)
 
         # Reset plotting
         self.StartPlotting()
 
         # Collect data
-        self.ui.ProgressGauge.setValue(20)
-        self.ui.ProgressGaugeLabel.setText("Collecting Data...")
+        self.ProgressGauge.setValue(20)
+        self.ProgressGaugeLabel.setText("Collecting Data...")
         time.sleep(0.5)
 
         for i in range(1, 101):
-            self.ui.ProgressGauge.setValue(20 + 60 * i / 100)
-            self.ui.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
+            self.ProgressGauge.setValue(20 + 60 * i / 100)
+            self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
             QApplication.processEvents()
             time.sleep(self.SamplingPeriod)
 
@@ -878,39 +877,39 @@ class Window(QMainWindow, Ui_MainWindow):
                 break
 
             # Retry Stabilization Timer
-            dlg = QProgressDialog("Stablizating the sensor", "Stop Timer", 0, self.ui.StabilizationTimeEditField.value(), self)
+            dlg = QProgressDialog("Stablizating the sensor", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             dlg.setWindowTitle("Sensor Stabilization Timer")
             dlg.setCancelButtonText("Stop Timer")
             dlg.setMinimumDuration(0)
 
-            for i in range(self.ui.StabilizationTimeEditField.value()):
+            for i in range(self.StabilizationTimeEditField.value()):
                 if dlg.wasCanceled():
                     dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
                     break
-                time_r = self.ui.StabilizationTimeEditField.value() - i
+                time_r = self.StabilizationTimeEditField.value() - i
                 dlg.setValue(i)
                 dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
                 QApplication.processEvents()
                 time.sleep(1)
 
-            dlg.setValue(self.ui.StabilizationTimeEditField.value())
+            dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
             dlg.close()
 
-            self.ui.ProgressGauge.setValue(0)
-            self.ui.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+            self.ProgressGauge.setValue(0)
+            self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
             time.sleep(0.5)
             self.StartPlotting()
 
-            self.ui.ProgressGauge.setValue(20)
-            self.ui.ProgressGaugeLabel.setText("Collecting Data...")
+            self.ProgressGauge.setValue(20)
+            self.ProgressGaugeLabel.setText("Collecting Data...")
             time.sleep(0.5)
 
             for i in range(1, 101):
-                self.ui.ProgressGauge.setValue(20 + 60 * i / 100)
-                self.ui.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
+                self.ProgressGauge.setValue(20 + 60 * i / 100)
+                self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
                 QApplication.processEvents()
                 time.sleep(self.SamplingPeriod)
 
@@ -919,45 +918,45 @@ class Window(QMainWindow, Ui_MainWindow):
             err = np.abs(np.array(self.Rawdata) - avg) / avg
 
         # Compute average
-        self.ui.ProgressGauge.setValue(80)
-        self.ui.ProgressGaugeLabel.setText("Calculating data for 1000 ppm STD solution")
+        self.ProgressGauge.setValue(80)
+        self.ProgressGaugeLabel.setText("Calculating data for 1000 ppm STD solution")
         time.sleep(0.5)
 
         value = float(np.mean(self.Rawdata))
-        self.ui.STD1000ppmEditField.setValue(value)
+        self.STD1000ppmEditField.setValue(value)
         self.STD1000ppm = value
         self.STDValues[0][2] = value  # Assuming 1-based index in MATLAB corresponds to [0][2] in Python
 
         if self.ReadyForCalibration():
-            self.ui.CalibrationCurveFittingButton.setEnabled(True)
+            self.CalibrationCurveFittingButton.setEnabled(True)
         else:
-            self.ui.CalibrationCurveFittingButton.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
 
-        self.ui.ProgressGauge.setValue(100)
-        self.ui.ProgressGaugeLabel.setText("Finishing...")
+        self.ProgressGauge.setValue(100)
+        self.ProgressGaugeLabel.setText("Finishing...")
         time.sleep(1)
 
-        self.ui.SystemNoteTextArea.show()
-        self.ui.ProgressGauge.setVisible(False)
-        self.ui.ProgressGaugeLabel.setVisible(False)
-        self.ui.SystemNoteTextArea.setPlainText("The value of 1000 ppm standard solution has been successfully collected.")
-        self.ui.SystemNoteSignLabel.setText("SUCCEED")
-        self.ui.SystemNoteLamp.setStyleSheet("background-color: green")
+        self.SystemNoteTextArea.show()
+        self.ProgressGauge.setVisible(False)
+        self.ProgressGaugeLabel.setVisible(False)
+        self.SystemNoteTextArea.setPlainText("The value of 1000 ppm standard solution has been successfully collected.")
+        self.SystemNoteSignLabel.setText("SUCCEED")
+        self.SystemNoteLamp.setStyleSheet("background-color: green")
 
         # Reactivate buttons
-        self.ui.SystemConnectionButton.setEnabled(True)
-        self.ui.STD10MeasurementButton.setEnabled(True)
-        self.ui.STD100MeasurementButton.setEnabled(True)
-        self.ui.STD1000MeasurementButton.setEnabled(True)
-        self.ui.STD5000MeasurementButton.setEnabled(True)
+        self.SystemConnectionButton.setEnabled(True)
+        self.STD10MeasurementButton.setEnabled(True)
+        self.STD100MeasurementButton.setEnabled(True)
+        self.STD1000MeasurementButton.setEnabled(True)
+        self.STD5000MeasurementButton.setEnabled(True)
 
     def STD5000MeasurementButtonPushed(self):
         # Disable buttons for update
         self.SetEnableButtonsIon("off")
-        self.ui.STD10MeasurementButton.setEnabled(False)
-        self.ui.STD100MeasurementButton.setEnabled(False)
-        self.ui.STD1000MeasurementButton.setEnabled(False)
-        self.ui.STD5000MeasurementButton.setEnabled(False)
+        self.STD10MeasurementButton.setEnabled(False)
+        self.STD100MeasurementButton.setEnabled(False)
+        self.STD1000MeasurementButton.setEnabled(False)
+        self.STD5000MeasurementButton.setEnabled(False)
 
         # Check standard placement
         std_check = QMessageBox.question(
@@ -966,9 +965,9 @@ class Window(QMainWindow, Ui_MainWindow):
         )
 
         if std_check == QMessageBox.No:
-            self.ui.SystemNoteTextArea.setPlainText("Before collecting the 5000 ppm standard solution, place the correct standard solution.")
-            self.ui.SystemNoteSignLabel.setText("REQUIRED")
-            self.ui.SystemNoteLamp.setStyleSheet("background-color: yellow")
+            self.SystemNoteTextArea.setPlainText("Before collecting the 5000 ppm standard solution, place the correct standard solution.")
+            self.SystemNoteSignLabel.setText("REQUIRED")
+            self.SystemNoteLamp.setStyleSheet("background-color: yellow")
             self.SetEnableButtonsIon("on")
             return
         elif std_check == QMessageBox.Yes:
@@ -982,43 +981,43 @@ class Window(QMainWindow, Ui_MainWindow):
         )
 
         if stab_confirm == QMessageBox.Yes:
-            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.ui.StabilizationTimeEditField.value(), self)
+            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             dlg.setWindowTitle("Sensor Stabilization Timer")
             dlg.setWindowModality(Qt.ApplicationModal)
             dlg.setAutoClose(True)
             dlg.setMinimumDuration(0)
 
-            for i in range(1, self.ui.StabilizationTimeEditField.value() + 1):
+            for i in range(1, self.StabilizationTimeEditField.value() + 1):
                 if dlg.wasCanceled():
                     dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
                     break
-                time_r = self.ui.StabilizationTimeEditField.value() - i
+                time_r = self.StabilizationTimeEditField.value() - i
                 dlg.setValue(i)
                 dlg.setLabelText(f"Waiting... ({time_r//60}:{time_r%60:02d})")
                 QCoreApplication.processEvents()
                 time.sleep(1)
 
-            dlg.setValue(self.ui.StabilizationTimeEditField.value())
+            dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
 
         # Start progress
-        self.ui.SystemNoteTextArea.setVisible(False)
-        self.ui.ProgressGauge.setVisible(True)
-        self.ui.ProgressGaugeLabel.setVisible(True)
-        self.ui.ProgressGauge.setValue(0)
-        self.ui.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+        self.SystemNoteTextArea.setVisible(False)
+        self.ProgressGauge.setVisible(True)
+        self.ProgressGaugeLabel.setVisible(True)
+        self.ProgressGauge.setValue(0)
+        self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
         time.sleep(0.5)
 
         self.StartPlotting()
-        self.ui.ProgressGauge.setValue(20)
-        self.ui.ProgressGaugeLabel.setText("Collecting Data...")
+        self.ProgressGauge.setValue(20)
+        self.ProgressGaugeLabel.setText("Collecting Data...")
         time.sleep(0.5)
 
         for i in range(1, 101):
-            self.ui.ProgressGauge.setValue(20 + int(60 * i / 100))
-            self.ui.ProgressGaugeLabel.setText(f"Collecting Data... ({i}/100)")
+            self.ProgressGauge.setValue(20 + int(60 * i / 100))
+            self.ProgressGaugeLabel.setText(f"Collecting Data... ({i}/100)")
             time.sleep(self.SamplingPeriod)
 
         self.Rawdata = self.IonData[-100:, 1]
@@ -1034,74 +1033,74 @@ class Window(QMainWindow, Ui_MainWindow):
             if stab_confirm == QMessageBox.No:
                 break
 
-            dlg = QProgressDialog("Stabilizing the sensor", "Stop Timer", 0, self.ui.StabilizationTimeEditField.value(), self)
+            dlg = QProgressDialog("Stabilizing the sensor", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             dlg.setWindowTitle("Sensor Stabilization Timer")
             dlg.setWindowModality(Qt.ApplicationModal)
             dlg.setAutoClose(True)
 
-            for i in range(1, self.ui.StabilizationTimeEditField.value() + 1):
+            for i in range(1, self.StabilizationTimeEditField.value() + 1):
                 if dlg.wasCanceled():
                     dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
                     break
-                time_r = self.ui.StabilizationTimeEditField.value() - i
+                time_r = self.StabilizationTimeEditField.value() - i
                 dlg.setValue(i)
                 dlg.setLabelText(f"Waiting... ({time_r//60}:{time_r%60:02d})")
                 QCoreApplication.processEvents()
                 time.sleep(1)
 
-            dlg.setValue(self.ui.StabilizationTimeEditField.value())
+            dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
 
-            self.ui.ProgressGauge.setValue(0)
-            self.ui.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+            self.ProgressGauge.setValue(0)
+            self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
             time.sleep(0.5)
 
             self.StartPlotting()
-            self.ui.ProgressGauge.setValue(20)
-            self.ui.ProgressGaugeLabel.setText("Collecting Data...")
+            self.ProgressGauge.setValue(20)
+            self.ProgressGaugeLabel.setText("Collecting Data...")
             time.sleep(0.5)
 
             for i in range(1, 101):
-                self.ui.ProgressGauge.setValue(20 + int(60 * i / 100))
-                self.ui.ProgressGaugeLabel.setText(f"Collecting Data... ({i}/100)")
+                self.ProgressGauge.setValue(20 + int(60 * i / 100))
+                self.ProgressGaugeLabel.setText(f"Collecting Data... ({i}/100)")
                 time.sleep(self.SamplingPeriod)
 
             self.Rawdata = self.IonData[-100:, 1]
             avg = np.mean(self.Rawdata)
             err = np.abs(self.Rawdata - avg) / avg
 
-        self.ui.ProgressGauge.setValue(80)
-        self.ui.ProgressGaugeLabel.setText("Calculating data for 5000 ppm STD solution")
+        self.ProgressGauge.setValue(80)
+        self.ProgressGaugeLabel.setText("Calculating data for 5000 ppm STD solution")
         time.sleep(0.5)
 
         std_val = np.mean(self.Rawdata)
-        self.ui.STD5000ppmEditField.setValue(std_val)
+        self.STD5000ppmEditField.setValue(std_val)
         self.STD5000ppm = std_val
         self.STDValues[0, 3] = std_val
 
         if self.ReadyForCalibration():
-            self.ui.CalibrationCurveFittingButton.setEnabled(True)
+            self.CalibrationCurveFittingButton.setEnabled(True)
         else:
-            self.ui.CalibrationCurveFittingButton.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
 
-        self.ui.ProgressGauge.setValue(100)
-        self.ui.ProgressGaugeLabel.setText("Finishing...")
+        self.ProgressGauge.setValue(100)
+        self.ProgressGaugeLabel.setText("Finishing...")
         time.sleep(1)
 
-        self.ui.SystemNoteTextArea.setVisible(True)
-        self.ui.ProgressGauge.setVisible(False)
-        self.ui.ProgressGaugeLabel.setVisible(False)
-        self.ui.SystemNoteTextArea.setPlainText("The value of 5000 ppm standard solution has been successfully collected.")
-        self.ui.SystemNoteSignLabel.setText("SUCCEED")
-        self.ui.SystemNoteLamp.setStyleSheet("background-color: green")
+        self.SystemNoteTextArea.setVisible(True)
+        self.ProgressGauge.setVisible(False)
+        self.ProgressGaugeLabel.setVisible(False)
+        self.SystemNoteTextArea.setPlainText("The value of 5000 ppm standard solution has been successfully collected.")
+        self.SystemNoteSignLabel.setText("SUCCEED")
+        self.SystemNoteLamp.setStyleSheet("background-color: green")
 
-        self.ui.SystemConnectionButton.setEnabled(True)
-        self.ui.STD10MeasurementButton.setEnabled(True)
-        self.ui.STD100MeasurementButton.setEnabled(True)
-        self.ui.STD1000MeasurementButton.setEnabled(True)
-        self.ui.STD5000MeasurementButton.setEnabled(True)
+        self.SystemConnectionButton.setEnabled(True)
+        self.STD10MeasurementButton.setEnabled(True)
+        self.STD100MeasurementButton.setEnabled(True)
+        self.STD1000MeasurementButton.setEnabled(True)
+        self.STD5000MeasurementButton.setEnabled(True)
 
     def calibrationApplyButtonPushed(self):
         # Disable measurement buttons
