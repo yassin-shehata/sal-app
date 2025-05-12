@@ -54,36 +54,32 @@ except ImportError as e: # if one of the required packages wasn't found, try to 
         print("okay, exiting now.")
         sys.exit()
 def cl_startup(period_ms):
+    print("🔍 Attempting to connect to GoDirect sensors...")
     try:
-        godirect = GoDirect(use_ble=False)  # use USB mode
-        devices = godirect.list_devices()
+        from godirect import GoDirect
+        godirect = GoDirect(use_ble=False)
+        device = godirect.get_device()
 
-        if not devices:
-            raise RuntimeError("No GoDirect devices found. Make sure the sensor is connected and powered.")
-        
-        for dev_info in devices:
-            try:
-                device = godirect.get_device(dev_info)
-                if device._device is None:
-                    continue
-                sensor_indices = list(range(len(device.sensors)))
-                sensors = device.enable_sensors(sensor_indices)
-                device.start(period=period_ms)
-                return device, sensors, godirect
-            except Exception as e:
-                print(f"⚠️ Skipped device due to error: {e}")
-                continue
+        if device is not None and device.open():
+            device.start(period=period_ms)
+            sensors = device.get_enabled_sensors()
 
-        raise RuntimeError("No usable GoDirect device could be initialized.")
+            if sensors is None or len(sensors) == 0:
+                raise RuntimeError("❌ Sensors could not be enabled.")
+
+            print("✅ Device initialized and started.")
+            return device, sensors, godirect
+        else:
+            raise RuntimeError("❌ Sensor not found or failed to open.")
 
     except Exception as e:
-        print("No physical devices. Falling back to fake.")
+        print("⚠️ Real sensor connection failed, using fake sensor.")
+        print(f"⚠️ Exception: {e}")
         from fake_sensor import FakeDevice, FakeSensor, FakeGoDirect
-        device = FakeDevice()
-        sensors = [FakeSensor()]
-        godirect = FakeGoDirect()
-        return device, sensors, godirect
+        return FakeDevice(), [FakeSensor()], FakeGoDirect()
 
+
+    
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -193,7 +189,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def main(self): 
         """_summary_
         """
-        cl_startup(self.period * 1000)
+        self.device, self.sensors, self.godirect = cl_startup(self.period * 1000)
         self.btn_system_connect.clicked.connect(self.systemConnectionButtonPushed)
 
     def cl_close(self):
@@ -211,36 +207,53 @@ class Window(QMainWindow, Ui_MainWindow):
         QCoreApplication.processEvents()  # Force UI to update
         
         time.sleep(0.5)  # Give user time to see the update
+    
     def cl_read(self):
         """Mimics the MATLAB cl_read() function — reads latest data from sensors."""
+        if self.device is None or self.sensors is None:
+            print("Device or sensors not initialized")
+            return float('nan')
+
         try:
             if self.device.read():
                 values = []
                 for sensor in self.sensors:
-                    values.append(sensor.values[0])
-                    sensor.clear()
-                return values[0] if values else float('nan')  # assuming single sensor for now
+                    if sensor.values:
+                        values.append(sensor.values[0])
+                        sensor.clear()
+                    else:
+                        values.append(float('nan'))
+                return values[0] if values else float('nan')  # Assuming first sensor is used
             else:
                 return float('nan')
         except Exception as e:
             print("❌ cl_read() error:", e)
             return float('nan')
 
+
+
+
     def get_sensor_voltage(self):
-        """Simulate sensor voltage reading."""
         return self.cl_read()
+
+
 
     
     def try_sensor_restart(self):
         """Simulate reconnect attempt."""
-        return cl_startup(self.period * 1000)
-    
+        self.device, self.sensors, self.godirect = cl_startup(self.period * 1000)
+        return self.device is not None and self.sensors is not None
+
+
     def startPlotting(self):
         """Start real-time plotting of sensor data"""
         # Stop timer if it's already running
         if self.ion_timer:
             self.ion_timer.stop()
-
+         # 🔐 Safety check
+        if self.device is None or self.sensors is None:
+            print("❌ Cannot start plotting — device or sensors not set.")
+            return
         # Clear previous data
         self.ion_data = []
         self.start_time = time.time()
@@ -252,14 +265,14 @@ class Window(QMainWindow, Ui_MainWindow):
 
             # Detect disconnect
             if np.isnan(reading):
-                self.system_connection_lamp.setStyleSheet("background-color: red;")
-                self.refresh_button.setEnabled(False)
+                self.setCircleColour(self.indicator_connection, "red")
+                self.refresh_plot_button.setEnabled(False)
 
                 # Attempt reconnect (replace cl_startup logic)
                 if self.try_sensor_restart():
                     reading = self.get_sensor_voltage()
-                    self.system_connection_lamp.setStyleSheet("background-color: green;")
-                    self.refresh_button.setEnabled(True)
+                    self.setCircleColour(self.indicator_connection, "green")
+                    self.refresh_plot_button.setEnabled(True)
                 else:
                     return
 
@@ -407,9 +420,18 @@ class Window(QMainWindow, Ui_MainWindow):
 
         try:
             self.device, self.sensors, self.godirect = cl_startup(self.period * 1000)
+            
+            print("🧪 self.device:", self.device)
+            print("🧪 self.sensors:", self.sensors)
+
+            if self.device is None or self.sensors is None:
+                raise RuntimeError("Device or sensors not initialized")
+
+            self.startPlotting()  # Start plotting immediately now that connection is confirmed
+
         except RuntimeError as e:
             QMessageBox.warning(self, "Sensor Not Found", f"Sensor connection error [code 01.02]\n\n{str(e)}")
-            self.txt_system_note.setPlainText(
+            self.txt_system_note.setText(
                 """Sensor connection error [code 01.02]
         Unable to collect sensor signal.
         1. Retry to check the sensor connection.
@@ -427,6 +449,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.btn_system_connect.setEnabled(True)
             return
 
+
         self.update_progress(80, "Wrapping up startup processes")
         QTimer.singleShot(500, lambda: None)
         self.update_progress(100, "Finishing...")
@@ -435,8 +458,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.bar_progress.setVisible(False)
         self.lbl_progress_status.setVisible(False)
 
-
-        self.startPlotting()
 
         timer_choice = QMessageBox.question(self, "High Concentration Stabilization",
     "Have you submerged the probe in the 1000 ppm STD solution for 30 minutes yet?\n\nIf not, do so and start the Timer. Otherwise, Skip this step to get started.",
@@ -470,7 +491,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setCircleColour(self.indicator_note_status, "green")
         self.setCircleColour(self.indicator_connection, "green")
 
-        self.startPlotting()
 
         self.btn_system_connect.setEnabled(True)
         self.btn_std_10.setEnabled(True)
