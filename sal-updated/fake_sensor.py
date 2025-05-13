@@ -1,14 +1,19 @@
+import math
 import random
+import time
 
 class FakeSensor:
     def __init__(self):
-        self.values = [0.0]
+        self.values = [55.0]
+        self._start_time = time.time()
 
     def clear(self):
         pass
 
     def update_value(self):
-        self.values[0] = random.uniform(0, 100)
+    # Simulate changing sensor voltage between 55 and 60 with decimal precision
+        change = random.uniform(-0.2, 0.2)  # Small delta each step
+        self.values[0] = round(min(60.0, max(55.0, self.values[0] + change)), 5)
 
 class FakeDevice:
     def __init__(self):

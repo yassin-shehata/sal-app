@@ -221,6 +221,8 @@ class Window(QMainWindow, Ui_MainWindow):
                     if sensor.values:
                         values.append(sensor.values[0])
                         sensor.clear()
+                    if hasattr(sensor, "update_value"):
+                        sensor.update_value()
                     else:
                         values.append(float('nan'))
                 return values[0] if values else float('nan')  # Assuming first sensor is used
