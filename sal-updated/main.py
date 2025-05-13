@@ -189,7 +189,6 @@ class Window(QMainWindow, Ui_MainWindow):
     def main(self): 
         """_summary_
         """
-        self.device, self.sensors, self.godirect = cl_startup(self.period * 1000)
         self.btn_system_connect.clicked.connect(self.systemConnectionButtonPushed)
 
     def cl_close(self):
