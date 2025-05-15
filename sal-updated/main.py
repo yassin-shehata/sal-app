@@ -19,6 +19,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import Timer 
 from ui_sal import Ui_MainWindow
 from PySide6.QtWidgets import QLineEdit
+from PySide6.QtWidgets import QTextEdit
+from PySide6.QtCore import Qt
 
 try: # try importing external packages 
     import subprocess
@@ -115,7 +117,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.testing = testing # bool whether we are just testing the app or not (set to False when using)
 
         # system connection 
-        self.rawFileName = "Rawdataset_SAL.xlsx"
+        self.rawFileName = "rawDataset_SAL.xlsx"
         self.plotMode = "Potential"
         self.ionTableData = {}
         self.measurementData = None   
@@ -125,7 +127,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # calibrations 
         self.time = 0.0
         self.ionUpdateTimer = float('nan')
-        self.ionData = []
+        self.ion_data = []
         self.rawData = []
         self.period = 0.1
         self.samplingPeriod = 0.2
@@ -190,6 +192,14 @@ class Window(QMainWindow, Ui_MainWindow):
         """_summary_
         """
         self.btn_system_connect.clicked.connect(self.systemConnectionButtonPushed)
+        self.STD10MeasurementButton.clicked.connect(self.STD10MeasurementButtonPushed)
+        self.STD100MeasurementButton.clicked.connect(self.STD100MeasurementButtonPushed)
+        self.STD1000MeasurementButton.clicked.connect(self.STD1000MeasurementButtonPushed)
+        self.STD5000MeasurementButton.clicked.connect(self.STD5000MeasurementButtonPushed)
+
+
+
+
 
     def cl_close(self):
         """Disconnects the Go Direct Cl sensor."""
@@ -316,7 +326,7 @@ class Window(QMainWindow, Ui_MainWindow):
             border-radius: {widget.width()//2}px;
         """)
     
-    # Python version of MATLAB's SystemConnectionButtonPushed
+    # Python version of MATLAB's btn_system_connectPushed
 
     def systemConnectionButtonPushed(self):
         # Deactivate the button
@@ -493,12 +503,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setCircleColour(self.indicator_connection, "green")
 
 
-        self.btn_system_connect.setEnabled(True)
-        self.btn_std_10.setEnabled(True)
-        self.btn_std_100.setEnabled(True)
-        self.btn_std_1000.setEnabled(True)
-        self.btn_std_5000.setEnabled(True)
+        self.STD10MeasurementButton.setEnabled(True)
+        self.STD100MeasurementButton.setEnabled(True)
+        self.STD1000MeasurementButton.setEnabled(True)
+        self.STD5000MeasurementButton.setEnabled(True)
+        self.calibration_frame.setEnabled(True)
 
+    def ReadyForCalibration(self):
+        return all(not np.isnan(val) for val in self.STDValues[0])
 
     def STD10MeasurementButtonPushed(self):
         # Disable Buttons for Update
@@ -514,9 +526,9 @@ class Window(QMainWindow, Ui_MainWindow):
             QMessageBox.Yes | QMessageBox.No
         )
         if std_check == QMessageBox.No:
-            self.SystemNoteTextArea.setPlainText("Before collecting the 10 ppm standard solution, place the correct standard solution.")
-            self.SystemNoteSignLabel.setText("REQUIRED")
-            self.SystemNoteLamp.setStyleSheet("background-color: yellow")
+            self.txt_system_note.setText("Before collecting the 10 ppm standard solution, place the correct standard solution.")
+            self.lbl_system_note.setText("REQUIRED")
+            self.indicator_note_status.setStyleSheet("background-color: yellow")
             self.SetEnableButtonsIon("on")
             return
         elif std_check == QMessageBox.Yes:
@@ -553,31 +565,48 @@ class Window(QMainWindow, Ui_MainWindow):
             time.sleep(1)
 
         # Start Progress Gauge
-        self.SystemNoteTextArea.setVisible(False)
-        self.ProgressGauge.setVisible(True)
-        self.ProgressGaugeLabel.setVisible(True)
-        self.ProgressGauge.setValue(0)
-        self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+        self.txt_system_note.setVisible(False)
+        self.bar_progress.setVisible(True)
+        self.lbl_progress_status.setVisible(True)
+        self.bar_progress.setValue(0)
+        self.lbl_progress_status.setText("Preparing to gather 100 data point to stablization")
         time.sleep(0.5)
 
         # Start plotting
-        self.StartPlotting()
-
-        self.ProgressGauge.setValue(20)
-        self.ProgressGaugeLabel.setText("Collecting Data...")
+        self.startPlotting()
+        self.bar_progress.setValue(20)
+        self.lbl_progress_status.setText("Collecting Data...")
         time.sleep(0.5)
 
-        for i in range(1, 101):
-            self.ProgressGauge.setValue(20 + int(60 * i / 100))
-            self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
-            time.sleep(self.SamplingPeriod)
+        valid_data = []
 
-        self.Rawdata = self.IonData[-100:, 1]
-        avg = np.mean(self.Rawdata)
-        err = np.abs(self.Rawdata - avg) / avg
+        timeout = time.time() + 30  # Wait up to 30 seconds max
+        while len(valid_data) < 100:
+            QCoreApplication.processEvents()
+            if self.ion_data:
+                # Append new value if it's valid
+                latest = self.ion_data[-1]
+                if not np.isnan(latest[1]):
+                    valid_data.append(latest[1])
 
+                    # Update progress
+                    pct = int(60 * len(valid_data) / 100)
+                    self.bar_progress.setValue(20 + pct)
+                    self.lbl_progress_status.setText(f"Collecting Data...  ({len(valid_data)}/100)")
+
+            if time.time() > timeout:
+                QMessageBox.warning(self, "Data Timeout", f"Only collected {len(valid_data)} valid points.")
+                self.SetEnableButtonsIon("on")
+                return
+            time.sleep(self.samplingPeriod / 2)
+
+        self.rawData = np.array(valid_data)
+
+        # Calculate average and error
+        avg = np.mean(self.rawData)
+        err = np.abs(self.rawData - avg) / avg
         # Stability loop
-        while np.all(err > self.StabilityError):
+        while np.all(err > self.stabilityError):
             remeasure = QMessageBox.question(
                 self,
                 "Sensor Stabilization",
@@ -608,54 +637,71 @@ class Window(QMainWindow, Ui_MainWindow):
                 dlg.setLabelText("Finishing...")
                 time.sleep(1)
 
-                self.ProgressGauge.setValue(0)
-                self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+                self.bar_progress.setValue(0)
+                self.lbl_progress_status.setText("Preparing to gather 100 data point to stablization")
                 time.sleep(0.5)
 
-                self.StartPlotting()
+                self.startPlotting()
 
-                self.ProgressGauge.setValue(20)
-                self.ProgressGaugeLabel.setText("Collecting Data...")
+                self.bar_progress.setValue(20)
+                self.lbl_progress_status.setText("Collecting Data...")
                 time.sleep(0.5)
 
                 for i in range(1, 101):
-                    self.ProgressGauge.setValue(20 + int(60 * i / 100))
-                    self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
-                    time.sleep(self.SamplingPeriod)
+                    self.bar_progress.setValue(20 + int(60 * i / 100))
+                    self.lbl_progress_status.setText(f"Collecting Data...  ({i}/100)")
+                    time.sleep(self.samplingPeriod)
 
-                self.Rawdata = self.IonData[-100:, 1]
-                avg = np.mean(self.Rawdata)
-                err = np.abs(self.Rawdata - avg) / avg
+
+                
+                self.rawData = [row[1] for row in self.ion_data[-100:] if not np.isnan(row[1])]
+
+                # Check if we have enough valid data
+                if len(self.rawData) < 100:
+                    QMessageBox.warning(self, "Data Error", "Not enough valid data points collected from the sensor.")
+                    self.SetEnableButtonsIon("on")
+                    return
+
+                # Convert to NumPy array
+                self.rawData = np.array(self.rawData)
+
+                # Calculate average and error
+                avg = np.mean(self.rawData)
+                err = np.abs(self.rawData - avg) / avg
 
         # Final calculations
-        self.ProgressGauge.setValue(80)
-        self.ProgressGaugeLabel.setText("Calculating data for 10 ppm STD solution")
+        self.bar_progress.setValue(80)
+        self.lbl_progress_status.setText("Calculating data for 10 ppm STD solution")
         time.sleep(0.5)
 
-        std_val = np.mean(self.Rawdata)
-        self.STD10ppmEditField.setValue(std_val)
+        std_val = np.mean(self.rawData)
+        self.STD10ppmEditField.setVisible(True)
+        self.STD10ppmEditField.setPlainText(f"{std_val:.2f}")
+
+        self.STD10ppmEditField.setStyleSheet("color: black; background-color: white;")  # <-- Add here
+
         self.STD10ppm = std_val
-        self.STDValues[0, 0] = std_val
+        self.STDValues[0][0] = std_val  # 10 ppm slot
 
         if self.ReadyForCalibration():
             self.CalibrationCurveFittingButton.setEnabled(True)
         else:
             self.CalibrationCurveFittingButton.setEnabled(False)
 
-        self.ProgressGauge.setValue(100)
-        self.ProgressGaugeLabel.setText("Finishing...")
+        self.bar_progress.setValue(100)
+        self.lbl_progress_status.setText("Finishing...")
         time.sleep(1)
 
         # System Note Update
-        self.SystemNoteTextArea.setVisible(True)
-        self.ProgressGauge.setVisible(False)
-        self.ProgressGaugeLabel.setVisible(False)
-        self.SystemNoteTextArea.setPlainText("The value of 10 ppm standard solution has been successfully collected.")
-        self.SystemNoteSignLabel.setText("SUCCEED")
-        self.SystemNoteLamp.setStyleSheet("background-color: green")
+        self.txt_system_note.setVisible(True)
+        self.bar_progress.setVisible(False)
+        self.lbl_progress_status.setVisible(False)
+        self.txt_system_note.setText("The value of 10 ppm standard solution has been successfully collected.")
+        self.lbl_system_note.setText("SUCCEED")
+        self.indicator_note_status.setStyleSheet("background-color: green")
 
         # Reactivate all buttons
-        self.SystemConnectionButton.setEnabled(True)
+        self.btn_system_connect.setEnabled(True)
         self.STD10MeasurementButton.setEnabled(True)
         self.STD100MeasurementButton.setEnabled(True)
         self.STD1000MeasurementButton.setEnabled(True)
@@ -679,9 +725,9 @@ class Window(QMainWindow, Ui_MainWindow):
         )
 
         if std_check == QMessageBox.No:
-            self.SystemNoteTextArea.setPlainText("Before collecting the 100 ppm standard solution, place the correct standard solution.")
-            self.SystemNoteSignLabel.setText("REQUIRED")
-            self.SystemNoteLamp.setStyleSheet("background-color: yellow")
+            self.txt_system_note.setText("Before collecting the 100 ppm standard solution, place the correct standard solution.")
+            self.lbl_system_note.setText("REQUIRED")
+            self.indicator_note_status.setStyleSheet("background-color: yellow")
             self.SetEnableButtonsIon("on")
             return
 
@@ -717,30 +763,47 @@ class Window(QMainWindow, Ui_MainWindow):
             progress.close()
 
         # Start progress bar
-        self.SystemNoteTextArea.setVisible(False)
-        self.ProgressGauge.setVisible(True)
-        self.ProgressGaugeLabel.setVisible(True)
-        self.ProgressGauge.setValue(0)
-        self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stabilization")
+        self.txt_system_note.setVisible(False)
+        self.bar_progress.setVisible(True)
+        self.lbl_progress_status.setVisible(True)
+        self.bar_progress.setValue(0)
+        self.lbl_progress_status.setText("Preparing to gather 100 data point to stabilization")
         time.sleep(0.5)
 
-        self.StartPlotting()
-
-        # Collect 100 data points
-        self.ProgressGauge.setValue(20)
-        self.ProgressGaugeLabel.setText("Collecting Data...")
+        self.startPlotting()
+        self.bar_progress.setValue(20)
+        self.lbl_progress_status.setText("Collecting Data...")
         time.sleep(0.5)
-        for i in range(1, 101):
-            self.ProgressGauge.setValue(20 + 60 * i / 100)
-            self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
-            time.sleep(self.SamplingPeriod)
 
-        self.Rawdata = [row[1] for row in self.IonData[-100:]]
-        avg = sum(self.Rawdata) / len(self.Rawdata)
-        err = [abs(val - avg) / avg for val in self.Rawdata]
+        valid_data = []
+
+        timeout = time.time() + 30  # Wait up to 30 seconds max
+        while len(valid_data) < 100:
+            QCoreApplication.processEvents()
+            if self.ion_data:
+                # Append new value if it's valid
+                latest = self.ion_data[-1]
+                if not np.isnan(latest[1]):
+                    valid_data.append(latest[1])
+
+                    # Update progress
+                    pct = int(60 * len(valid_data) / 100)
+                    self.bar_progress.setValue(20 + pct)
+                    self.lbl_progress_status.setText(f"Collecting Data...  ({len(valid_data)}/100)")
+
+            if time.time() > timeout:
+                QMessageBox.warning(self, "Data Timeout", f"Only collected {len(valid_data)} valid points.")
+                self.SetEnableButtonsIon("on")
+                return
+            time.sleep(self.samplingPeriod / 2)
+
+        self.rawData = np.array(valid_data)
+        avg = np.mean(self.rawData)
+        err = np.abs(self.rawData - avg) / avg
 
         # Stability check
-        while all(e > self.StabilityError for e in err):
+
+        while np.any(err > self.stabilityError):
             stability_timer = QMessageBox.question(
                 self,
                 "Sensor Stabilization",
@@ -769,50 +832,54 @@ class Window(QMainWindow, Ui_MainWindow):
                 time.sleep(1)
                 progress.close()
 
-                self.ProgressGauge.setValue(0)
-                self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stabilization")
+                self.bar_progress.setValue(0)
+                self.lbl_progress_status.setText("Preparing to gather 100 data point to stabilization")
                 time.sleep(0.5)
-                self.StartPlotting()
-                self.ProgressGauge.setValue(20)
-                self.ProgressGaugeLabel.setText("Collecting Data...")
+                self.startPlotting()
+                self.bar_progress.setValue(20)
+                self.lbl_progress_status.setText("Collecting Data...")
                 time.sleep(0.5)
                 for i in range(1, 101):
-                    self.ProgressGauge.setValue(20 + 60 * i / 100)
-                    self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
-                    time.sleep(self.SamplingPeriod)
+                    self.bar_progress.setValue(20 + 60 * i / 100)
+                    self.lbl_progress_status.setText(f"Collecting Data...  ({i}/100)")
+                    time.sleep(self.samplingPeriod)
 
-                self.Rawdata = [row[1] for row in self.IonData[-100:]]
-                avg = sum(self.Rawdata) / len(self.Rawdata)
-                err = [abs(val - avg) / avg for val in self.Rawdata]
+
+                self.rawData = [row[1] for row in self.ion_data[-100:]]
+                avg = sum(self.rawData) / len(self.rawData)
+                err = [abs(val - avg) / avg for val in self.rawData]
 
         # Final calculations
-        self.ProgressGauge.setValue(80)
-        self.ProgressGaugeLabel.setText("Calculating data for 100 ppm STD solution")
+        self.bar_progress.setValue(80)
+        self.lbl_progress_status.setText("Calculating data for 100 ppm STD solution")
         time.sleep(0.5)
 
-        result = sum(self.Rawdata) / len(self.Rawdata)
-        self.STD100ppmEditField.setValue(result)
+        result = sum(self.rawData) / len(self.rawData)
+        self.STD100ppmEditField.setVisible(True)
+        self.STD100ppmEditField.setPlainText(f"{result:.2f}")
+        self.STD100ppmEditField.setStyleSheet("color: black; background-color: white;")
         self.STD100ppm = result
         self.STDValues[0][1] = result
+
 
         if self.ReadyForCalibration():
             self.CalibrationCurveFittingButton.setEnabled(True)
         else:
             self.CalibrationCurveFittingButton.setEnabled(False)
 
-        self.ProgressGauge.setValue(100)
-        self.ProgressGaugeLabel.setText("Finishing...")
+        self.bar_progress.setValue(100)
+        self.lbl_progress_status.setText("Finishing...")
         time.sleep(1)
 
-        self.SystemNoteTextArea.setVisible(True)
-        self.ProgressGauge.setVisible(False)
-        self.ProgressGaugeLabel.setVisible(False)
-        self.SystemNoteTextArea.setPlainText("The value of 100 ppm standard solution has been successfully collected.")
-        self.SystemNoteSignLabel.setText("SUCCEED")
-        self.SystemNoteLamp.setStyleSheet("background-color: green")
+        self.txt_system_note.setVisible(True)
+        self.bar_progress.setVisible(False)
+        self.lbl_progress_status.setVisible(False)
+        self.txt_system_note.setText("The value of 100 ppm standard solution has been successfully collected.")
+        self.lbl_system_note.setText("SUCCEED")
+        self.indicator_note_status.setStyleSheet("background-color: green")
 
         # Reactivate buttons
-        self.SystemConnectionButton.setEnabled(True)
+        self.btn_system_connect.setEnabled(True)
         self.STD10MeasurementButton.setEnabled(True)
         self.STD100MeasurementButton.setEnabled(True)
         self.STD1000MeasurementButton.setEnabled(True)
@@ -829,9 +896,9 @@ class Window(QMainWindow, Ui_MainWindow):
         # Confirm 1000 ppm standard solution
         std_check = QMessageBox.question(self, "STD Check", "Is 1000 ppm standard solution correct??")
         if std_check == QMessageBox.No:
-            self.SystemNoteTextArea.setPlainText("Before collecting the 1000 ppm standard solution, place the correct standard solution.")
-            self.SystemNoteSignLabel.setText("REQUIRED")
-            self.SystemNoteLamp.setStyleSheet("background-color: yellow")
+            self.txt_system_note.setText("Before collecting the 1000 ppm standard solution, place the correct standard solution.")
+            self.lbl_system_note.setText("REQUIRED")
+            self.indicator_note_status.setStyleSheet("background-color: yellow")
             self.SetEnableButtonsIon("on")
             return
 
@@ -863,34 +930,49 @@ class Window(QMainWindow, Ui_MainWindow):
             dlg.close()
 
         # Show progress
-        self.SystemNoteTextArea.hide()
-        self.ProgressGauge.setVisible(True)
-        self.ProgressGaugeLabel.setVisible(True)
-        self.ProgressGauge.setValue(0)
-        self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+        self.txt_system_note.hide()
+        self.bar_progress.setVisible(True)
+        self.lbl_progress_status.setVisible(True)
+        self.bar_progress.setValue(0)
+        self.lbl_progress_status.setText("Preparing to gather 100 data point to stablization")
         time.sleep(0.5)
+
 
         # Reset plotting
-        self.StartPlotting()
+        self.startPlotting()
 
         # Collect data
-        self.ProgressGauge.setValue(20)
-        self.ProgressGaugeLabel.setText("Collecting Data...")
+        self.bar_progress.setValue(20)
+        self.lbl_progress_status.setText("Collecting Data...")
         time.sleep(0.5)
 
-        for i in range(1, 101):
-            self.ProgressGauge.setValue(20 + 60 * i / 100)
-            self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
-            QApplication.processEvents()
-            time.sleep(self.SamplingPeriod)
+        valid_data = []
 
-        self.Rawdata = [row[1] for row in self.IonData[-100:]]
+        timeout = time.time() + 30  # Wait up to 30 seconds max
+        while len(valid_data) < 100:
+            QCoreApplication.processEvents()
+            if self.ion_data:
+                # Append new value if it's valid
+                latest = self.ion_data[-1]
+                if not np.isnan(latest[1]):
+                    valid_data.append(latest[1])
 
-        # Check stability
-        avg = np.mean(self.Rawdata)
-        err = np.abs(np.array(self.Rawdata) - avg) / avg
+                    # Update progress
+                    pct = int(60 * len(valid_data) / 100)
+                    self.bar_progress.setValue(20 + pct)
+                    self.lbl_progress_status.setText(f"Collecting Data...  ({len(valid_data)}/100)")
 
-        while np.all(err > self.StabilityError):
+            if time.time() > timeout:
+                QMessageBox.warning(self, "Data Timeout", f"Only collected {len(valid_data)} valid points.")
+                self.SetEnableButtonsIon("on")
+                return
+            time.sleep(self.samplingPeriod / 2)
+
+        self.rawData = np.array(valid_data)
+        avg = np.mean(self.rawData)
+        err = np.abs(self.rawData - avg) / avg
+
+        while np.all(err > self.stabilityError):
             retry = QMessageBox.question(self, "Sensor Stabilization", 
                                         "Sensor was not stable during the measurement.\nDo you want to remeasure the sample?",
                                         QMessageBox.Yes | QMessageBox.No)
@@ -919,53 +1001,56 @@ class Window(QMainWindow, Ui_MainWindow):
             time.sleep(1)
             dlg.close()
 
-            self.ProgressGauge.setValue(0)
-            self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+            self.bar_progress.setValue(0)
+            self.lbl_progress_status.setText("Preparing to gather 100 data point to stablization")
             time.sleep(0.5)
-            self.StartPlotting()
+            self.startPlotting()
 
-            self.ProgressGauge.setValue(20)
-            self.ProgressGaugeLabel.setText("Collecting Data...")
+            self.bar_progress.setValue(20)
+            self.lbl_progress_status.setText("Collecting Data...")
             time.sleep(0.5)
 
             for i in range(1, 101):
-                self.ProgressGauge.setValue(20 + 60 * i / 100)
-                self.ProgressGaugeLabel.setText(f"Collecting Data...  ({i}/100)")
+                self.bar_progress.setValue(20 + 60 * i / 100)
+                self.lbl_progress_status.setText(f"Collecting Data...  ({i}/100)")
                 QApplication.processEvents()
-                time.sleep(self.SamplingPeriod)
+                time.sleep(self.samplingPeriod)
 
-            self.Rawdata = [row[1] for row in self.IonData[-100:]]
-            avg = np.mean(self.Rawdata)
-            err = np.abs(np.array(self.Rawdata) - avg) / avg
+
+            self.rawData = [row[1] for row in self.ion_data[-100:]]
+            avg = np.mean(self.rawData)
+            err = np.abs(np.array(self.rawData) - avg) / avg
 
         # Compute average
-        self.ProgressGauge.setValue(80)
-        self.ProgressGaugeLabel.setText("Calculating data for 1000 ppm STD solution")
+        self.bar_progress.setValue(80)
+        self.lbl_progress_status.setText("Calculating data for 1000 ppm STD solution")
         time.sleep(0.5)
 
-        value = float(np.mean(self.Rawdata))
-        self.STD1000ppmEditField.setValue(value)
-        self.STD1000ppm = value
-        self.STDValues[0][2] = value  # Assuming 1-based index in MATLAB corresponds to [0][2] in Python
+        result = sum(self.rawData) / len(self.rawData)
+        self.STD1000ppmEditField.setVisible(True)
+        self.STD1000ppmEditField.setPlainText(f"{result:.2f}")
+        self.STD1000ppmEditField.setStyleSheet("color: black; background-color: white;")
+        self.STD1000ppm = result
+        self.STDValues[0][2] = result
 
         if self.ReadyForCalibration():
             self.CalibrationCurveFittingButton.setEnabled(True)
         else:
             self.CalibrationCurveFittingButton.setEnabled(False)
 
-        self.ProgressGauge.setValue(100)
-        self.ProgressGaugeLabel.setText("Finishing...")
+        self.bar_progress.setValue(100)
+        self.lbl_progress_status.setText("Finishing...")
         time.sleep(1)
 
-        self.SystemNoteTextArea.show()
-        self.ProgressGauge.setVisible(False)
-        self.ProgressGaugeLabel.setVisible(False)
-        self.SystemNoteTextArea.setPlainText("The value of 1000 ppm standard solution has been successfully collected.")
-        self.SystemNoteSignLabel.setText("SUCCEED")
-        self.SystemNoteLamp.setStyleSheet("background-color: green")
+        self.txt_system_note.show()
+        self.bar_progress.setVisible(False)
+        self.lbl_progress_status.setVisible(False)
+        self.txt_system_note.setText("The value of 1000 ppm standard solution has been successfully collected.")
+        self.lbl_system_note.setText("SUCCEED")
+        self.indicator_note_status.setStyleSheet("background-color: green")
 
         # Reactivate buttons
-        self.SystemConnectionButton.setEnabled(True)
+        self.btn_system_connect.setEnabled(True)
         self.STD10MeasurementButton.setEnabled(True)
         self.STD100MeasurementButton.setEnabled(True)
         self.STD1000MeasurementButton.setEnabled(True)
@@ -986,9 +1071,9 @@ class Window(QMainWindow, Ui_MainWindow):
         )
 
         if std_check == QMessageBox.No:
-            self.SystemNoteTextArea.setPlainText("Before collecting the 5000 ppm standard solution, place the correct standard solution.")
-            self.SystemNoteSignLabel.setText("REQUIRED")
-            self.SystemNoteLamp.setStyleSheet("background-color: yellow")
+            self.txt_system_note.setText("Before collecting the 5000 ppm standard solution, place the correct standard solution.")
+            self.lbl_system_note.setText("REQUIRED")
+            self.indicator_note_status.setStyleSheet("background-color: yellow")
             self.SetEnableButtonsIon("on")
             return
         elif std_check == QMessageBox.Yes:
@@ -1024,28 +1109,45 @@ class Window(QMainWindow, Ui_MainWindow):
             time.sleep(1)
 
         # Start progress
-        self.SystemNoteTextArea.setVisible(False)
-        self.ProgressGauge.setVisible(True)
-        self.ProgressGaugeLabel.setVisible(True)
-        self.ProgressGauge.setValue(0)
-        self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+        self.txt_system_note.setVisible(False)
+        self.bar_progress.setVisible(True)
+        self.lbl_progress_status.setVisible(True)
+        self.bar_progress.setValue(0)
+        self.lbl_progress_status.setText("Preparing to gather 100 data point to stablization")
         time.sleep(0.5)
 
-        self.StartPlotting()
-        self.ProgressGauge.setValue(20)
-        self.ProgressGaugeLabel.setText("Collecting Data...")
+        self.startPlotting()
+        self.bar_progress.setValue(20)
+        self.lbl_progress_status.setText("Collecting Data...")
         time.sleep(0.5)
 
-        for i in range(1, 101):
-            self.ProgressGauge.setValue(20 + int(60 * i / 100))
-            self.ProgressGaugeLabel.setText(f"Collecting Data... ({i}/100)")
-            time.sleep(self.SamplingPeriod)
+        valid_data = []
 
-        self.Rawdata = self.IonData[-100:, 1]
-        avg = np.mean(self.Rawdata)
-        err = np.abs(self.Rawdata - avg) / avg
+        timeout = time.time() + 30  # Wait up to 30 seconds max
+        while len(valid_data) < 100:
+            QCoreApplication.processEvents()
+            if self.ion_data:
+                # Append new value if it's valid
+                latest = self.ion_data[-1]
+                if not np.isnan(latest[1]):
+                    valid_data.append(latest[1])
 
-        while np.all(err > self.StabilityError):
+                    # Update progress
+                    pct = int(60 * len(valid_data) / 100)
+                    self.bar_progress.setValue(20 + pct)
+                    self.lbl_progress_status.setText(f"Collecting Data...  ({len(valid_data)}/100)")
+
+            if time.time() > timeout:
+                QMessageBox.warning(self, "Data Timeout", f"Only collected {len(valid_data)} valid points.")
+                self.SetEnableButtonsIon("on")
+                return
+            time.sleep(self.samplingPeriod / 2)
+
+        self.rawData = np.array(valid_data)
+        avg = np.mean(self.rawData)
+        err = np.abs(self.rawData - avg) / avg
+
+        while np.all(err > self.stabilityError):
             stab_confirm = QMessageBox.question(
                 self, "Sensor Stabilization",
                 "Sensor was not stable during the measurement.\nDo you want to remeasure the sample?\nClick Remeasurement to repeat or Skip to finish.",
@@ -1074,50 +1176,54 @@ class Window(QMainWindow, Ui_MainWindow):
             dlg.setLabelText("Finishing...")
             time.sleep(1)
 
-            self.ProgressGauge.setValue(0)
-            self.ProgressGaugeLabel.setText("Preparing to gather 100 data point to stablization")
+            self.bar_progress.setValue(0)
+            self.lbl_progress_status.setText("Preparing to gather 100 data point to stablization")
             time.sleep(0.5)
 
-            self.StartPlotting()
-            self.ProgressGauge.setValue(20)
-            self.ProgressGaugeLabel.setText("Collecting Data...")
+            self.startPlotting()
+            self.bar_progress.setValue(20)
+            self.lbl_progress_status.setText("Collecting Data...")
             time.sleep(0.5)
 
             for i in range(1, 101):
-                self.ProgressGauge.setValue(20 + int(60 * i / 100))
-                self.ProgressGaugeLabel.setText(f"Collecting Data... ({i}/100)")
-                time.sleep(self.SamplingPeriod)
+                self.bar_progress.setValue(20 + int(60 * i / 100))
+                self.lbl_progress_status.setText(f"Collecting Data... ({i}/100)")
+                time.sleep(self.samplingPeriod)
 
-            self.Rawdata = self.IonData[-100:, 1]
-            avg = np.mean(self.Rawdata)
-            err = np.abs(self.Rawdata - avg) / avg
 
-        self.ProgressGauge.setValue(80)
-        self.ProgressGaugeLabel.setText("Calculating data for 5000 ppm STD solution")
+            self.rawData = [row[1] for row in self.ion_data[-100:]]
+            avg = np.mean(self.rawData)
+            err = np.abs(self.rawData - avg) / avg
+
+        self.bar_progress.setValue(80)
+        self.lbl_progress_status.setText("Calculating data for 5000 ppm STD solution")
         time.sleep(0.5)
 
-        std_val = np.mean(self.Rawdata)
-        self.STD5000ppmEditField.setValue(std_val)
-        self.STD5000ppm = std_val
-        self.STDValues[0, 3] = std_val
+        result = sum(self.rawData) / len(self.rawData)
+        self.STD5000ppmEditField.setVisible(True)
+        self.STD5000ppmEditField.setPlainText(f"{result:.2f}")
+        self.STD5000ppmEditField.setStyleSheet("color: black; background-color: white;")
+        self.STD5000ppm = result
+        self.STDValues[0][3] = result
+
 
         if self.ReadyForCalibration():
             self.CalibrationCurveFittingButton.setEnabled(True)
         else:
             self.CalibrationCurveFittingButton.setEnabled(False)
 
-        self.ProgressGauge.setValue(100)
-        self.ProgressGaugeLabel.setText("Finishing...")
+        self.bar_progress.setValue(100)
+        self.lbl_progress_status.setText("Finishing...")
         time.sleep(1)
 
-        self.SystemNoteTextArea.setVisible(True)
-        self.ProgressGauge.setVisible(False)
-        self.ProgressGaugeLabel.setVisible(False)
-        self.SystemNoteTextArea.setPlainText("The value of 5000 ppm standard solution has been successfully collected.")
-        self.SystemNoteSignLabel.setText("SUCCEED")
-        self.SystemNoteLamp.setStyleSheet("background-color: green")
+        self.txt_system_note.setVisible(True)
+        self.bar_progress.setVisible(False)
+        self.lbl_progress_status.setVisible(False)
+        self.txt_system_note.setText("The value of 5000 ppm standard solution has been successfully collected.")
+        self.lbl_system_note.setText("SUCCEED")
+        self.indicator_note_status.setStyleSheet("background-color: green")
 
-        self.SystemConnectionButton.setEnabled(True)
+        self.btn_system_connect.setEnabled(True)
         self.STD10MeasurementButton.setEnabled(True)
         self.STD100MeasurementButton.setEnabled(True)
         self.STD1000MeasurementButton.setEnabled(True)
@@ -1139,6 +1245,13 @@ class Window(QMainWindow, Ui_MainWindow):
         # Re-enable core UI
         self.setEnableButtons(True)
     
+    def SetEnableButtonsIon(self, mode):
+        state = mode.lower() == "on"
+        self.STD10MeasurementButton.setEnabled(state)
+        self.STD100MeasurementButton.setEnabled(state)
+        self.STD1000MeasurementButton.setEnabled(state)
+        self.STD5000MeasurementButton.setEnabled(state)
+
     def calibrationResetButtonPushed(self):
         # Disable measurement buttons
         self.std10_measurement_button.setEnabled(True)
@@ -1475,7 +1588,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Start plot & progress
         self.startPlotting()
-        self.ionData = []
+        self.ion_data = []
         progress = QProgressDialog("Collecting 100 data points...", "Cancel", 0, 100, self)
         progress.setWindowTitle("Sensor Data Collection")
         progress.setValue(0)
@@ -1488,11 +1601,11 @@ class Window(QMainWindow, Ui_MainWindow):
             QApplication.processEvents()
             if progress.wasCanceled():
                 break
-            self.ionData.append([time.time(), self.cl_read(), np.nan])
+            self.ion_data.append([time.time(), self.cl_read(), np.nan])
             progress.setValue(i + 1)
             time.sleep(self.samplingPeriod)
 
-        raw = np.array([x[1] for x in self.ionData[-100:]])
+        raw = np.array([x[1] for x in self.ion_data[-100:]])
         avg = np.mean(raw)
         err = np.abs(raw - avg) / avg
 
@@ -1507,12 +1620,12 @@ class Window(QMainWindow, Ui_MainWindow):
                 break
             else:
                 self.startPlotting()
-                self.ionData = []
+                self.ion_data = []
                 for i in range(100):
                     QApplication.processEvents()
-                    self.ionData.append([time.time(), self.cl_read(), np.nan])
+                    self.ion_data.append([time.time(), self.cl_read(), np.nan])
                     time.sleep(self.samplingPeriod)
-                raw = np.array([x[1] for x in self.ionData[-100:]])
+                raw = np.array([x[1] for x in self.ion_data[-100:]])
                 avg = np.mean(raw)
                 err = np.abs(raw - avg) / avg
 

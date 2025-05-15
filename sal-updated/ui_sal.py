@@ -509,107 +509,107 @@ class Ui_MainWindow(object):
         self.calibration_frame.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_2 = QGridLayout(self.calibration_frame)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.btn_std_10 = QPushButton(self.calibration_frame)
-        self.btn_std_10.setObjectName(u"btn_std_10")
-        self.btn_std_10.setEnabled(False)
-
-        self.gridLayout_2.addWidget(self.btn_std_10, 0, 2, 1, 1)
-
-        self.calibration_button = QPushButton(self.calibration_frame)
-        self.calibration_button.setObjectName(u"calibration_button")
-        self.calibration_button.setEnabled(False)
-
-        self.gridLayout_2.addWidget(self.calibration_button, 4, 2, 1, 1)
-
-        self.STD5000MeasurementButton = QLabel(self.calibration_frame)
+        self.STD5000MeasurementButton = QPushButton(self.calibration_frame)
         self.STD5000MeasurementButton.setObjectName(u"STD5000MeasurementButton")
         self.STD5000MeasurementButton.setEnabled(False)
-        self.STD5000MeasurementButton.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.gridLayout_2.addWidget(self.STD5000MeasurementButton, 3, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.STD5000MeasurementButton, 3, 2, 1, 1)
 
-        self.STD10MeasurementButton = QLabel(self.calibration_frame)
+        self.STD100Measurement = QLabel(self.calibration_frame)
+        self.STD100Measurement.setObjectName(u"STD100Measurement")
+        self.STD100Measurement.setEnabled(False)
+        self.STD100Measurement.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_2.addWidget(self.STD100Measurement, 1, 0, 1, 1)
+
+        self.STD100ppmEditField = QTextEdit(self.calibration_frame)
+        self.STD100ppmEditField.setObjectName(u"STD100ppmEditField")
+        self.STD100ppmEditField.setEnabled(False)
+        self.STD100ppmEditField.setMinimumSize(QSize(150, 28))
+        self.STD100ppmEditField.setMaximumSize(QSize(150, 26))
+        self.STD100ppmEditField.setAutoFillBackground(False)
+        self.STD100ppmEditField.setFrameShape(QFrame.Shape.Box)
+        self.STD100ppmEditField.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.gridLayout_2.addWidget(self.STD100ppmEditField, 1, 1, 1, 1)
+
+        self.STD10MeasurementButton = QPushButton(self.calibration_frame)
         self.STD10MeasurementButton.setObjectName(u"STD10MeasurementButton")
         self.STD10MeasurementButton.setEnabled(False)
-        self.STD10MeasurementButton.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.gridLayout_2.addWidget(self.STD10MeasurementButton, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.STD10MeasurementButton, 0, 2, 1, 1)
 
-        self.std_100ppm_input = QTextEdit(self.calibration_frame)
-        self.std_100ppm_input.setObjectName(u"std_100ppm_input")
-        self.std_100ppm_input.setEnabled(False)
-        self.std_100ppm_input.setMinimumSize(QSize(150, 28))
-        self.std_100ppm_input.setMaximumSize(QSize(150, 26))
-        self.std_100ppm_input.setAutoFillBackground(False)
-        self.std_100ppm_input.setFrameShape(QFrame.Shape.Box)
-        self.std_100ppm_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.gridLayout_2.addWidget(self.std_100ppm_input, 1, 1, 1, 1)
-
-        self.std_1000ppm_input = QTextEdit(self.calibration_frame)
-        self.std_1000ppm_input.setObjectName(u"std_1000ppm_input")
-        self.std_1000ppm_input.setEnabled(False)
-        self.std_1000ppm_input.setMinimumSize(QSize(150, 28))
-        self.std_1000ppm_input.setMaximumSize(QSize(150, 26))
-        self.std_1000ppm_input.setAutoFillBackground(False)
-        self.std_1000ppm_input.setFrameShape(QFrame.Shape.Box)
-        self.std_1000ppm_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.gridLayout_2.addWidget(self.std_1000ppm_input, 2, 1, 1, 1)
-
-        self.std_5000pm_input = QTextEdit(self.calibration_frame)
-        self.std_5000pm_input.setObjectName(u"std_5000pm_input")
-        self.std_5000pm_input.setEnabled(False)
-        self.std_5000pm_input.setMinimumSize(QSize(150, 28))
-        self.std_5000pm_input.setMaximumSize(QSize(150, 26))
-        self.std_5000pm_input.setAutoFillBackground(False)
-        self.std_5000pm_input.setFrameShape(QFrame.Shape.Box)
-        self.std_5000pm_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.gridLayout_2.addWidget(self.std_5000pm_input, 3, 1, 1, 1)
-
-        self.STD1000MeasurementButton = QLabel(self.calibration_frame)
-        self.STD1000MeasurementButton.setObjectName(u"STD1000MeasurementButton")
-        self.STD1000MeasurementButton.setEnabled(False)
-        self.STD1000MeasurementButton.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_2.addWidget(self.STD1000MeasurementButton, 2, 0, 1, 1)
-
-        self.btn_std_100 = QPushButton(self.calibration_frame)
-        self.btn_std_100.setObjectName(u"btn_std_100")
-        self.btn_std_100.setEnabled(False)
-
-        self.gridLayout_2.addWidget(self.btn_std_100, 1, 2, 1, 1)
-
-        self.STD100MeasurementButton = QLabel(self.calibration_frame)
+        self.STD100MeasurementButton = QPushButton(self.calibration_frame)
         self.STD100MeasurementButton.setObjectName(u"STD100MeasurementButton")
         self.STD100MeasurementButton.setEnabled(False)
-        self.STD100MeasurementButton.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.gridLayout_2.addWidget(self.STD100MeasurementButton, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.STD100MeasurementButton, 1, 2, 1, 1)
 
-        self.std_10ppm_input = QTextEdit(self.calibration_frame)
-        self.std_10ppm_input.setObjectName(u"std_10ppm_input")
-        self.std_10ppm_input.setEnabled(False)
-        self.std_10ppm_input.setMinimumSize(QSize(150, 28))
-        self.std_10ppm_input.setMaximumSize(QSize(150, 26))
-        self.std_10ppm_input.setAutoFillBackground(False)
-        self.std_10ppm_input.setFrameShape(QFrame.Shape.Box)
-        self.std_10ppm_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.STD1000Measurement = QLabel(self.calibration_frame)
+        self.STD1000Measurement.setObjectName(u"STD1000Measurement")
+        self.STD1000Measurement.setEnabled(False)
+        self.STD1000Measurement.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.gridLayout_2.addWidget(self.std_10ppm_input, 0, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.STD1000Measurement, 2, 0, 1, 1)
 
-        self.btn_std_5000 = QPushButton(self.calibration_frame)
-        self.btn_std_5000.setObjectName(u"btn_std_5000")
-        self.btn_std_5000.setEnabled(False)
+        self.STD5000Measurement = QLabel(self.calibration_frame)
+        self.STD5000Measurement.setObjectName(u"STD5000Measurement")
+        self.STD5000Measurement.setEnabled(False)
+        self.STD5000Measurement.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.gridLayout_2.addWidget(self.btn_std_5000, 3, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.STD5000Measurement, 3, 0, 1, 1)
 
-        self.btn_std_1000 = QPushButton(self.calibration_frame)
-        self.btn_std_1000.setObjectName(u"btn_std_1000")
-        self.btn_std_1000.setEnabled(False)
+        self.STD1000ppmEditField = QTextEdit(self.calibration_frame)
+        self.STD1000ppmEditField.setObjectName(u"STD1000ppmEditField")
+        self.STD1000ppmEditField.setEnabled(False)
+        self.STD1000ppmEditField.setMinimumSize(QSize(150, 28))
+        self.STD1000ppmEditField.setMaximumSize(QSize(150, 26))
+        self.STD1000ppmEditField.setAutoFillBackground(False)
+        self.STD1000ppmEditField.setFrameShape(QFrame.Shape.Box)
+        self.STD1000ppmEditField.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
-        self.gridLayout_2.addWidget(self.btn_std_1000, 2, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.STD1000ppmEditField, 2, 1, 1, 1)
+
+        self.STD5000ppmEditField = QTextEdit(self.calibration_frame)
+        self.STD5000ppmEditField.setObjectName(u"STD5000ppmEditField")
+        self.STD5000ppmEditField.setEnabled(False)
+        self.STD5000ppmEditField.setMinimumSize(QSize(150, 28))
+        self.STD5000ppmEditField.setMaximumSize(QSize(150, 26))
+        self.STD5000ppmEditField.setAutoFillBackground(False)
+        self.STD5000ppmEditField.setFrameShape(QFrame.Shape.Box)
+        self.STD5000ppmEditField.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.gridLayout_2.addWidget(self.STD5000ppmEditField, 3, 1, 1, 1)
+
+        self.STD10Measurement = QLabel(self.calibration_frame)
+        self.STD10Measurement.setObjectName(u"STD10Measurement")
+        self.STD10Measurement.setEnabled(False)
+        self.STD10Measurement.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_2.addWidget(self.STD10Measurement, 0, 0, 1, 1)
+
+        self.STD1000MeasurementButton = QPushButton(self.calibration_frame)
+        self.STD1000MeasurementButton.setObjectName(u"STD1000MeasurementButton")
+        self.STD1000MeasurementButton.setEnabled(False)
+
+        self.gridLayout_2.addWidget(self.STD1000MeasurementButton, 2, 2, 1, 1)
+
+        self.CalibrationCurveFittingButton = QPushButton(self.calibration_frame)
+        self.CalibrationCurveFittingButton.setObjectName(u"CalibrationCurveFittingButton")
+        self.CalibrationCurveFittingButton.setEnabled(False)
+
+        self.gridLayout_2.addWidget(self.CalibrationCurveFittingButton, 4, 2, 1, 1)
+
+        self.STD10ppmEditField = QTextEdit(self.calibration_frame)
+        self.STD10ppmEditField.setObjectName(u"STD10ppmEditField")
+        self.STD10ppmEditField.setEnabled(False)
+        self.STD10ppmEditField.setMinimumSize(QSize(150, 28))
+        self.STD10ppmEditField.setMaximumSize(QSize(150, 26))
+        self.STD10ppmEditField.setAutoFillBackground(False)
+        self.STD10ppmEditField.setFrameShape(QFrame.Shape.Box)
+        self.STD10ppmEditField.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.gridLayout_2.addWidget(self.STD10ppmEditField, 0, 1, 1, 1)
 
 
         self.verticalLayout_3.addWidget(self.calibration_frame)
@@ -949,10 +949,10 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_10.addWidget(self.stabilization_time_label)
 
-        self.stabilization_time_input = QSpinBox(self.options_frame)
-        self.stabilization_time_input.setObjectName(u"stabilization_time_input")
+        self.StabilizationTimeEditField = QSpinBox(self.options_frame)
+        self.StabilizationTimeEditField.setObjectName(u"StabilizationTimeEditField")
 
-        self.horizontalLayout_10.addWidget(self.stabilization_time_input)
+        self.horizontalLayout_10.addWidget(self.StabilizationTimeEditField)
 
         self.baseline_label = QLabel(self.options_frame)
         self.baseline_label.setObjectName(u"baseline_label")
@@ -1279,7 +1279,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(3)
+        self.sample_measurement_tab_widget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(7)
 
 
@@ -1307,15 +1307,15 @@ class Ui_MainWindow(object):
         self.sample_measurement_label.setText(QCoreApplication.translate("MainWindow", u"2. Sample Measurement", None))
         self.reset_button_measurement.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
         self.apply_button_measurement.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
-        self.btn_std_10.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
-        self.calibration_button.setText(QCoreApplication.translate("MainWindow", u"Calibration Curve Fitting", None))
-        self.STD5000MeasurementButton.setText(QCoreApplication.translate("MainWindow", u"STD 5000 ppm", None))
-        self.STD10MeasurementButton.setText(QCoreApplication.translate("MainWindow", u"STD 10 ppm", None))
-        self.STD1000MeasurementButton.setText(QCoreApplication.translate("MainWindow", u"STD 1000 ppm", None))
-        self.btn_std_100.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
-        self.STD100MeasurementButton.setText(QCoreApplication.translate("MainWindow", u"STD 100 ppm", None))
-        self.btn_std_5000.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
-        self.btn_std_1000.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
+        self.STD5000MeasurementButton.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
+        self.STD100Measurement.setText(QCoreApplication.translate("MainWindow", u"STD 100 ppm", None))
+        self.STD10MeasurementButton.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
+        self.STD100MeasurementButton.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
+        self.STD1000Measurement.setText(QCoreApplication.translate("MainWindow", u"STD 1000 ppm", None))
+        self.STD5000Measurement.setText(QCoreApplication.translate("MainWindow", u"STD 5000 ppm", None))
+        self.STD10Measurement.setText(QCoreApplication.translate("MainWindow", u"STD 10 ppm", None))
+        self.STD1000MeasurementButton.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
+        self.CalibrationCurveFittingButton.setText(QCoreApplication.translate("MainWindow", u"Calibration Curve Fitting", None))
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.calibration), QCoreApplication.translate("MainWindow", u"Calibration", None))
         self.project_name_label.setText(QCoreApplication.translate("MainWindow", u"Project Name", None))
         self.sample_no_label.setText(QCoreApplication.translate("MainWindow", u"Sample No", None))
