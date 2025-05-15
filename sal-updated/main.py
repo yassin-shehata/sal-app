@@ -196,6 +196,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD100MeasurementButton.clicked.connect(self.STD100MeasurementButtonPushed)
         self.STD1000MeasurementButton.clicked.connect(self.STD1000MeasurementButtonPushed)
         self.STD5000MeasurementButton.clicked.connect(self.STD5000MeasurementButtonPushed)
+        self.reset_button_measurement.clicked.connect(self.resetSTDValues)
 
 
 
@@ -511,6 +512,36 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def ReadyForCalibration(self):
         return all(not np.isnan(val) for val in self.STDValues[0])
+   
+    def resetSTDValues(self):
+        # Clear all STD fields visually
+        self.STD10ppmEditField.setPlainText("")
+        self.STD100ppmEditField.setPlainText("")
+        self.STD1000ppmEditField.setPlainText("")
+        self.STD5000ppmEditField.setPlainText("")
+
+        # Reset internal values
+        self.STDValues[0] = [np.nan, np.nan, np.nan, np.nan]
+        self.STD10ppm = None
+        self.STD100ppm = None
+        self.STD1000ppm = None
+        self.STD5000ppm = None
+
+        # Disable Calibration button and Reset button
+        self.CalibrationCurveFittingButton.setEnabled(False)
+        self.reset_button_measurement.setEnabled(False)
+
+        # ✅ Visual confirmation
+        self.txt_system_note.setVisible(True)
+        self.txt_system_note.setText("All STD values have been cleared.")
+        self.lbl_system_note.setText("RESET")
+        self.indicator_note_status.setStyleSheet("background-color: orange")  # or another color like gray
+
+        # Optional: hide progress
+        self.bar_progress.setVisible(False)
+        self.lbl_progress_status.setVisible(False)
+
+
 
     def STD10MeasurementButtonPushed(self):
         # Disable Buttons for Update
@@ -682,6 +713,9 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.STD10ppm = std_val
         self.STDValues[0][0] = std_val  # 10 ppm slot
+        if any(not np.isnan(val) for val in self.STDValues[0]):
+            self.reset_button_measurement.setEnabled(True)
+
 
         if self.ReadyForCalibration():
             self.CalibrationCurveFittingButton.setEnabled(True)
@@ -860,6 +894,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD100ppmEditField.setStyleSheet("color: black; background-color: white;")
         self.STD100ppm = result
         self.STDValues[0][1] = result
+        if any(not np.isnan(val) for val in self.STDValues[0]):
+            self.reset_button_measurement.setEnabled(True)
 
 
         if self.ReadyForCalibration():
@@ -1032,6 +1068,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD1000ppmEditField.setStyleSheet("color: black; background-color: white;")
         self.STD1000ppm = result
         self.STDValues[0][2] = result
+        if any(not np.isnan(val) for val in self.STDValues[0]):
+            self.reset_button_measurement.setEnabled(True)
+
 
         if self.ReadyForCalibration():
             self.CalibrationCurveFittingButton.setEnabled(True)
@@ -1205,6 +1244,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD5000ppmEditField.setStyleSheet("color: black; background-color: white;")
         self.STD5000ppm = result
         self.STDValues[0][3] = result
+        if any(not np.isnan(val) for val in self.STDValues[0]):
+            self.reset_button_measurement.setEnabled(True)
+
 
 
         if self.ReadyForCalibration():
