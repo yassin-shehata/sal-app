@@ -9,6 +9,8 @@ TODO:
 
 
 # from fake_sensor import cl_startup
+from matplotlib.ticker import FormatStrFormatter  # add once at top of file
+
 import re
 from excel_exporter import append_or_create_excel
 from ui_sal import Ui_MainWindow
@@ -185,7 +187,8 @@ class Window(QMainWindow, Ui_MainWindow):
         print("✅ btn_system_connect found:", self.btn_system_connect is not None)
         print("✅ indicator_connection found:", self.indicator_connection is not None)
         print("✅ txt_system_note found:", self.txt_system_note is not None)
-        
+        self.calibration_mode = False           # tells the program whether we’re showing the static calibration plot
+        self.refresh_plot_button.setEnabled(False)  # start with Refresh disabled
         self.main()
 
     def main(self): 
@@ -196,9 +199,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD100MeasurementButton.clicked.connect(self.STD100MeasurementButtonPushed)
         self.STD1000MeasurementButton.clicked.connect(self.STD1000MeasurementButtonPushed)
         self.STD5000MeasurementButton.clicked.connect(self.STD5000MeasurementButtonPushed)
-        self.reset_button_measurement.clicked.connect(self.resetSTDValues)
-
-
+        self.refresh_plot_button.clicked.connect(self.refreshPlotButtonPushed)
+        self.CalibrationCurveFittingButton.clicked.connect(self.CalibrationCurveFittingButtonPushed)
+        self.reset_button_measurement.clicked.connect(self.calibrationResetButtonPushed)
+        self.apply_button_measurement.clicked.connect(self.calibrationApplyButtonPushed)
 
 
 
@@ -259,6 +263,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def startPlotting(self):
         """Start real-time plotting of sensor data"""
+        self.refresh_plot_button.setEnabled(False)
         # Stop timer if it's already running
         if self.ion_timer:
             self.ion_timer.stop()
@@ -512,37 +517,113 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def ReadyForCalibration(self):
         return all(not np.isnan(val) for val in self.STDValues[0])
-   
-    def resetSTDValues(self):
-        # Clear all STD fields visually
-        self.STD10ppmEditField.setPlainText("")
-        self.STD100ppmEditField.setPlainText("")
-        self.STD1000ppmEditField.setPlainText("")
-        self.STD5000ppmEditField.setPlainText("")
+    def computeIonEquation(self):
+        """
+        Fit log10(concentration) vs sensor potential and build:
+        • self.coeff      – [slope, intercept]
+        • self.rsquared   – goodness-of-fit
+        • self.ionEquation(x) – function that converts mV ➔ mg L-1
+        """
+        # ❶  drop NaNs (we only keep points we really measured)
+        potentials = np.array([p for p in self.STDValues[0] if not np.isnan(p)])
+        concs      = np.array([c
+                            for p, c in zip(self.STDValues[0], self.STDValues[1])
+                            if not np.isnan(p)])
 
-        # Reset internal values
-        self.STDValues[0] = [np.nan, np.nan, np.nan, np.nan]
-        self.STD10ppm = None
-        self.STD100ppm = None
-        self.STD1000ppm = None
-        self.STD5000ppm = None
+        logC = np.log10(concs)
 
-        # Disable Calibration button and Reset button
-        self.CalibrationCurveFittingButton.setEnabled(False)
-        self.reset_button_measurement.setEnabled(False)
+        # ❷  linear least-squares on (potential, log10 C)
+        self.coeff = np.polyfit(potentials, logC, 1)         # slope, intercept
 
-        # ✅ Visual confirmation
-        self.txt_system_note.setVisible(True)
-        self.txt_system_note.setText("All STD values have been cleared.")
-        self.lbl_system_note.setText("RESET")
-        self.indicator_note_status.setStyleSheet("background-color: orange")  # or another color like gray
+        # ❸  R²  (same formula as in the MATLAB code)
+        fit = np.polyval(self.coeff, potentials)
+        ss_res = np.sum((logC - fit) ** 2)
+        ss_tot = np.sum((logC - logC.mean()) ** 2)
+        self.rsquared = 1 - ss_res/ss_tot
 
-        # Optional: hide progress
-        self.bar_progress.setVisible(False)
-        self.lbl_progress_status.setVisible(False)
+        # ❹  build the converter mV → mg L-1
+        self.ionEquation = lambda x: 10 ** (self.coeff[0]*x + self.coeff[1])
 
+    
+    def CalibrationCurveFittingButtonPushed(self):
+        if not self.ReadyForCalibration():
+            QMessageBox.warning(self, "Calibration", "Collect all four STD points first.")
+            return
 
+        # ---- maths stays the same ----
+        self.computeIonEquation()
 
+        # ---- stop live feed so figure stays ----
+        if self.ion_timer:
+            self.ion_timer.stop()
+
+        # build X (1-4) and Y (your 100-pt avgs)
+        x_idx, y_avg = [], []
+        for i, avg in enumerate(self.STDValues[0], start=1):
+            if not np.isnan(avg):
+                x_idx.append(i)
+                y_avg.append(avg)
+
+        self.axes.clear()
+        self.axes.plot(x_idx, y_avg, "o-", label="STD avg (mV)")
+        self.axes.set_xlabel("STD order  (1 = 10 ppm … 4 = 5000 ppm)")
+        self.axes.set_ylabel("Average potential (mV)")
+        self.axes.set_xticks([1, 2, 3, 4])
+        self.axes.yaxis.set_major_formatter(FormatStrFormatter("%.2f"))  # ← 56.53 etc
+        self.axes.grid(True, ls="--", alpha=.3)
+        self.canvas.draw()
+
+        # show R² & unlock Apply
+        self.r_squared_label_2.setText(f"R² = {self.rsquared:.4f}")
+        self.apply_button_measurement.setEnabled(True)
+
+        # flip mode
+        self.calibration_mode = True
+        self.refresh_plot_button.setEnabled(True)   # user can go back to live feed
+    
+    def refreshPlotButtonPushed(self):
+        if not self.calibration_mode:
+            return                          # already in live mode – ignore
+
+        # wipe the static plot
+        self.axes.clear()
+        self.canvas.draw()
+
+        # restart live plotting
+        self.calibration_mode = False
+        self.refresh_plot_button.setEnabled(False)
+        self.startPlotting()                # startPlotting() must KEEP the button disabled
+
+    def _set_measurement_controls_enabled(self, enabled: bool):
+        """
+        Turn every measurement / calibration widget on-or-off in one shot.
+        (The Reset button is **not** in this list on purpose.)
+        """
+        for w in (
+            # four STD push-buttons
+            self.STD10MeasurementButton,
+            self.STD100MeasurementButton,
+            self.STD1000MeasurementButton,
+            self.STD5000MeasurementButton,
+
+            # the “Fit curve” push-button
+            self.CalibrationCurveFittingButton,
+
+            # the “Apply calibration” push-button
+            self.apply_button_measurement,      # ← that’s the one you wired up earlier
+
+            # core sample-measurement actions
+            self.measurement_button,            # “Measure” / “Predict”
+        ):
+            w.setEnabled(enabled)
+    
+    def SetEnableButtonsIon(self, mode):
+        state = mode.lower() == "on"
+        self.STD10MeasurementButton.setEnabled(state)
+        self.STD100MeasurementButton.setEnabled(state)
+        self.STD1000MeasurementButton.setEnabled(state)
+        self.STD5000MeasurementButton.setEnabled(state)
+    
     def STD10MeasurementButtonPushed(self):
         # Disable Buttons for Update
         self.SetEnableButtonsIon("off")
@@ -1271,41 +1352,38 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD1000MeasurementButton.setEnabled(True)
         self.STD5000MeasurementButton.setEnabled(True)
 
+
     def calibrationApplyButtonPushed(self):
-        # Disable measurement buttons
-        self.std10_measurement_button.setEnabled(False)
-        self.std100_measurement_button.setEnabled(False)
-        self.std1000_measurement_button.setEnabled(False)
-        self.std5000_measurement_button.setEnabled(False)
-        # Disable curve fitting and apply buttons
-        self.calibration_curve_button.setEnabled(False)
-        self.calibration_apply_button.setEnabled(False)
-        # Enable reset button
-        self.calibration_reset_button.setEnabled(True)
-        # Restart live plotting
-        self.startPlotting()
-        # Re-enable core UI
-        self.setEnableButtons(True)
-    
-    def SetEnableButtonsIon(self, mode):
-        state = mode.lower() == "on"
-        self.STD10MeasurementButton.setEnabled(state)
-        self.STD100MeasurementButton.setEnabled(state)
-        self.STD1000MeasurementButton.setEnabled(state)
-        self.STD5000MeasurementButton.setEnabled(state)
+        # 1) freeze every measurement / calibration control
+        self._set_measurement_controls_enabled(False)
+
+        # 2) leave only Reset active
+        self.reset_button_measurement.setEnabled(True)
+
+        # 3) keep the live plot rolling  ➜  ensure the timer is on
+        if not (self.ion_timer and self.ion_timer.isActive()):
+            self.startPlotting()          # starts the feed if it wasn’t already
+
+        # 4) ‘Apply’ greys itself out until the next curve-fit
+        self.CalibrationCurveFittingButton.setEnabled(False)
+
+
 
     def calibrationResetButtonPushed(self):
-        # Disable measurement buttons
-        self.std10_measurement_button.setEnabled(True)
-        self.std100_measurement_button.setEnabled(True)
-        self.std1000_measurement_button.setEnabled(True)
-        self.std5000_measurement_button.setEnabled(True)
-        # Disable curve fitting and apply buttons
-        self.calibration_curve_button.setEnabled(True)
-        self.calibration_apply_button.setEnabled(True)
-        # Enable reset button
-        self.calibration_reset_button.setEnabled(False)
-   
+        # un-freeze everything
+        self._set_measurement_controls_enabled(True)
+
+        # grey out Reset itself until next Apply
+        self.reset_button_measurement.setEnabled(False)
+
+        # Apply stays disabled until a new curve-fit is run
+        self.apply_button_measurement.setEnabled(False)
+
+        # wipe the static plot & jump back to live mode
+        self.axes.clear(); self.canvas.draw()
+        self.startPlotting()
+
+    
     def sampleTypeDropdownValueChanged(self):
         selected = self.sample_type_dropdown.currentText()
 
@@ -1596,8 +1674,6 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ISEUIAxes.set_ylabel("Concentration (mg/L)")
             self.plotMode = "Concentration"
     
-    def refreshPlotButtonPushed(self):
-        self.startPlotting()
    
     def STDcheckButtonPushed(self):
             # Disable buttons
