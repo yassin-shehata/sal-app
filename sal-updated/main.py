@@ -197,6 +197,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD1000MeasurementButton.clicked.connect(self.STD1000MeasurementButtonPushed)
         self.STD5000MeasurementButton.clicked.connect(self.STD5000MeasurementButtonPushed)
         self.reset_button_measurement.clicked.connect(self.resetSTDValues)
+        self.STD10Measurement.setStyleSheet("color: black;")
+        self.STD100Measurement.setStyleSheet("color: black;")
+        self.STD1000Measurement.setStyleSheet("color: black;")
+        self.STD5000Measurement.setStyleSheet("color: black;")
 
 
 
@@ -879,9 +883,20 @@ class Window(QMainWindow, Ui_MainWindow):
                     time.sleep(self.samplingPeriod)
 
 
-                self.rawData = [row[1] for row in self.ion_data[-100:]]
-                avg = sum(self.rawData) / len(self.rawData)
-                err = [abs(val - avg) / avg for val in self.rawData]
+                self.rawData = [row[1] for row in self.ion_data[-100:] if not np.isnan(row[1])]
+
+                # Check if we have enough valid data
+                if len(self.rawData) < 100:
+                    QMessageBox.warning(self, "Data Error", "Not enough valid data points collected from the sensor.")
+                    self.SetEnableButtonsIon("on")
+                    return
+
+                # Convert to NumPy array
+                self.rawData = np.array(self.rawData)
+
+                # Calculate average and error
+                avg = np.mean(self.rawData)
+                err = np.abs(self.rawData - avg) / avg
 
         # Final calculations
         self.bar_progress.setValue(80)
@@ -1053,9 +1068,20 @@ class Window(QMainWindow, Ui_MainWindow):
                 time.sleep(self.samplingPeriod)
 
 
-            self.rawData = [row[1] for row in self.ion_data[-100:]]
+            self.rawData = [row[1] for row in self.ion_data[-100:] if not np.isnan(row[1])]
+
+            # Check if we have enough valid data
+            if len(self.rawData) < 100:
+                QMessageBox.warning(self, "Data Error", "Not enough valid data points collected from the sensor.")
+                self.SetEnableButtonsIon("on")
+                return
+
+            # Convert to NumPy array
+            self.rawData = np.array(self.rawData)
+
+            # Calculate average and error
             avg = np.mean(self.rawData)
-            err = np.abs(np.array(self.rawData) - avg) / avg
+            err = np.abs(self.rawData - avg) / avg
 
         # Compute average
         self.bar_progress.setValue(80)
@@ -1230,7 +1256,18 @@ class Window(QMainWindow, Ui_MainWindow):
                 time.sleep(self.samplingPeriod)
 
 
-            self.rawData = [row[1] for row in self.ion_data[-100:]]
+            self.rawData = [row[1] for row in self.ion_data[-100:] if not np.isnan(row[1])]
+
+            # Check if we have enough valid data
+            if len(self.rawData) < 100:
+                QMessageBox.warning(self, "Data Error", "Not enough valid data points collected from the sensor.")
+                self.SetEnableButtonsIon("on")
+                return
+
+            # Convert to NumPy array
+            self.rawData = np.array(self.rawData)
+
+            # Calculate average and error
             avg = np.mean(self.rawData)
             err = np.abs(self.rawData - avg) / avg
 
