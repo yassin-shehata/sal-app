@@ -1899,26 +1899,26 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Progress gauge
         self.txt_system_note.setVisible(False)
-        self.progress_gauge.setVisible(True)
-        self.progress_gauge_label.setVisible(True)
-        self.progress_gauge.setValue(0)
-        self.progress_gauge_label.setText("Preparing to gather 100 data point to stabilization")
+        self.bar_progress.setVisible(True)
+        self.lbl_progress_status.setVisible(True)
+        self.bar_progress.setValue(0)
+        self.lbl_progress_status.setText("Preparing to gather 100 data point to stabilization")
         QApplication.processEvents()
         time.sleep(0.5)
 
         # Start new plot
         self.startPlotting()
 
-        self.progress_gauge.setValue(20)
-        self.progress_gauge_label.setText("Collecting Data...")
+        self.bar_progress.setValue(20)
+        self.lbl_progress_status.setText("Collecting Data...")
         QApplication.processEvents()
         time.sleep(0.5)
 
         self.rawData = []
         for i in range(100):
             self.rawData.append(self.cl_read())
-            self.progress_gauge.setValue(20 + 60 * i // 100)
-            self.progress_gauge_label.setText(f"Collecting Data... ({i+1}/100)")
+            self.bar_progress.setValue(20 + 60 * i // 100)
+            self.lbl_progress_status.setText(f"Collecting Data... ({i+1}/100)")
             QApplication.processEvents()
             time.sleep(self.samplingPeriod)
 
@@ -1948,12 +1948,12 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.samplePotential = avg
         self.rawSample = self.ionEquation(avg)
-        self.progress_gauge.setValue(80)
-        self.progress_gauge_label.setText("Calculating sample concentration")
+        self.bar_progress.setValue(80)
+        self.lbl_progress_status.setText("Calculating sample concentration")
         QApplication.processEvents()
         time.sleep(0.5)
 
-        self.average_potential_field.setValue(self.samplePotential)
+        self.average_potential_input.setPlainText(f"{self.samplePotential:.2f}")
 
         if self.sample_type_combobox_2.currentText() == "Soil":
             self.rawSample_liquid = (self.rawSample - self.baseline) if self.baselineType == "Yes" else self.rawSample
@@ -1991,14 +1991,14 @@ class Window(QMainWindow, Ui_MainWindow):
         # Save to table and Excel — implementation would follow same as your exportToExcel() or related
         # Code for storing/appending to dataframes or writing to Excel goes here...
 
-        self.progress_gauge.setValue(100)
-        self.progress_gauge_label.setText("Finishing")
+        self.bar_progress.setValue(100)
+        self.lbl_progress_status.setText("Finishing")
         QApplication.processEvents()
         time.sleep(1)
 
         self.txt_system_note.setVisible(True)
-        self.progress_gauge.setVisible(False)
-        self.progress_gauge_label.setVisible(False)
+        self.bar_progress.setVisible(False)
+        self.lbl_progress_status.setVisible(False)
         self.txt_system_note.setText("The standard solution value is within the normal range.")
         self.lbl_system_note.setText("NORMAL")
         self.setCircleColour(self.indicator_note_status, "green")
@@ -2056,8 +2056,8 @@ class Window(QMainWindow, Ui_MainWindow):
             self.STDValues[0][1],
             self.STDValues[0][2],
             self.STDValues[0][3],
-            self.STDcheck,
-            self.stdpotential
+            self.stdCheck,
+            self.stdPotential
         ]
         header_std = [
             "Date", "ProjectName", "SampleNo", "SampleID", "Replication",
@@ -2075,7 +2075,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.txt_system_note.setText("")
         self.setCircleColour(self.indicator_note_status, "grey")
         self.lbl_system_note.setText("")
-        self.average_potential_field.setValue(0)
+        self.average_potential_input.setValue(0)
         self.salt_in_liquid_input.setText("")
         self.salt_in_ground_input.setText("")
         self.setCircleColour(self.measurement_circle, "grey")
@@ -2130,7 +2130,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 return
 
         self.rawSample = self.ionEquation(self.samplePotential)
-        self.average_potential_field.setValue(self.samplePotential)
+        self.average_potential_input.setPlainText(f"{self.samplePotential:.2f}")
 
         if self.sample_type_combobox_2.currentText() == "Soil":
             self.rawSample_liquid = (self.rawSample - self.baseline) if self.baselineType == "Yes" else self.rawSample
@@ -2163,11 +2163,11 @@ class Window(QMainWindow, Ui_MainWindow):
 
         sampledata = [self.check, self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, result, self.rawSample_liquid, self.samplePotential, self.cl_criteria]
         measurementdata = [self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, self.guidelineType, self.mainParameter, self.subParameter, self.cl_criteria, self.moisture, self.buffer, self.stabilizationTime, self.baselineType]
-        stddata = [self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, self.STDValues[0][0], self.STDValues[0][1], self.STDValues[0][2], self.STDValues[0][3], self.STDcheck, self.stdpotential]
+        stddata = [self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, self.STDValues[0][0], self.STDValues[0][1], self.STDValues[0][2], self.STDValues[0][3], self.stdCheck, self.stdPotential]
 
         header_sample = ["Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication", "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)"]
         header_measurement = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication", "Guideline Type", "MainParameter", "SubParameter", "Cl Criteria (mg/kg)", "Moisture(%)", "Buffer Range (%)", "Stabilization Time (s)", "Baseline"]
-        header_std = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication", "STD 10ppm", "STD 100ppm", "STD 1000ppm", "STD 5000ppm", "STD check (100ppm)", "STD check potential (mV)"]
+        header_std = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication", "STD 10ppm", "STD 100˜ppm", "STD 1000ppm", "STD 5000ppm", "STD check (100ppm)", "STD check potential (mV)"]
 
         append_or_create_excel(self.rawFileName, "AISCT_SAL", [sampledata], header_sample)
         append_or_create_excel(self.rawFileName, "Measurement Conditions", [measurementdata], header_measurement)

@@ -11,7 +11,7 @@ def append_or_create_excel(filename, sheet_name, data, headers):
     else:
         book = load_workbook(filename)
         with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-            writer.book = book
+            writer._book = book  # ✅ use _book instead of book
             if sheet_name in book.sheetnames:
                 existing_df = pd.read_excel(filename, sheet_name=sheet_name)
                 final_df = pd.concat([existing_df, df_new], ignore_index=True)

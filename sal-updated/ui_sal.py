@@ -163,6 +163,8 @@ class Ui_MainWindow(object):
         font2.setPointSize(14)
         font2.setBold(True)
         self.lbl_connection_status.setFont(font2)
+        self.lbl_connection_status.setStyleSheet(u"color: black;\n"
+"")
 
         self.horizontalLayout_2.addWidget(self.lbl_connection_status)
 
@@ -235,6 +237,8 @@ class Ui_MainWindow(object):
         font3.setPointSize(12)
         font3.setBold(True)
         self.lbl_system_note.setFont(font3)
+        self.lbl_system_note.setStyleSheet(u"color: black;\n"
+"")
         self.lbl_system_note.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout_3.addWidget(self.lbl_system_note)
@@ -286,16 +290,22 @@ class Ui_MainWindow(object):
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.txt_system_note = QLabel(self.inner_table_frame)
         self.txt_system_note.setObjectName(u"txt_system_note")
+        self.txt_system_note.setStyleSheet(u"color: black;\n"
+"")
 
         self.verticalLayout_9.addWidget(self.txt_system_note)
 
         self.lbl_progress_status = QLabel(self.inner_table_frame)
         self.lbl_progress_status.setObjectName(u"lbl_progress_status")
+        self.lbl_progress_status.setStyleSheet(u"color: black;\n"
+"")
 
         self.verticalLayout_9.addWidget(self.lbl_progress_status)
 
         self.bar_progress = QProgressBar(self.inner_table_frame)
         self.bar_progress.setObjectName(u"bar_progress")
+        self.bar_progress.setStyleSheet(u"color: green;\n"
+"")
         self.bar_progress.setValue(24)
 
         self.verticalLayout_9.addWidget(self.bar_progress)
@@ -346,6 +356,8 @@ class Ui_MainWindow(object):
         font4.setPointSize(11)
         font4.setBold(True)
         self.potential_label.setFont(font4)
+        self.potential_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.verticalLayout_4.addWidget(self.potential_label)
 
@@ -368,6 +380,8 @@ class Ui_MainWindow(object):
         self.cl_conc_label.setMinimumSize(QSize(0, 0))
         self.cl_conc_label.setMaximumSize(QSize(16777215, 40))
         self.cl_conc_label.setFont(font4)
+        self.cl_conc_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.verticalLayout_4.addWidget(self.cl_conc_label)
 
@@ -390,6 +404,8 @@ class Ui_MainWindow(object):
         self.r_squared_label.setMinimumSize(QSize(0, 0))
         self.r_squared_label.setMaximumSize(QSize(16777215, 40))
         self.r_squared_label.setFont(font4)
+        self.r_squared_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.horizontalLayout_5.addWidget(self.r_squared_label)
 
@@ -419,7 +435,9 @@ class Ui_MainWindow(object):
         self.r_squared_input.setSizePolicy(sizePolicy9)
         self.r_squared_input.setMinimumSize(QSize(0, 28))
         self.r_squared_input.setMaximumSize(QSize(16777215, 36))
-        self.r_squared_input.setStyleSheet(u"b")
+        self.r_squared_input.setStyleSheet(u"color: black;\n"
+"\n"
+"")
         self.r_squared_input.setFrame(True)
 
         self.verticalLayout_4.addWidget(self.r_squared_input)
@@ -476,6 +494,8 @@ class Ui_MainWindow(object):
         self.formLayout.setObjectName(u"formLayout")
         self.sample_measurement_tab_widget = QTabWidget(self.sample_measurement_tab_frame)
         self.sample_measurement_tab_widget.setObjectName(u"sample_measurement_tab_widget")
+        self.sample_measurement_tab_widget.setStyleSheet(u"color: black;\n"
+"")
         self.calibration = QWidget()
         self.calibration.setObjectName(u"calibration")
         self.verticalLayout_3 = QVBoxLayout(self.calibration)
@@ -489,12 +509,16 @@ class Ui_MainWindow(object):
         self.reset_button_measurement = QPushButton(self.calibration)
         self.reset_button_measurement.setObjectName(u"reset_button_measurement")
         self.reset_button_measurement.setEnabled(False)
+        self.reset_button_measurement.setStyleSheet(u"color: black;\n"
+"")
 
         self.horizontalLayout_calibration.addWidget(self.reset_button_measurement)
 
         self.apply_button_measurement = QPushButton(self.calibration)
         self.apply_button_measurement.setObjectName(u"apply_button_measurement")
         self.apply_button_measurement.setEnabled(False)
+        self.apply_button_measurement.setStyleSheet(u"color: black;\n"
+"")
 
         self.horizontalLayout_calibration.addWidget(self.apply_button_measurement)
 
@@ -520,6 +544,8 @@ class Ui_MainWindow(object):
         self.STD100Measurement = QLabel(self.calibration_frame)
         self.STD100Measurement.setObjectName(u"STD100Measurement")
         self.STD100Measurement.setEnabled(False)
+        self.STD100Measurement.setStyleSheet(u"color: black;\n"
+"")
         self.STD100Measurement.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.STD100Measurement, 1, 0, 1, 1)
@@ -550,6 +576,8 @@ class Ui_MainWindow(object):
         self.STD1000Measurement = QLabel(self.calibration_frame)
         self.STD1000Measurement.setObjectName(u"STD1000Measurement")
         self.STD1000Measurement.setEnabled(False)
+        self.STD1000Measurement.setStyleSheet(u"color: black;\n"
+"")
         self.STD1000Measurement.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.STD1000Measurement, 2, 0, 1, 1)
@@ -557,6 +585,8 @@ class Ui_MainWindow(object):
         self.STD5000Measurement = QLabel(self.calibration_frame)
         self.STD5000Measurement.setObjectName(u"STD5000Measurement")
         self.STD5000Measurement.setEnabled(False)
+        self.STD5000Measurement.setStyleSheet(u"color: black;\n"
+"")
         self.STD5000Measurement.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.STD5000Measurement, 3, 0, 1, 1)
@@ -586,6 +616,8 @@ class Ui_MainWindow(object):
         self.STD10Measurement = QLabel(self.calibration_frame)
         self.STD10Measurement.setObjectName(u"STD10Measurement")
         self.STD10Measurement.setEnabled(False)
+        self.STD10Measurement.setStyleSheet(u"color: black;\n"
+"")
         self.STD10Measurement.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.STD10Measurement, 0, 0, 1, 1)
@@ -625,6 +657,8 @@ class Ui_MainWindow(object):
         self.sample_information_top_grid_layout.setObjectName(u"sample_information_top_grid_layout")
         self.project_name_label = QLabel(self.sample_information)
         self.project_name_label.setObjectName(u"project_name_label")
+        self.project_name_label.setStyleSheet(u"color: black;\n"
+"")
         self.project_name_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.sample_information_top_grid_layout.addWidget(self.project_name_label, 0, 0, 1, 1)
@@ -634,6 +668,8 @@ class Ui_MainWindow(object):
         self.project_name_input.setMinimumSize(QSize(150, 28))
         self.project_name_input.setMaximumSize(QSize(150, 26))
         self.project_name_input.setAutoFillBackground(False)
+        self.project_name_input.setStyleSheet(u"color: black;\n"
+"")
         self.project_name_input.setFrameShape(QFrame.Shape.Box)
         self.project_name_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -641,6 +677,8 @@ class Ui_MainWindow(object):
 
         self.sample_no_label = QLabel(self.sample_information)
         self.sample_no_label.setObjectName(u"sample_no_label")
+        self.sample_no_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.sample_information_top_grid_layout.addWidget(self.sample_no_label, 0, 2, 1, 1)
 
@@ -648,12 +686,15 @@ class Ui_MainWindow(object):
         self.sample_no_spinbox.setObjectName(u"sample_no_spinbox")
         self.sample_no_spinbox.setMinimumSize(QSize(150, 28))
         self.sample_no_spinbox.setMaximumSize(QSize(150, 26))
-        self.sample_no_spinbox.setStyleSheet(u"")
+        self.sample_no_spinbox.setStyleSheet(u"color: black;\n"
+"")
 
         self.sample_information_top_grid_layout.addWidget(self.sample_no_spinbox, 0, 3, 1, 1)
 
         self.sample_id_label = QLabel(self.sample_information)
         self.sample_id_label.setObjectName(u"sample_id_label")
+        self.sample_id_label.setStyleSheet(u"color: black;\n"
+"")
         self.sample_id_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.sample_information_top_grid_layout.addWidget(self.sample_id_label, 1, 0, 1, 1)
@@ -663,6 +704,8 @@ class Ui_MainWindow(object):
         self.sample_id_input.setMinimumSize(QSize(150, 28))
         self.sample_id_input.setMaximumSize(QSize(150, 26))
         self.sample_id_input.setAutoFillBackground(False)
+        self.sample_id_input.setStyleSheet(u"color: black;\n"
+"")
         self.sample_id_input.setFrameShape(QFrame.Shape.Box)
         self.sample_id_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -670,6 +713,8 @@ class Ui_MainWindow(object):
 
         self.replication_label = QLabel(self.sample_information)
         self.replication_label.setObjectName(u"replication_label")
+        self.replication_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.sample_information_top_grid_layout.addWidget(self.replication_label, 1, 2, 1, 1)
 
@@ -677,16 +722,22 @@ class Ui_MainWindow(object):
         self.replication_spinbox.setObjectName(u"replication_spinbox")
         self.replication_spinbox.setMinimumSize(QSize(150, 28))
         self.replication_spinbox.setMaximumSize(QSize(150, 26))
+        self.replication_spinbox.setStyleSheet(u"color: black;\n"
+"")
 
         self.sample_information_top_grid_layout.addWidget(self.replication_spinbox, 1, 3, 1, 1)
 
         self.auto_sample_naming_checkbox = QCheckBox(self.sample_information)
         self.auto_sample_naming_checkbox.setObjectName(u"auto_sample_naming_checkbox")
+        self.auto_sample_naming_checkbox.setStyleSheet(u"color: black;\n"
+"")
 
         self.sample_information_top_grid_layout.addWidget(self.auto_sample_naming_checkbox, 2, 0, 1, 1)
 
         self.sample_type_label = QLabel(self.sample_information)
         self.sample_type_label.setObjectName(u"sample_type_label")
+        self.sample_type_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.sample_information_top_grid_layout.addWidget(self.sample_type_label, 2, 2, 1, 1)
 
@@ -694,7 +745,9 @@ class Ui_MainWindow(object):
         self.sample_type_combobox_2.setObjectName(u"sample_type_combobox_2")
         self.sample_type_combobox_2.setMinimumSize(QSize(150, 28))
         self.sample_type_combobox_2.setMaximumSize(QSize(150, 26))
-        self.sample_type_combobox_2.setStyleSheet(u"b")
+        self.sample_type_combobox_2.setStyleSheet(u"color: black;\n"
+"\n"
+"")
         self.sample_type_combobox_2.setFrame(True)
 
         self.sample_information_top_grid_layout.addWidget(self.sample_type_combobox_2, 2, 3, 1, 1)
@@ -713,6 +766,8 @@ class Ui_MainWindow(object):
         self.sample_information_grid_layout_.setObjectName(u"sample_information_grid_layout_")
         self.bore_hole_id_label = QLabel(self.sample_information_frame)
         self.bore_hole_id_label.setObjectName(u"bore_hole_id_label")
+        self.bore_hole_id_label.setStyleSheet(u"color: black;\n"
+"")
         self.bore_hole_id_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.sample_information_grid_layout_.addWidget(self.bore_hole_id_label, 0, 0, 1, 1)
@@ -722,6 +777,8 @@ class Ui_MainWindow(object):
         self.bore_hole_id_input.setMinimumSize(QSize(150, 28))
         self.bore_hole_id_input.setMaximumSize(QSize(150, 26))
         self.bore_hole_id_input.setAutoFillBackground(False)
+        self.bore_hole_id_input.setStyleSheet(u"color: black;\n"
+"")
         self.bore_hole_id_input.setFrameShape(QFrame.Shape.Box)
         self.bore_hole_id_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -729,6 +786,8 @@ class Ui_MainWindow(object):
 
         self.bore_hole_no_label = QLabel(self.sample_information_frame)
         self.bore_hole_no_label.setObjectName(u"bore_hole_no_label")
+        self.bore_hole_no_label.setStyleSheet(u"color: black;\n"
+"")
         self.bore_hole_no_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.sample_information_grid_layout_.addWidget(self.bore_hole_no_label, 0, 2, 1, 1)
@@ -738,6 +797,8 @@ class Ui_MainWindow(object):
         self.bore_hole_no_input.setMinimumSize(QSize(150, 28))
         self.bore_hole_no_input.setMaximumSize(QSize(150, 26))
         self.bore_hole_no_input.setAutoFillBackground(False)
+        self.bore_hole_no_input.setStyleSheet(u"color: black;\n"
+"")
         self.bore_hole_no_input.setFrameShape(QFrame.Shape.Box)
         self.bore_hole_no_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -745,6 +806,8 @@ class Ui_MainWindow(object):
 
         self.top_depth_label = QLabel(self.sample_information_frame)
         self.top_depth_label.setObjectName(u"top_depth_label")
+        self.top_depth_label.setStyleSheet(u"color: black;\n"
+"")
         self.top_depth_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.sample_information_grid_layout_.addWidget(self.top_depth_label, 1, 0, 1, 1)
@@ -754,6 +817,8 @@ class Ui_MainWindow(object):
         self.top_depth_input.setMinimumSize(QSize(150, 28))
         self.top_depth_input.setMaximumSize(QSize(150, 26))
         self.top_depth_input.setAutoFillBackground(False)
+        self.top_depth_input.setStyleSheet(u"color: black;\n"
+"")
         self.top_depth_input.setFrameShape(QFrame.Shape.Box)
         self.top_depth_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -761,6 +826,8 @@ class Ui_MainWindow(object):
 
         self.bottom_depth_label = QLabel(self.sample_information_frame)
         self.bottom_depth_label.setObjectName(u"bottom_depth_label")
+        self.bottom_depth_label.setStyleSheet(u"color: black;\n"
+"")
         self.bottom_depth_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.sample_information_grid_layout_.addWidget(self.bottom_depth_label, 1, 2, 1, 1)
@@ -770,6 +837,8 @@ class Ui_MainWindow(object):
         self.bottom_depth_input.setMinimumSize(QSize(150, 28))
         self.bottom_depth_input.setMaximumSize(QSize(150, 26))
         self.bottom_depth_input.setAutoFillBackground(False)
+        self.bottom_depth_input.setStyleSheet(u"color: black;\n"
+"")
         self.bottom_depth_input.setFrameShape(QFrame.Shape.Box)
         self.bottom_depth_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -790,23 +859,29 @@ class Ui_MainWindow(object):
         self.horizontalLayout_guideline.setObjectName(u"horizontalLayout_guideline")
         self.single_guideline_checkbox = QCheckBox(self.guideline)
         self.single_guideline_checkbox.setObjectName(u"single_guideline_checkbox")
+        self.single_guideline_checkbox.setStyleSheet(u"color: black;\n"
+"")
 
         self.horizontalLayout_guideline.addWidget(self.single_guideline_checkbox)
 
         self.multiple_guideline_checkbox = QCheckBox(self.guideline)
         self.multiple_guideline_checkbox.setObjectName(u"multiple_guideline_checkbox")
+        self.multiple_guideline_checkbox.setStyleSheet(u"color: black;\n"
+"")
 
         self.horizontalLayout_guideline.addWidget(self.multiple_guideline_checkbox)
 
         self.reset_button_guideline = QPushButton(self.guideline)
         self.reset_button_guideline.setObjectName(u"reset_button_guideline")
         self.reset_button_guideline.setEnabled(False)
+        self.reset_button_guideline.setStyleSheet(u"")
 
         self.horizontalLayout_guideline.addWidget(self.reset_button_guideline)
 
         self.apply_button_guideline = QPushButton(self.guideline)
         self.apply_button_guideline.setObjectName(u"apply_button_guideline")
         self.apply_button_guideline.setEnabled(False)
+        self.apply_button_guideline.setStyleSheet(u"")
 
         self.horizontalLayout_guideline.addWidget(self.apply_button_guideline)
 
@@ -825,6 +900,8 @@ class Ui_MainWindow(object):
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.guideline_type_label = QLabel(self.guideline_frame)
         self.guideline_type_label.setObjectName(u"guideline_type_label")
+        self.guideline_type_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.gridLayout_6.addWidget(self.guideline_type_label, 0, 0, 1, 1)
 
@@ -833,13 +910,17 @@ class Ui_MainWindow(object):
         self.guideline_type_combobox.setObjectName(u"guideline_type_combobox")
         self.guideline_type_combobox.setMinimumSize(QSize(150, 28))
         self.guideline_type_combobox.setMaximumSize(QSize(150, 26))
-        self.guideline_type_combobox.setStyleSheet(u"b")
+        self.guideline_type_combobox.setStyleSheet(u"color: black;\n"
+"\n"
+"")
         self.guideline_type_combobox.setFrame(True)
 
         self.gridLayout_6.addWidget(self.guideline_type_combobox, 0, 1, 1, 1)
 
         self.main_parameter_label = QLabel(self.guideline_frame)
         self.main_parameter_label.setObjectName(u"main_parameter_label")
+        self.main_parameter_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.gridLayout_6.addWidget(self.main_parameter_label, 1, 0, 1, 1)
 
@@ -847,6 +928,8 @@ class Ui_MainWindow(object):
         self.main_parameter_input.setObjectName(u"main_parameter_input")
         self.main_parameter_input.setMinimumSize(QSize(150, 28))
         self.main_parameter_input.setMaximumSize(QSize(150, 26))
+        self.main_parameter_input.setStyleSheet(u"color: black;\n"
+"")
         self.main_parameter_input.setFrameShape(QFrame.Shape.Box)
         self.main_parameter_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -854,6 +937,8 @@ class Ui_MainWindow(object):
 
         self.sub_parameter_label = QLabel(self.guideline_frame)
         self.sub_parameter_label.setObjectName(u"sub_parameter_label")
+        self.sub_parameter_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.gridLayout_6.addWidget(self.sub_parameter_label, 1, 2, 1, 1)
 
@@ -861,6 +946,8 @@ class Ui_MainWindow(object):
         self.sub_parameter_input.setObjectName(u"sub_parameter_input")
         self.sub_parameter_input.setMinimumSize(QSize(150, 28))
         self.sub_parameter_input.setMaximumSize(QSize(150, 26))
+        self.sub_parameter_input.setStyleSheet(u"color: black;\n"
+"")
         self.sub_parameter_input.setFrameShape(QFrame.Shape.Box)
         self.sub_parameter_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -868,6 +955,8 @@ class Ui_MainWindow(object):
 
         self.chloride_label = QLabel(self.guideline_frame)
         self.chloride_label.setObjectName(u"chloride_label")
+        self.chloride_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.gridLayout_6.addWidget(self.chloride_label, 2, 0, 1, 1)
 
@@ -875,6 +964,8 @@ class Ui_MainWindow(object):
         self.chloride_input.setObjectName(u"chloride_input")
         self.chloride_input.setMinimumSize(QSize(150, 28))
         self.chloride_input.setMaximumSize(QSize(150, 26))
+        self.chloride_input.setStyleSheet(u"color: black;\n"
+"")
         self.chloride_input.setFrameShape(QFrame.Shape.Box)
         self.chloride_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -1017,6 +1108,8 @@ class Ui_MainWindow(object):
         sizePolicy12.setHeightForWidth(self.average_potential_label.sizePolicy().hasHeightForWidth())
         self.average_potential_label.setSizePolicy(sizePolicy12)
         self.average_potential_label.setFont(font6)
+        self.average_potential_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.measurement_frame_grid_layout.addWidget(self.average_potential_label, 0, 1, 1, 1)
 
@@ -1029,6 +1122,8 @@ class Ui_MainWindow(object):
         self.average_potential_input.setSizePolicy(sizePolicy13)
         self.average_potential_input.setMinimumSize(QSize(150, 28))
         self.average_potential_input.setMaximumSize(QSize(150, 26))
+        self.average_potential_input.setStyleSheet(u"color: black;\n"
+"")
         self.average_potential_input.setFrameShape(QFrame.Shape.Box)
         self.average_potential_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -1051,6 +1146,8 @@ class Ui_MainWindow(object):
         sizePolicy12.setHeightForWidth(self.salt_in_liquid_label.sizePolicy().hasHeightForWidth())
         self.salt_in_liquid_label.setSizePolicy(sizePolicy12)
         self.salt_in_liquid_label.setFont(font6)
+        self.salt_in_liquid_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.measurement_frame_grid_layout.addWidget(self.salt_in_liquid_label, 1, 1, 1, 1)
 
@@ -1060,6 +1157,8 @@ class Ui_MainWindow(object):
         self.salt_in_liquid_input.setSizePolicy(sizePolicy13)
         self.salt_in_liquid_input.setMinimumSize(QSize(150, 28))
         self.salt_in_liquid_input.setMaximumSize(QSize(150, 26))
+        self.salt_in_liquid_input.setStyleSheet(u"color: black;\n"
+"")
         self.salt_in_liquid_input.setFrameShape(QFrame.Shape.Box)
         self.salt_in_liquid_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -1070,6 +1169,8 @@ class Ui_MainWindow(object):
         sizePolicy12.setHeightForWidth(self.salt_in_ground_label.sizePolicy().hasHeightForWidth())
         self.salt_in_ground_label.setSizePolicy(sizePolicy12)
         self.salt_in_ground_label.setFont(font6)
+        self.salt_in_ground_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.measurement_frame_grid_layout.addWidget(self.salt_in_ground_label, 2, 1, 1, 1)
 
@@ -1079,6 +1180,8 @@ class Ui_MainWindow(object):
         self.salt_in_ground_input.setSizePolicy(sizePolicy13)
         self.salt_in_ground_input.setMinimumSize(QSize(150, 28))
         self.salt_in_ground_input.setMaximumSize(QSize(150, 26))
+        self.salt_in_ground_input.setStyleSheet(u"color: black;\n"
+"")
         self.salt_in_ground_input.setFrameShape(QFrame.Shape.Box)
         self.salt_in_ground_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -1129,6 +1232,8 @@ class Ui_MainWindow(object):
         font7.setPointSize(7)
         font7.setBold(True)
         self.cl_criteria_label.setFont(font7)
+        self.cl_criteria_label.setStyleSheet(u"color: black;\n"
+"")
 
         self.measurement_frame_grid_layout.addWidget(self.cl_criteria_label, 3, 1, 1, 1)
 
@@ -1138,6 +1243,8 @@ class Ui_MainWindow(object):
         self.cl_criteria_input.setSizePolicy(sizePolicy13)
         self.cl_criteria_input.setMinimumSize(QSize(150, 28))
         self.cl_criteria_input.setMaximumSize(QSize(150, 26))
+        self.cl_criteria_input.setStyleSheet(u"color: black;\n"
+"")
         self.cl_criteria_input.setFrameShape(QFrame.Shape.Box)
         self.cl_criteria_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -1176,7 +1283,8 @@ class Ui_MainWindow(object):
         sizePolicy6.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
         self.tabWidget.setSizePolicy(sizePolicy6)
         self.tabWidget.setAutoFillBackground(False)
-        self.tabWidget.setStyleSheet(u"")
+        self.tabWidget.setStyleSheet(u"color: black;\n"
+"")
         self.check = QWidget()
         self.check.setObjectName(u"check")
         self.tabWidget.addTab(self.check, "")
@@ -1223,7 +1331,8 @@ class Ui_MainWindow(object):
         sizePolicy16.setHeightForWidth(self.measurement_range_label.sizePolicy().hasHeightForWidth())
         self.measurement_range_label.setSizePolicy(sizePolicy16)
         self.measurement_range_label.setFont(font6)
-        self.measurement_range_label.setStyleSheet(u"background: transparent")
+        self.measurement_range_label.setStyleSheet(u"color: black;\n"
+"background: transparent")
 
         self.horizontalLayout_bottom.addWidget(self.measurement_range_label)
 
@@ -1235,7 +1344,8 @@ class Ui_MainWindow(object):
         sizePolicy17.setHeightForWidth(self.auto_file_naming_checkbox.sizePolicy().hasHeightForWidth())
         self.auto_file_naming_checkbox.setSizePolicy(sizePolicy17)
         self.auto_file_naming_checkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.auto_file_naming_checkbox.setStyleSheet(u"background: transparent\n"
+        self.auto_file_naming_checkbox.setStyleSheet(u"color: black;\n"
+"background: transparent\n"
 "")
 
         self.horizontalLayout_bottom.addWidget(self.auto_file_naming_checkbox)
@@ -1246,7 +1356,8 @@ class Ui_MainWindow(object):
         self.file_name_label.setSizePolicy(sizePolicy9)
         self.file_name_label.setFont(font4)
         self.file_name_label.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-        self.file_name_label.setStyleSheet(u"background: transparent")
+        self.file_name_label.setStyleSheet(u"color: black;\n"
+"background: transparent")
 
         self.horizontalLayout_bottom.addWidget(self.file_name_label)
 
@@ -1257,6 +1368,8 @@ class Ui_MainWindow(object):
         self.file_name_input.setMaximumSize(QSize(150, 26))
         self.file_name_input.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.file_name_input.setAutoFillBackground(False)
+        self.file_name_input.setStyleSheet(u"color: black;\n"
+"")
         self.file_name_input.setFrameShape(QFrame.Shape.Box)
         self.file_name_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
@@ -1282,8 +1395,8 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(2)
-        self.tabWidget.setCurrentIndex(7)
+        self.sample_measurement_tab_widget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(8)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

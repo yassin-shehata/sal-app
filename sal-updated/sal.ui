@@ -205,6 +205,10 @@ Connection</string>
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: black;
+</string>
+                 </property>
                  <property name="text">
                   <string>Connection</string>
                  </property>
@@ -328,6 +332,10 @@ Connection</string>
                      <bold>true</bold>
                     </font>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>System
 Note</string>
@@ -411,6 +419,10 @@ Note</string>
                <layout class="QVBoxLayout" name="verticalLayout_9">
                 <item>
                  <widget class="QLabel" name="txt_system_note">
+                  <property name="styleSheet">
+                   <string notr="true">color: black;
+</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -418,6 +430,10 @@ Note</string>
                 </item>
                 <item>
                  <widget class="QLabel" name="lbl_progress_status">
+                  <property name="styleSheet">
+                   <string notr="true">color: black;
+</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -425,6 +441,10 @@ Note</string>
                 </item>
                 <item>
                  <widget class="QProgressBar" name="bar_progress">
+                  <property name="styleSheet">
+                   <string notr="true">color: green;
+</string>
+                  </property>
                   <property name="value">
                    <number>24</number>
                   </property>
@@ -500,6 +520,10 @@ Note</string>
                  <bold>true</bold>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
+               </property>
                <property name="text">
                 <string>Potential (mV)</string>
                </property>
@@ -552,6 +576,10 @@ Note</string>
                  <pointsize>11</pointsize>
                  <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
                </property>
                <property name="text">
                 <string>Cl Conc. in Liquid (mg/L)</string>
@@ -610,6 +638,10 @@ Note</string>
                    <pointsize>11</pointsize>
                    <bold>true</bold>
                   </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: black;
+</string>
                  </property>
                  <property name="text">
                   <string>R squared:</string>
@@ -670,7 +702,9 @@ Note</string>
                 </size>
                </property>
                <property name="styleSheet">
-                <string notr="true">b</string>
+                <string notr="true">color: black;
+
+</string>
                </property>
                <property name="frame">
                 <bool>true</bool>
@@ -752,8 +786,12 @@ Note</string>
           <layout class="QFormLayout" name="formLayout">
            <item row="0" column="0">
             <widget class="QTabWidget" name="sample_measurement_tab_widget">
+             <property name="styleSheet">
+              <string notr="true">color: black;
+</string>
+             </property>
              <property name="currentIndex">
-              <number>2</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="calibration">
               <attribute name="title">
@@ -780,6 +818,10 @@ Note</string>
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Reset</string>
                    </property>
@@ -789,6 +831,10 @@ Note</string>
                   <widget class="QPushButton" name="apply_button_measurement">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
                    </property>
                    <property name="text">
                     <string>Apply</string>
@@ -823,6 +869,10 @@ Note</string>
                    <widget class="QLabel" name="STD100Measurement">
                     <property name="enabled">
                      <bool>false</bool>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
                     </property>
                     <property name="text">
                      <string>STD 100 ppm</string>
@@ -885,6 +935,10 @@ Note</string>
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
+                    </property>
                     <property name="text">
                      <string>STD 1000 ppm</string>
                     </property>
@@ -897,6 +951,10 @@ Note</string>
                    <widget class="QLabel" name="STD5000Measurement">
                     <property name="enabled">
                      <bool>false</bool>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
                     </property>
                     <property name="text">
                      <string>STD 5000 ppm</string>
@@ -966,6 +1024,10 @@ Note</string>
                    <widget class="QLabel" name="STD10Measurement">
                     <property name="enabled">
                      <bool>false</bool>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
                     </property>
                     <property name="text">
                      <string>STD 10 ppm</string>
@@ -1037,6 +1099,10 @@ Note</string>
                 <layout class="QGridLayout" name="sample_information_top_grid_layout">
                  <item row="0" column="0">
                   <widget class="QLabel" name="project_name_label">
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Project Name</string>
                    </property>
@@ -1062,6 +1128,10 @@ Note</string>
                    <property name="autoFillBackground">
                     <bool>false</bool>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="frameShape">
                     <enum>QFrame::Shape::Box</enum>
                    </property>
@@ -1072,6 +1142,10 @@ Note</string>
                  </item>
                  <item row="0" column="2">
                   <widget class="QLabel" name="sample_no_label">
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Sample No</string>
                    </property>
@@ -1092,12 +1166,17 @@ Note</string>
                     </size>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true"/>
+                    <string notr="true">color: black;
+</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="0">
                   <widget class="QLabel" name="sample_id_label">
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Sample ID</string>
                    </property>
@@ -1123,6 +1202,10 @@ Note</string>
                    <property name="autoFillBackground">
                     <bool>false</bool>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="frameShape">
                     <enum>QFrame::Shape::Box</enum>
                    </property>
@@ -1133,6 +1216,10 @@ Note</string>
                  </item>
                  <item row="1" column="2">
                   <widget class="QLabel" name="replication_label">
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Replication</string>
                    </property>
@@ -1152,10 +1239,18 @@ Note</string>
                      <height>26</height>
                     </size>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                   </widget>
                  </item>
                  <item row="2" column="0">
                   <widget class="QCheckBox" name="auto_sample_naming_checkbox">
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Auto Sample Naming</string>
                    </property>
@@ -1163,6 +1258,10 @@ Note</string>
                  </item>
                  <item row="2" column="2">
                   <widget class="QLabel" name="sample_type_label">
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Sample Type</string>
                    </property>
@@ -1183,7 +1282,9 @@ Note</string>
                     </size>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">b</string>
+                    <string notr="true">color: black;
+
+</string>
                    </property>
                    <property name="frame">
                     <bool>true</bool>
@@ -1208,6 +1309,10 @@ Note</string>
                    <layout class="QGridLayout" name="sample_information_grid_layout_">
                     <item row="0" column="0">
                      <widget class="QLabel" name="bore_hole_id_label">
+                      <property name="styleSheet">
+                       <string notr="true">color: black;
+</string>
+                      </property>
                       <property name="text">
                        <string>Bore Hole ID</string>
                       </property>
@@ -1233,6 +1338,10 @@ Note</string>
                       <property name="autoFillBackground">
                        <bool>false</bool>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: black;
+</string>
+                      </property>
                       <property name="frameShape">
                        <enum>QFrame::Shape::Box</enum>
                       </property>
@@ -1243,6 +1352,10 @@ Note</string>
                     </item>
                     <item row="0" column="2">
                      <widget class="QLabel" name="bore_hole_no_label">
+                      <property name="styleSheet">
+                       <string notr="true">color: black;
+</string>
+                      </property>
                       <property name="text">
                        <string>Bore Hole No</string>
                       </property>
@@ -1268,6 +1381,10 @@ Note</string>
                       <property name="autoFillBackground">
                        <bool>false</bool>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: black;
+</string>
+                      </property>
                       <property name="frameShape">
                        <enum>QFrame::Shape::Box</enum>
                       </property>
@@ -1278,6 +1395,10 @@ Note</string>
                     </item>
                     <item row="1" column="0">
                      <widget class="QLabel" name="top_depth_label">
+                      <property name="styleSheet">
+                       <string notr="true">color: black;
+</string>
+                      </property>
                       <property name="text">
                        <string>Top Depth (m)</string>
                       </property>
@@ -1303,6 +1424,10 @@ Note</string>
                       <property name="autoFillBackground">
                        <bool>false</bool>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: black;
+</string>
+                      </property>
                       <property name="frameShape">
                        <enum>QFrame::Shape::Box</enum>
                       </property>
@@ -1313,6 +1438,10 @@ Note</string>
                     </item>
                     <item row="1" column="2">
                      <widget class="QLabel" name="bottom_depth_label">
+                      <property name="styleSheet">
+                       <string notr="true">color: black;
+</string>
+                      </property>
                       <property name="text">
                        <string>Bottom Depth (m)</string>
                       </property>
@@ -1338,6 +1467,10 @@ Note</string>
                       <property name="autoFillBackground">
                        <bool>false</bool>
                       </property>
+                      <property name="styleSheet">
+                       <string notr="true">color: black;
+</string>
+                      </property>
                       <property name="frameShape">
                        <enum>QFrame::Shape::Box</enum>
                       </property>
@@ -1362,6 +1495,10 @@ Note</string>
                 <layout class="QHBoxLayout" name="horizontalLayout_guideline" stretch="1,1,1,1">
                  <item>
                   <widget class="QCheckBox" name="single_guideline_checkbox">
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Single Guideline</string>
                    </property>
@@ -1369,6 +1506,10 @@ Note</string>
                  </item>
                  <item>
                   <widget class="QCheckBox" name="multiple_guideline_checkbox">
+                   <property name="styleSheet">
+                    <string notr="true">color: black;
+</string>
+                   </property>
                    <property name="text">
                     <string>Multiple Guideline</string>
                    </property>
@@ -1379,6 +1520,11 @@ Note</string>
                    <property name="enabled">
                     <bool>false</bool>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">
+
+</string>
+                   </property>
                    <property name="text">
                     <string>Reset</string>
                    </property>
@@ -1388,6 +1534,10 @@ Note</string>
                   <widget class="QPushButton" name="apply_button_guideline">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">
+</string>
                    </property>
                    <property name="text">
                     <string>Apply</string>
@@ -1407,6 +1557,10 @@ Note</string>
                  <layout class="QGridLayout" name="gridLayout_6">
                   <item row="0" column="0">
                    <widget class="QLabel" name="guideline_type_label">
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
+                    </property>
                     <property name="text">
                      <string>Guideline Type</string>
                     </property>
@@ -1427,7 +1581,9 @@ Note</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">b</string>
+                     <string notr="true">color: black;
+
+</string>
                     </property>
                     <property name="frame">
                      <bool>true</bool>
@@ -1441,6 +1597,10 @@ Note</string>
                   </item>
                   <item row="1" column="0">
                    <widget class="QLabel" name="main_parameter_label">
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
+                    </property>
                     <property name="text">
                      <string>Main Parameter</string>
                     </property>
@@ -1460,6 +1620,10 @@ Note</string>
                       <height>26</height>
                      </size>
                     </property>
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
+                    </property>
                     <property name="frameShape">
                      <enum>QFrame::Shape::Box</enum>
                     </property>
@@ -1470,6 +1634,10 @@ Note</string>
                   </item>
                   <item row="1" column="2">
                    <widget class="QLabel" name="sub_parameter_label">
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
+                    </property>
                     <property name="text">
                      <string>Sub Parameter</string>
                     </property>
@@ -1489,6 +1657,10 @@ Note</string>
                       <height>26</height>
                      </size>
                     </property>
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
+                    </property>
                     <property name="frameShape">
                      <enum>QFrame::Shape::Box</enum>
                     </property>
@@ -1499,6 +1671,10 @@ Note</string>
                   </item>
                   <item row="2" column="0">
                    <widget class="QLabel" name="chloride_label">
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
+                    </property>
                     <property name="text">
                      <string>Chloride (mg/kg)</string>
                     </property>
@@ -1517,6 +1693,10 @@ Note</string>
                       <width>150</width>
                       <height>26</height>
                      </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color: black;
+</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::Shape::Box</enum>
@@ -1777,6 +1957,10 @@ Note</string>
                  <bold>true</bold>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
+               </property>
                <property name="text">
                 <string>Average Potential (mV)</string>
                </property>
@@ -1801,6 +1985,10 @@ Note</string>
                  <width>150</width>
                  <height>26</height>
                 </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
                </property>
                <property name="frameShape">
                 <enum>QFrame::Shape::Box</enum>
@@ -1848,6 +2036,10 @@ Note</string>
                  <bold>true</bold>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
+               </property>
                <property name="text">
                 <string>Cl Conc. inExtract(mg/L)</string>
                </property>
@@ -1873,6 +2065,10 @@ Note</string>
                  <height>26</height>
                 </size>
                </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
+               </property>
                <property name="frameShape">
                 <enum>QFrame::Shape::Box</enum>
                </property>
@@ -1893,6 +2089,10 @@ Note</string>
                 <font>
                  <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
                </property>
                <property name="text">
                 <string>Cl Conc. in Soil (mg/kg)</string>
@@ -1918,6 +2118,10 @@ Note</string>
                  <width>150</width>
                  <height>26</height>
                 </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
                </property>
                <property name="frameShape">
                 <enum>QFrame::Shape::Box</enum>
@@ -2018,6 +2222,10 @@ px;
                  <bold>true</bold>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
+               </property>
                <property name="text">
                 <string>Cl Criteria (mg/kg)</string>
                </property>
@@ -2042,6 +2250,10 @@ px;
                  <width>150</width>
                  <height>26</height>
                 </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: black;
+</string>
                </property>
                <property name="frameShape">
                 <enum>QFrame::Shape::Box</enum>
@@ -2096,10 +2308,11 @@ px;
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true"/>
+          <string notr="true">color: black;
+</string>
          </property>
          <property name="currentIndex">
-          <number>7</number>
+          <number>8</number>
          </property>
          <widget class="QWidget" name="check">
           <attribute name="title">
@@ -2172,7 +2385,8 @@ px;
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">background: transparent</string>
+         <string notr="true">color: black;
+background: transparent</string>
         </property>
         <property name="text">
          <string>*Measurement Range (mg/kg): 50~5,000, N.D. = non detective, M.C. = meet criteria</string>
@@ -2191,7 +2405,8 @@ px;
          <enum>Qt::LayoutDirection::LeftToRight</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">background: transparent
+         <string notr="true">color: black;
+background: transparent
 </string>
         </property>
         <property name="text">
@@ -2217,7 +2432,8 @@ px;
          <enum>Qt::LayoutDirection::RightToLeft</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">background: transparent</string>
+         <string notr="true">color: black;
+background: transparent</string>
         </property>
         <property name="text">
          <string>File Name:</string>
@@ -2246,6 +2462,10 @@ px;
         </property>
         <property name="autoFillBackground">
          <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: black;
+</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::Shape::Box</enum>
