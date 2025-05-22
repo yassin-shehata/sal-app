@@ -412,6 +412,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addLayout(self.horizontalLayout_5)
 
         self.r_squared_input = QComboBox(self.data_frame)
+        self.r_squared_input.addItem("")
+        self.r_squared_input.addItem("")
         self.r_squared_input.setObjectName(u"r_squared_input")
         sizePolicy9.setHeightForWidth(self.r_squared_input.sizePolicy().hasHeightForWidth())
         self.r_squared_input.setSizePolicy(sizePolicy9)
@@ -827,6 +829,7 @@ class Ui_MainWindow(object):
         self.gridLayout_6.addWidget(self.guideline_type_label, 0, 0, 1, 1)
 
         self.guideline_type_combobox = QComboBox(self.guideline_frame)
+        self.guideline_type_combobox.addItem("")
         self.guideline_type_combobox.setObjectName(u"guideline_type_combobox")
         self.guideline_type_combobox.setMinimumSize(QSize(150, 28))
         self.guideline_type_combobox.setMaximumSize(QSize(150, 26))
@@ -1279,7 +1282,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(0)
+        self.sample_measurement_tab_widget.setCurrentIndex(2)
         self.tabWidget.setCurrentIndex(7)
 
 
@@ -1303,6 +1306,9 @@ class Ui_MainWindow(object):
         self.cl_conc_label.setText(QCoreApplication.translate("MainWindow", u"Cl Conc. in Liquid (mg/L)", None))
         self.r_squared_label.setText(QCoreApplication.translate("MainWindow", u"R squared:", None))
         self.r_squared_label_2.setText("")
+        self.r_squared_input.setItemText(0, QCoreApplication.translate("MainWindow", u"Potential", None))
+        self.r_squared_input.setItemText(1, QCoreApplication.translate("MainWindow", u"Concentration", None))
+
         self.refresh_plot_button.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
         self.sample_measurement_label.setText(QCoreApplication.translate("MainWindow", u"2. Sample Measurement", None))
         self.reset_button_measurement.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
@@ -1333,6 +1339,8 @@ class Ui_MainWindow(object):
         self.reset_button_guideline.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
         self.apply_button_guideline.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
         self.guideline_type_label.setText(QCoreApplication.translate("MainWindow", u"Guideline Type", None))
+        self.guideline_type_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"Manual", None))
+
         self.main_parameter_label.setText(QCoreApplication.translate("MainWindow", u"Main Parameter", None))
         self.sub_parameter_label.setText(QCoreApplication.translate("MainWindow", u"Sub Parameter", None))
         self.chloride_label.setText(QCoreApplication.translate("MainWindow", u"Chloride (mg/kg)", None))

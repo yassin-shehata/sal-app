@@ -188,8 +188,16 @@ class Window(QMainWindow, Ui_MainWindow):
         print("✅ indicator_connection found:", self.indicator_connection is not None)
         print("✅ txt_system_note found:", self.txt_system_note is not None)
         self.calibration_mode = False           # tells the program whether we’re showing the static calibration plot
-        self.refresh_plot_button.setEnabled(False)  # start with Refresh disabled
+        self.refresh_plot_button.setEnabled(False)
+        self.std_check_button.setEnabled(False)
+        self.measurement_button.setEnabled(False)
+        self.recalculation_button.setEnabled(False) 
+        self.measurement_button.setEnabled(False)
+        self.std_check_button.setEnabled(False)
+        self.recalculation_button.setEnabled(False) # start with Refresh disabled
+        self.cl_criteria_input.setPlainText("100")
         self.main()
+
 
     def main(self): 
         """_summary_
@@ -203,7 +211,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.CalibrationCurveFittingButton.clicked.connect(self.CalibrationCurveFittingButtonPushed)
         self.reset_button_measurement.clicked.connect(self.calibrationResetButtonPushed)
         self.apply_button_measurement.clicked.connect(self.calibrationApplyButtonPushed)
-
+        self.r_squared_input.currentTextChanged.connect(self.graphSelectorDropdownValueChanged)
+        self.measurement_button.clicked.connect(self.measurementButtonPushed)
 
 
     def cl_close(self):
@@ -263,7 +272,6 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def startPlotting(self):
         """Start real-time plotting of sensor data"""
-        self.refresh_plot_button.setEnabled(False)
         # Stop timer if it's already running
         if self.ion_timer:
             self.ion_timer.stop()
@@ -308,16 +316,20 @@ class Window(QMainWindow, Ui_MainWindow):
             self.potential_input.setStyleSheet("color: black;")
             self.cl_conc_input.setStyleSheet("color: black;")
 
+
             data = np.array(self.ion_data)
             self.axes.clear()
+
             if self.plotMode == "Potential":
                 self.axes.plot(data[:, 0], data[:, 1], 'r')
-                self.axes.set_ylabel("Electric Potential (mV)")  # <-- Match MATLAB label
+                self.axes.set_ylabel("Electric Potential (mV)")
             elif self.plotMode == "Concentration":
                 self.axes.plot(data[:, 0], data[:, 2], 'b')
                 self.axes.set_ylabel("Concentration (mg/L)")
+
             self.axes.set_xlabel("Time (s)")
             self.canvas.draw()
+
 
         # Start a QTimer for real-time plotting
         self.ion_timer = QTimer()
@@ -548,6 +560,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def CalibrationCurveFittingButtonPushed(self):
         if not self.ReadyForCalibration():
             QMessageBox.warning(self, "Calibration", "Collect all four STD points first.")
+            
             return
 
         # ---- maths stays the same ----
@@ -580,21 +593,22 @@ class Window(QMainWindow, Ui_MainWindow):
         # flip mode
         self.calibration_mode = True
         self.refresh_plot_button.setEnabled(True)   # user can go back to live feed
-    
-    def refreshPlotButtonPushed(self):
-        if not self.calibration_mode:
-            return                          # already in live mode – ignore
+        self.measurement_button.setEnabled(True)
 
-        # wipe the static plot
+    def refreshPlotButtonPushed(self):
+        self.calibration_mode = False
         self.axes.clear()
         self.canvas.draw()
 
-        # restart live plotting
-        self.calibration_mode = False
-        self.refresh_plot_button.setEnabled(False)
-        self.startPlotting()                # startPlotting() must KEEP the button disabled
+        # Reset time and data
+        self.ion_data = []
+        self.start_time = time.time()
 
-    def _set_measurement_controls_enabled(self, enabled: bool):
+        self.startPlotting()
+
+
+
+    def setEnableButtons(self, enabled: bool):
         """
         Turn every measurement / calibration widget on-or-off in one shot.
         (The Reset button is **not** in this list on purpose.)
@@ -1355,7 +1369,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def calibrationApplyButtonPushed(self):
         # 1) freeze every measurement / calibration control
-        self._set_measurement_controls_enabled(False)
+        self.setEnableButtons(False)
 
         # 2) leave only Reset active
         self.reset_button_measurement.setEnabled(True)
@@ -1366,18 +1380,27 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # 4) ‘Apply’ greys itself out until the next curve-fit
         self.CalibrationCurveFittingButton.setEnabled(False)
+        self.std_check_button.setEnabled(True)
+        self.measurement_button.setEnabled(True)
+        self.recalculation_button.setEnabled(True)
+        
+
 
 
 
     def calibrationResetButtonPushed(self):
         # un-freeze everything
-        self._set_measurement_controls_enabled(True)
+        self.setEnableButtons(True)
 
         # grey out Reset itself until next Apply
         self.reset_button_measurement.setEnabled(False)
 
         # Apply stays disabled until a new curve-fit is run
         self.apply_button_measurement.setEnabled(False)
+        self.measurement_button.setEnabled(False)
+        self.std_check_button.setEnabled(False)
+        self.recalculation_button.setEnabled(False)
+
 
         # wipe the static plot & jump back to live mode
         self.axes.clear(); self.canvas.draw()
@@ -1385,7 +1408,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     
     def sampleTypeDropdownValueChanged(self):
-        selected = self.sample_type_dropdown.currentText()
+        selected = self.sample_type_combobox_2.currentText()
 
         if selected == "Soil":
             self.cl_conc_extract_label.setText("Cl Conc. in Extract (mg/L)")
@@ -1405,12 +1428,12 @@ class Window(QMainWindow, Ui_MainWindow):
 
         if value_of_auto_sample_naming:
             self.auto_sample_naming_panel.setVisible(True)
-            self.sample_id_edit_field.setVisible(False)
-            self.sample_id_edit_field_label.setVisible(False)
+            self.sample_id_input.setVisible(False)
+            self.sample_id_input_label.setVisible(False)
         else:
             self.auto_sample_naming_panel.setVisible(False)
-            self.sample_id_edit_field.setVisible(True)
-            self.sample_id_edit_field_label.setVisible(True)
+            self.sample_id_input.setVisible(True)
+            self.sample_id_input_label.setVisible(True)
 
             if self.multiple_guideline_checkbox.isChecked():
                 QMessageBox.information(
@@ -1421,12 +1444,12 @@ class Window(QMainWindow, Ui_MainWindow):
                 # Revert to auto naming
                 self.auto_sample_naming_checkbox.setChecked(True)
                 self.auto_sample_naming_panel.setVisible(True)
-                self.sample_id_edit_field.setVisible(False)
-                self.sample_id_edit_field_label.setVisible(False)
+                self.sample_id_input.setVisible(False)
+                self.sample_id_input_label.setVisible(False)
 
     def topDepthFieldValueChanged(self):
-        self.topDepthSetting = self.top_depth_field.value()
-        self.bottomDepthSetting = self.bottom_depth_field.value()
+        self.topDepthSetting = self.top_depth_input.value()
+        self.bottomDepthSetting = self.bottom_depth_input.value()
         self.depth1value = self.top_depth1.value()
         self.depth2value = self.top_depth2.value()
 
@@ -1437,24 +1460,24 @@ class Window(QMainWindow, Ui_MainWindow):
                 "The bottom depth is lower than or equal to the top depth.\nThe bottom depth must be higher than top depth.",
                 QMessageBox.Ok
             )
-            self.bottom_depth_field.setValue(self.topDepthSetting + 0.1)
+            self.bottom_depth_input.setValue(self.topDepthSetting + 0.1)
 
         if not self.rd_zone_checkbox.isChecked():
             if self.topDepthSetting < self.depth1value:
-                self.cl_criteria_field.setText(str(self.cl_zone1.value()))
+                self.cl_criteria_input.setText(str(self.cl_zone1.value()))
             else:
-                self.cl_criteria_field.setText(str(self.cl_zone2.value()))
+                self.cl_criteria_input.setText(str(self.cl_zone2.value()))
         else:
             if self.topDepthSetting < self.depth1value:
-                self.cl_criteria_field.setText(str(self.cl_zone1.value()))
+                self.cl_criteria_input.setText(str(self.cl_zone1.value()))
             elif self.topDepthSetting < self.depth2value:
-                self.cl_criteria_field.setText(str(self.cl_zone2.value()))
+                self.cl_criteria_input.setText(str(self.cl_zone2.value()))
             else:
-                self.cl_criteria_field.setText(str(self.cl_zone3.value()))
+                self.cl_criteria_input.setText(str(self.cl_zone3.value()))
     
     def bottomDepthFieldValueChanged(self):
-        self.topDepthSetting = self.top_depth_field.value()
-        self.bottomDepthSetting = self.bottom_depth_field.value()
+        self.topDepthSetting = self.top_depth_input.value()
+        self.bottomDepthSetting = self.bottom_depth_input.value()
 
         if self.topDepthSetting >= self.bottomDepthSetting:
             QMessageBox.warning(
@@ -1463,7 +1486,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 "The bottom depth is lower than or equal to the top depth.\nThe bottom depth must be higher than the top depth.",
             QMessageBox.Ok
             )
-            self.bottom_depth_field.setValue(self.topDepthSetting + 0.1)
+            self.bottom_depth_input.setValue(self.topDepthSetting + 0.1)
 
     def singleGuidelineCheckboxChanged(self):
         value_of_single_guideline = self.single_guideline_checkbox.isChecked()
@@ -1475,18 +1498,18 @@ class Window(QMainWindow, Ui_MainWindow):
             self.apply_button.setVisible(False)
             self.reset_button.setVisible(False)
 
-            self.top_depth_field.setValue(0)
-            self.bottom_depth_field.setValue(0.1)
+            self.top_depth_input.setValue(0)
+            self.bottom_depth_input.setValue(0.1)
 
             # Set the default criteria
-            self.guideline_type_dropdown.setCurrentText("Manual")
-            self.main_parameter_field.setVisible(True)
-            self.sub_parameter_field.setVisible(True)
-            self.main_parameter_field.setText("N/A")
-            self.sub_parameter_field.setText("N/A")
+            self.guideline_type_combobox.setCurrentText("Manual")
+            self.main_parameter_input.setVisible(True)
+            self.sub_parameter_input.setVisible(True)
+            self.main_parameter_input.setText("N/A")
+            self.sub_parameter_input.setText("N/A")
 
             self.chloride_mgkg_field.setValue(100)
-            self.cl_criteria_field.setText(str(100))
+            self.cl_criteria_input.setText(str(100))
 
         else:
             self.multiple_guideline_checkbox.setChecked(True)
@@ -1507,8 +1530,8 @@ class Window(QMainWindow, Ui_MainWindow):
             self.cl_zone3.setEnabled(True)
             self.rd_zone_checkbox.setEnabled(True)
 
-            self.top_depth_field.setValue(0)
-            self.bottom_depth_field.setValue(0.1)
+            self.top_depth_input.setValue(0)
+            self.bottom_depth_input.setValue(0.1)
 
             self.top_depth1.setValue(0)
             self.top_depth2.setValue(0)
@@ -1521,11 +1544,11 @@ class Window(QMainWindow, Ui_MainWindow):
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
             self.rd_zone_label.setText("3rd Zone")
-            self.cl_criteria_field.setText(str(self.cl_zone1.value()))
+            self.cl_criteria_input.setText(str(self.cl_zone1.value()))
 
     def chlorideMgkgFieldValueChanged(self):
         value_of_single_chloride_criteria = self.chloride_mgkg_field.value()
-        self.cl_criteria_field.setText(str(value_of_single_chloride_criteria))
+        self.cl_criteria_input.setText(str(value_of_single_chloride_criteria))
 
     def multipleGuidelineCheckboxValueChanged(self):
         value_of_multiple_guideline = self.multiple_guideline_checkbox.isChecked()
@@ -1536,8 +1559,8 @@ class Window(QMainWindow, Ui_MainWindow):
             self.multi_guideline_panel.setVisible(True)
             self.auto_sample_naming_checkbox.setChecked(True)
             self.auto_sample_naming_panel.setVisible(True)
-            self.sample_id_edit_field.setVisible(False)
-            self.sample_id_edit_field_label.setVisible(False)
+            self.sample_id_input.setVisible(False)
+            self.sample_id_input_label.setVisible(False)
             self.apply_button.setVisible(True)
             self.reset_button.setVisible(True)
             self.apply_button.setEnabled(True)
@@ -1549,8 +1572,8 @@ class Window(QMainWindow, Ui_MainWindow):
             self.cl_zone3.setEnabled(True)
             self.rd_zone_checkbox.setEnabled(True)
 
-            self.top_depth_field.setValue(0)
-            self.bottom_depth_field.setValue(0.1)
+            self.top_depth_input.setValue(0)
+            self.bottom_depth_input.setValue(0.1)
 
             self.top_depth1.setValue(0)
             self.top_depth2.setValue(0)
@@ -1564,7 +1587,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
             self.rd_zone_label.setText("3rd Zone")
-            self.cl_criteria_field.setText(str(self.cl_zone1.value()))
+            self.cl_criteria_input.setText(str(self.cl_zone1.value()))
         else:
             self.single_guideline_checkbox.setChecked(True)
             self.single_guideline_panel.setVisible(True)
@@ -1572,17 +1595,17 @@ class Window(QMainWindow, Ui_MainWindow):
             self.apply_button.setVisible(False)
             self.reset_button.setVisible(False)
 
-            self.top_depth_field.setValue(0)
-            self.bottom_depth_field.setValue(0.1)
+            self.top_depth_input.setValue(0)
+            self.bottom_depth_input.setValue(0.1)
 
-            self.guideline_type_dropdown.setCurrentText("Manual")
-            self.main_parameter_edit_field.setVisible(True)
-            self.sub_parameter_edit_field.setVisible(True)
-            self.main_parameter_edit_field.setText("N/A")
-            self.sub_parameter_edit_field.setText("N/A")
+            self.guideline_type_combobox.setCurrentText("Manual")
+            self.main_parameter_input.setVisible(True)
+            self.sub_parameter_edit_input.setVisible(True)
+            self.input.setText("N/A")
+            self.sub_parameter_edit_input.setText("N/A")
 
             self.chloride_mgkg_field.setValue(100)
-            self.cl_criteria_field.setText(str(100))
+            self.cl_criteria_input.setText(str(100))
     
     def applyButtonPushed(self):
         self.depth1value = self.top_depth1.value()
@@ -1606,9 +1629,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.nd_zone_label.setText(f"2nd Zone ({self.depth1value}-{self.depth2value})")
             self.rd_zone_label.setText(f"3rd Zone ({self.depth2value}~)")
 
-        self.cl_criteria_field.setText(str(self.cl_zone1.value()))
-        self.top_depth_field.setValue(0)
-        self.bottom_depth_field.setValue(0.1)
+        self.cl_criteria_input.setText(str(self.cl_zone1.value()))
+        self.top_depth_input.setValue(0)
+        self.bottom_depth_input.setValue(0.1)
 
         # Deactivate editing
         self.reset_button.setEnabled(True)
@@ -1631,8 +1654,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.rd_zone_checkbox.setEnabled(True)
         self.apply_button.setEnabled(True)
 
-        self.top_depth_field.setValue(0)
-        self.bottom_depth_field.setValue(0.1)
+        self.top_depth_input.setValue(0)
+        self.bottom_depth_input.setValue(0.1)
     
     def rdZoneCheckboxValueChanged(self):
         rd_zone_active = self.rd_zone_checkbox.isChecked()
@@ -1656,23 +1679,24 @@ class Window(QMainWindow, Ui_MainWindow):
             self.advanced_parameters_panel.setVisible(False)
 
     def graphSelectorDropdownValueChanged(self):
-        value_of_graph_selector = self.graph_selector_dropdown.currentText()
+        value = self.r_squared_input.currentText()
 
-        if value_of_graph_selector == "Potential":
-            self.ISEUIAxes.set_ylabel("Electric Potential (mV)")
+        if value == "Potential":
             self.plotMode = "Potential"
-        elif value_of_graph_selector == "Concentration":
-            if not callable(self.ionEquation):
-                self.graph_selector_dropdown.setCurrentText("Potential")
-                QMessageBox.warning(
-                    self,
-                    "Error",
-                    "Concentration graph unavailable until calibration is complete.",
-                    QMessageBox.Ok
-                )
-                return
-            self.ISEUIAxes.set_ylabel("Concentration (mg/L)")
+        elif value == "Concentration":
             self.plotMode = "Concentration"
+
+        # Update labels and redraw immediately
+        self.axes.clear()
+        self.axes.set_xlabel("Time (s)")
+
+        if self.plotMode == "Potential":
+            self.axes.set_ylabel("Electric Potential (mV)")
+        elif self.plotMode == "Concentration":
+            self.axes.set_ylabel("Concentration (mg/L)")
+
+        self.canvas.draw()
+
     
    
     def STDcheckButtonPushed(self):
@@ -1685,8 +1709,8 @@ class Window(QMainWindow, Ui_MainWindow):
             QMessageBox.Yes | QMessageBox.No
         )
         if confirm == QMessageBox.No:
-            self.system_note_sign_label.setText("REQUIRED")
-            self.setCircleColour(self.system_note_circle, "yellow")
+            self.lbl_system_note.setText("REQUIRED")
+            self.setCircleColour(self.indicator_note_status, "yellow")
             self.showMessage("STD Check", "Before collecting the 100 ppm standard solution, place the correct standard solution.")
             self.setEnableButtons(True)
             return
@@ -1759,14 +1783,14 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.stdCheck < 80 or self.stdCheck > 120:
             code = "02.01" if self.stdCheck < 80 else "02.02"
             self.showMessage("STD Check Error", f"STD check error [code {code}]\nSTD value out of expected range.\nReset calibration and retry.")
-            self.system_note_sign_label.setText("REQUIRED")
-            self.setCircleColour(self.system_note_circle, "yellow")
+            self.lbl_system_note.setText("REQUIRED")
+            self.setCircleColour(self.indicator_note_status, "yellow")
             self.setEnableButtons(True)
             return
 
         # If valid
-        self.system_note_sign_label.setText("NORMAL")
-        self.setCircleColour(self.system_note_circle, "green")
+        self.lbl_system_note.setText("NORMAL")
+        self.setCircleColour(self.indicator_note_status, "green")
         self.showMessage("STD Check", f"The standard solution is valid.\nCurrent STD value: {self.stdCheck:.2f}")
 
         # Re-enable buttons
@@ -1776,32 +1800,31 @@ class Window(QMainWindow, Ui_MainWindow):
         # Disable all relevant buttons
         self.setEnableButtons(False)
 
-        # Reset status indicators
-        self.system_note_text_area.setText("")
-        self.setCircleColour(self.system_note_circle, "grey")
-        self.system_note_sign_label.setText("")
-        self.average_potential_field.setValue(0)
-        self.cl_conc_extract_field.setText("")
-        self.cl_conc_sample_field.setText("")
-        self.setCircleColour(self.chloride_measurement_circle, "grey")
+        self.setCircleColour(self.indicator_note_status, "grey") 
+        self.lbl_system_note.setText("") 
+        self.average_potential_input.setPlainText("0.00")  
+        self.cl_criteria_input.setPlainText("")  
+        self.salt_in_liquid_input.setText("")  
+        self.salt_in_ground_input.setText("")
+
+        self.setCircleColour(self.measurement_circle, "grey")  # if exists
 
         # Auto-fill N/A where fields are empty
-        if not self.borehole_id_field.text():
-            self.borehole_id_field.setText("N/A")
-        if not self.borehole_no_field.text():
-            self.borehole_no_field.setText("N/A")
-        if not self.sample_id_edit_field.text():
-            self.sample_id_edit_field.setText("N/A")
+        if not self.bore_hole_id_input.toPlainText():
+            self.bore_hole_id_input.setPlainText("N/A")
+        if not self.bore_hole_no_input.toPlainText():
+            self.bore_hole_no_input.setPlainText("N/A")
+        if not self.sample_id_input.toPlainText():
+            self.sample_id_input.setPlainText("N/A")
 
-        borehole_id = self.borehole_id_field.text()
-        borehole_no = self.borehole_no_field.text()
-        top_depth = str(self.top_depth_field.value())
-        bottom_depth = str(self.bottom_depth_field.value())
+        borehole_id = self.bore_hole_id_input.toPlainText()
+        borehole_no = self.bore_hole_no_input.toPlainText()
+        self.sampleID = (
+            f"{borehole_id}-{borehole_no}_{top_depth}-{bottom_depth}"
+            if self.auto_sample_naming_checkbox.isChecked()
+            else self.sample_id_input.toPlainText()
+        )
 
-        if self.auto_sample_naming_checkbox.isChecked():
-            self.sampleID = f"{borehole_id}-{borehole_no}_{top_depth}-{bottom_depth}"
-        else:
-            self.sampleID = self.sample_id_edit_field.text()
 
         # Confirm sample info
         confirm = QMessageBox.question(
@@ -1814,21 +1837,24 @@ class Window(QMainWindow, Ui_MainWindow):
             return
 
         # Measurement conditions
-        self.guideline = float(self.cl_criteria_field.text())
+        try:
+            self.guideline = float(self.cl_criteria_input.toPlainText())
+        except ValueError:
+            self.guideline = 100  # fallback if it's empty or invalid
         self.date = datetime.now()
-        self.projectName = self.project_name_field.text()
-        self.sampleNo = self.sample_no_spinner.value()
-        self.replication = self.replication_spinner.value()
-        self.moisture = self.moisture_dropdown.currentText()
-        self.buffer = self.buffer_dropdown.currentText()
-        self.guidelineType = self.guideline_type_dropdown.currentText()
-        self.stabilizationTime = self.stabilization_time_field.value()
-        self.baselineType = self.baseline_dropdown.currentText()
+        self.projectName = self.project_name_input.toPlainText()
+        self.sampleNo = self.sample_no_spinbox.value()
+        self.replication = self.replication_spinbox.value()
+        self.moisture = self.moisture_combobox.currentText()
+        self.buffer = self.buffer_range_combobox.currentText()
+        self.guidelineType = self.guideline_type_combobox.currentText()
+        self.stabilizationTime = self.StabilizationTimeEditField.value()
+        self.baselineType = self.baseline_combobox.currentText()
 
-        self.mainParameter = (self.main_parameter_field.text()
+        self.mainParameter = (self.main_parameter_input.toPlainText()
                             if self.guidelineType == "Manual"
                             else self.main_parameter_dropdown.currentText())
-        self.subParameter = (self.sub_parameter_field.text()
+        self.subParameter = (self.sub_parameter_input.toPlainText()
                             if self.guidelineType == "Manual"
                             else self.sub_parameter_dropdown.currentText())
 
@@ -1872,7 +1898,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.timer_dialog.canceled.connect(self.timer_dialog.cancelEvent)
 
         # Progress gauge
-        self.system_note_text_area.setVisible(False)
+        self.txt_system_note.setVisible(False)
         self.progress_gauge.setVisible(True)
         self.progress_gauge_label.setVisible(True)
         self.progress_gauge.setValue(0)
@@ -1929,20 +1955,20 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.average_potential_field.setValue(self.samplePotential)
 
-        if self.sample_type_dropdown.currentText() == "Soil":
+        if self.sample_type_combobox_2.currentText() == "Soil":
             self.rawSample_liquid = (self.rawSample - self.baseline) if self.baselineType == "Yes" else self.rawSample
             if self.rawSample_liquid <= self.lower_val:
-                self.cl_conc_extract_field.setText("N.D.")
+                self.salt_in_liquid_input.setText("N.D.")
             else:
-                self.cl_conc_extract_field.setText(str(self.rawSample_liquid))
+                self.salt_in_liquid_input.setText(str(self.rawSample_liquid))
 
             self.rawSample_soil = self.rawSample_liquid * self.liquidSoilFactor / (1 - self.moisture)
         else:
             self.rawSample_liquid = (self.rawSample - (self.baseline / 2)) * 2 if self.baselineType == "Yes" else self.rawSample
             if self.rawSample_liquid <= self.lower_val:
-                self.cl_conc_extract_field.setText("N.D.")
+                self.salt_in_liquid_input.setText("N.D.")
             else:
-                self.cl_conc_extract_field.setText(str(self.rawSample_liquid))
+                self.salt_in_liquid_input.setText(str(self.rawSample_liquid))
             self.rawSample_soil = self.rawSample_liquid
 
         value = self.rawSample_soil
@@ -1959,8 +1985,8 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             result = "Exceeded Max."; color = "red"
 
-        self.cl_conc_sample_field.setText(result)
-        self.setCircleColour(self.chloride_measurement_circle, color)
+        self.salt_in_ground_input.setText(result)
+        self.setCircleColour(self.measurement_circle, color)
 
         # Save to table and Excel — implementation would follow same as your exportToExcel() or related
         # Code for storing/appending to dataframes or writing to Excel goes here...
@@ -1970,12 +1996,12 @@ class Window(QMainWindow, Ui_MainWindow):
         QApplication.processEvents()
         time.sleep(1)
 
-        self.system_note_text_area.setVisible(True)
+        self.txt_system_note.setVisible(True)
         self.progress_gauge.setVisible(False)
         self.progress_gauge_label.setVisible(False)
-        self.system_note_text_area.setText("The standard solution value is within the normal range.")
-        self.system_note_sign_label.setText("NORMAL")
-        self.setCircleColour(self.system_note_circle, "green")
+        self.txt_system_note.setText("The standard solution value is within the normal range.")
+        self.lbl_system_note.setText("NORMAL")
+        self.setCircleColour(self.indicator_note_status, "green")
 
         self.setEnableButtons(True)
     
@@ -2045,32 +2071,33 @@ class Window(QMainWindow, Ui_MainWindow):
     def recalculateButtonPushed(self):
         self.setEnableButtons(False)
 
-        # Reset
-        self.system_note_text_area.setText("")
-        self.setCircleColour(self.system_note_circle, "grey")
-        self.system_note_sign_label.setText("")
+            # Reset
+        self.txt_system_note.setText("")
+        self.setCircleColour(self.indicator_note_status, "grey")
+        self.lbl_system_note.setText("")
         self.average_potential_field.setValue(0)
-        self.cl_conc_extract_field.setText("")
-        self.cl_conc_sample_field.setText("")
-        self.setCircleColour(self.chloride_measurement_circle, "grey")
+        self.salt_in_liquid_input.setText("")
+        self.salt_in_ground_input.setText("")
+        self.setCircleColour(self.measurement_circle, "grey")
 
         # Fill defaults if missing
-        if not self.borehole_id_field.text():
-            self.borehole_id_field.setText("N/A")
-        if not self.borehole_no_field.text():
-            self.borehole_no_field.setText("N/A")
-        if not self.sample_id_edit_field.text():
-            self.sample_id_edit_field.setText("N/A")
+        if not self.bore_hole_id_input.toPlainText():
+            self.bore_hole_id_input.setPlainText("N/A")
+        if not self.bore_hole_no_input.toPlainText():
+            self.bore_hole_no_input.setPlainText("N/A")
+        if not self.sample_id_input.toPlainText():
+            self.sample_id_input.setPlainText("N/A")
 
-        borehole_id = self.borehole_id_field.text()
-        borehole_no = self.borehole_no_field.text()
-        top_depth = str(self.top_depth_field.value())
-        bottom_depth = str(self.bottom_depth_field.value())
+        borehole_id = self.bore_hole_id_input.toPlainText()
+        borehole_no = self.bore_hole_no_input.toPlainText()
+        top_depth = str(self.top_depth_input.value())
+        bottom_depth = str(self.bottom_depth_input.value())
+
 
         if self.auto_sample_naming_checkbox.isChecked():
             self.sampleID = f"{borehole_id}-{borehole_no}_{top_depth}-{bottom_depth}"
         else:
-            self.sampleID = self.sample_id_edit_field.text()
+            self.sampleID = self.sample_id_input.text()
 
         confirm = QMessageBox.question(self, "Sample Info", f"Sample ID: {self.sampleID}\nConfirm this info?", QMessageBox.Yes | QMessageBox.Retry)
         if confirm == QMessageBox.Retry:
@@ -2078,24 +2105,24 @@ class Window(QMainWindow, Ui_MainWindow):
             return
 
         self.date = datetime.now()
-        self.projectName = self.project_name_field.text()
-        self.sampleNo = self.sample_no_spinner.value()
-        self.replication = self.replication_spinner.value()
-        self.moisture = self.moisture_dropdown.currentText()
-        self.buffer = self.buffer_dropdown.currentText()
-        self.guidelineType = self.guideline_type_dropdown.currentText()
+        self.projectName = self.project_name_input.toPlainText()
+        self.sampleNo = self.sample_no_spinbox.value()
+        self.replication = self.replication_spinbox.value()
+        self.moisture = self.moisture_combobox.currentText()
+        self.buffer = self.buffer_range_combobox.currentText()
+        self.guidelineType = self.guideline_type_combobox.currentText()
         self.stabilizationTime = self.stabilization_time_field.value()
-        self.baselineType = self.baseline_dropdown.currentText()
+        self.baselineType = self.baseline_combobox.currentText()
 
-        self.mainParameter = self.main_parameter_field.text() if self.guidelineType == "Manual" else self.main_parameter_dropdown.currentText()
-        self.subParameter = self.sub_parameter_field.text() if self.guidelineType == "Manual" else self.sub_parameter_dropdown.currentText()
+        self.mainParameter = self.main_parameter_input.toPlainText() if self.guidelineType == "Manual" else self.main_parameter_dropdown.currentText()
+        self.subParameter = self.sub_parameter_input.toPlainText() if self.guidelineType == "Manual" else self.sub_parameter_dropdown.currentText()
 
         moisture_map = {"Dry (0)": 0, "Damp (1-25)": 0.125, "Moist (26-50)": 0.375, "Wet (51-75)": 0.625, "Saturated (76-99)": 0.875}
         buffer_map = {"20%": 0.2, "30%": 0.3, "40%": 0.4, "50%": 0.5}
         self.moisture = moisture_map.get(self.moisture, 0.0)
         self.buffer = buffer_map.get(self.buffer, 0.2)
 
-        self.cl_criteria = float(self.cl_criteria_field.text())
+        self.cl_criteria = float(self.cl_criteria_input.text())
         if self.cl_criteria < 50:
             choice = QMessageBox.question(self, "Guideline Warning", "Current criteria < 50. Reset?", QMessageBox.Yes | QMessageBox.Ignore)
             if choice == QMessageBox.Yes:
@@ -2105,17 +2132,17 @@ class Window(QMainWindow, Ui_MainWindow):
         self.rawSample = self.ionEquation(self.samplePotential)
         self.average_potential_field.setValue(self.samplePotential)
 
-        if self.sample_type_dropdown.currentText() == "Soil":
+        if self.sample_type_combobox_2.currentText() == "Soil":
             self.rawSample_liquid = (self.rawSample - self.baseline) if self.baselineType == "Yes" else self.rawSample
         else:
             self.rawSample_liquid = (self.rawSample - self.baseline/2)*2 if self.baselineType == "Yes" else self.rawSample
 
         if self.rawSample_liquid <= self.lower_val:
-            self.cl_conc_extract_field.setText("N.D.")
+            self.salt_in_liquid_input.setText("N.D.")
         else:
-            self.cl_conc_extract_field.setText(str(self.rawSample_liquid))
+            self.salt_in_liquid_input.setText(str(self.rawSample_liquid))
 
-        self.rawSample_soil = self.rawSample_liquid * self.liquidSoilFactor / (1 - self.moisture) if self.sample_type_dropdown.currentText() == "Soil" else self.rawSample_liquid
+        self.rawSample_soil = self.rawSample_liquid * self.liquidSoilFactor / (1 - self.moisture) if self.sample_type_combobox_2.currentText() == "Soil" else self.rawSample_liquid
 
         value = self.rawSample_soil
         if value <= self.lower_val:
@@ -2131,8 +2158,8 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             result = "Exceeded Max."; color = "red"
 
-        self.cl_conc_sample_field.setText(result)
-        self.setCircleColour(self.chloride_measurement_circle, color)
+        self.salt_in_ground_input.setText(result)
+        self.setCircleColour(self.measurement_circle, color)
 
         sampledata = [self.check, self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, result, self.rawSample_liquid, self.samplePotential, self.cl_criteria]
         measurementdata = [self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, self.guidelineType, self.mainParameter, self.subParameter, self.cl_criteria, self.moisture, self.buffer, self.stabilizationTime, self.baselineType]
@@ -2146,10 +2173,10 @@ class Window(QMainWindow, Ui_MainWindow):
         append_or_create_excel(self.rawFileName, "Measurement Conditions", [measurementdata], header_measurement)
         append_or_create_excel(self.rawFileName, "STD value", [stddata], header_std)
 
-        self.system_note_text_area.setVisible(True)
-        self.system_note_text_area.setText("The standard solution value is within the normal range.")
-        self.system_note_sign_label.setText("NORMAL")
-        self.setCircleColour(self.system_note_circle, "green")
+        self.txt_system_note.setVisible(True)
+        self.txt_system_note.setText("The standard solution value is within the normal range.")
+        self.lbl_system_note.setText("NORMAL")
+        self.setCircleColour(self.indicator_note_status, "green")
         self.setEnableButtons(True)
 
     def autoFileNamingCheckBoxValueChanged(self):
@@ -2161,9 +2188,9 @@ class Window(QMainWindow, Ui_MainWindow):
     def exportDataButtonPushed(self):
         self.setEnableButtons(False)
 
-        self.system_note_text_area.setText("")
-        self.setCircleColour(self.system_note_circle, "grey")
-        self.system_note_sign_label.setText("")
+        self.txt_system_note.setText("")
+        self.setCircleColour(self.indicator_note_status, "grey")
+        self.lbl_system_note.setText("")
 
         self.ionTableData = self.table_model.getDataAsDataFrame()
 
@@ -2179,7 +2206,7 @@ class Window(QMainWindow, Ui_MainWindow):
         if not self.auto_file_naming_checkbox.isChecked():
             self.filename = self.file_name_field.text() + ".xlsx"
         else:
-            self.filename = f"{self.project_name_field.text()}_SAL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+            self.filename = f"{self.project_name_input.toPlainText()}_SAL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
 
         df_sample = self.ionTableData.copy()
         df_sample = df_sample[df_sample.iloc[:, 0] != 0]
@@ -2201,9 +2228,9 @@ class Window(QMainWindow, Ui_MainWindow):
             df_measurement.to_excel(writer, sheet_name='Measurement Conditions', index=False)
             df_std.to_excel(writer, sheet_name='STD value', index=False)
 
-        self.system_note_text_area.setText("The predicted values have been successfully exported.")
-        self.system_note_sign_label.setText("EXPORTED")
-        self.setCircleColour(self.system_note_circle, "green")
+        self.txt_system_note.setText("The predicted values have been successfully exported.")
+        self.lbl_system_note.setText("EXPORTED")
+        self.setCircleColour(self.indicator_note_status, "green")
 
         self.setEnableButtons(True)
 
@@ -2232,7 +2259,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 f.show()
                 QApplication.processEvents()
 
-                currDate = f"{self.project_name_field.text()}_SAL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+                currDate = f"{self.project_name_input.toPlainText()}_SAL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
                 os.makedirs(currDate, exist_ok=True)
                 shutil.move(self.rawFileName, os.path.join(currDate, os.path.basename(self.rawFileName)))
                 try:
