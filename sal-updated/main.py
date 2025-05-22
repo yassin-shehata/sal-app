@@ -213,6 +213,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.apply_button_measurement.clicked.connect(self.calibrationApplyButtonPushed)
         self.r_squared_input.currentTextChanged.connect(self.graphSelectorDropdownValueChanged)
         self.measurement_button.clicked.connect(self.measurementButtonPushed)
+        self.recalculation_button.clicked.connect(self.recalculateButtonPushed)
+        self.std_check_button.clicked.connect(self.STDcheckButtonPushed)
 
 
     def cl_close(self):
