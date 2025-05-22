@@ -2077,7 +2077,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.txt_system_note.setText("")
         self.setCircleColour(self.indicator_note_status, "grey")
         self.lbl_system_note.setText("")
-        self.average_potential_input.setValue(0)
+        self.average_potential_input.setPlainText("0")
         self.salt_in_liquid_input.setText("")
         self.salt_in_ground_input.setText("")
         self.setCircleColour(self.measurement_circle, "grey")
