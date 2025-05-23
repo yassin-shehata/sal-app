@@ -16,10 +16,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
-    QFrame, QGridLayout, QHBoxLayout, QLabel,
-    QMainWindow, QProgressBar, QPushButton, QSizePolicy,
-    QSpacerItem, QSpinBox, QTabWidget, QTextEdit,
-    QVBoxLayout, QWidget)
+    QFrame, QGridLayout, QHBoxLayout, QHeaderView,
+    QLabel, QMainWindow, QProgressBar, QPushButton,
+    QSizePolicy, QSpacerItem, QSpinBox, QTabWidget,
+    QTableWidget, QTableWidgetItem, QTextEdit, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -149,6 +150,19 @@ class Ui_MainWindow(object):
         sizePolicy2.setHeightForWidth(self.btn_system_connect.sizePolicy().hasHeightForWidth())
         self.btn_system_connect.setSizePolicy(sizePolicy2)
         self.btn_system_connect.setFont(font)
+        self.btn_system_connect.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.horizontalLayout.addWidget(self.btn_system_connect)
 
@@ -451,6 +465,19 @@ class Ui_MainWindow(object):
         font5.setPointSize(16)
         font5.setBold(True)
         self.refresh_plot_button.setFont(font5)
+        self.refresh_plot_button.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.verticalLayout_4.addWidget(self.refresh_plot_button)
 
@@ -509,7 +536,18 @@ class Ui_MainWindow(object):
         self.reset_button_measurement = QPushButton(self.calibration)
         self.reset_button_measurement.setObjectName(u"reset_button_measurement")
         self.reset_button_measurement.setEnabled(False)
-        self.reset_button_measurement.setStyleSheet(u"color: black;\n"
+        self.reset_button_measurement.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
 "")
 
         self.horizontalLayout_calibration.addWidget(self.reset_button_measurement)
@@ -517,7 +555,18 @@ class Ui_MainWindow(object):
         self.apply_button_measurement = QPushButton(self.calibration)
         self.apply_button_measurement.setObjectName(u"apply_button_measurement")
         self.apply_button_measurement.setEnabled(False)
-        self.apply_button_measurement.setStyleSheet(u"color: black;\n"
+        self.apply_button_measurement.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
 "")
 
         self.horizontalLayout_calibration.addWidget(self.apply_button_measurement)
@@ -538,6 +587,19 @@ class Ui_MainWindow(object):
         self.STD5000MeasurementButton = QPushButton(self.calibration_frame)
         self.STD5000MeasurementButton.setObjectName(u"STD5000MeasurementButton")
         self.STD5000MeasurementButton.setEnabled(False)
+        self.STD5000MeasurementButton.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.gridLayout_2.addWidget(self.STD5000MeasurementButton, 3, 2, 1, 1)
 
@@ -564,12 +626,38 @@ class Ui_MainWindow(object):
         self.STD10MeasurementButton = QPushButton(self.calibration_frame)
         self.STD10MeasurementButton.setObjectName(u"STD10MeasurementButton")
         self.STD10MeasurementButton.setEnabled(False)
+        self.STD10MeasurementButton.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.gridLayout_2.addWidget(self.STD10MeasurementButton, 0, 2, 1, 1)
 
         self.STD100MeasurementButton = QPushButton(self.calibration_frame)
         self.STD100MeasurementButton.setObjectName(u"STD100MeasurementButton")
         self.STD100MeasurementButton.setEnabled(False)
+        self.STD100MeasurementButton.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.gridLayout_2.addWidget(self.STD100MeasurementButton, 1, 2, 1, 1)
 
@@ -625,12 +713,38 @@ class Ui_MainWindow(object):
         self.STD1000MeasurementButton = QPushButton(self.calibration_frame)
         self.STD1000MeasurementButton.setObjectName(u"STD1000MeasurementButton")
         self.STD1000MeasurementButton.setEnabled(False)
+        self.STD1000MeasurementButton.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.gridLayout_2.addWidget(self.STD1000MeasurementButton, 2, 2, 1, 1)
 
         self.CalibrationCurveFittingButton = QPushButton(self.calibration_frame)
         self.CalibrationCurveFittingButton.setObjectName(u"CalibrationCurveFittingButton")
         self.CalibrationCurveFittingButton.setEnabled(False)
+        self.CalibrationCurveFittingButton.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.gridLayout_2.addWidget(self.CalibrationCurveFittingButton, 4, 2, 1, 1)
 
@@ -742,6 +856,9 @@ class Ui_MainWindow(object):
         self.sample_information_top_grid_layout.addWidget(self.sample_type_label, 2, 2, 1, 1)
 
         self.sample_type_combobox_2 = QComboBox(self.sample_information)
+        self.sample_type_combobox_2.addItem("")
+        self.sample_type_combobox_2.addItem("")
+        self.sample_type_combobox_2.addItem("")
         self.sample_type_combobox_2.setObjectName(u"sample_type_combobox_2")
         self.sample_type_combobox_2.setMinimumSize(QSize(150, 28))
         self.sample_type_combobox_2.setMaximumSize(QSize(150, 26))
@@ -992,6 +1109,11 @@ class Ui_MainWindow(object):
         self.options_horizontal_layout.addWidget(self.moisture_label)
 
         self.moisture_combobox = QComboBox(self.options)
+        self.moisture_combobox.addItem("")
+        self.moisture_combobox.addItem("")
+        self.moisture_combobox.addItem("")
+        self.moisture_combobox.addItem("")
+        self.moisture_combobox.addItem("")
         self.moisture_combobox.setObjectName(u"moisture_combobox")
         self.moisture_combobox.setMinimumSize(QSize(150, 28))
         self.moisture_combobox.setMaximumSize(QSize(150, 26))
@@ -1011,6 +1133,10 @@ class Ui_MainWindow(object):
         self.options_horizontal_layout.addWidget(self.buffer_range_label)
 
         self.buffer_range_combobox = QComboBox(self.options)
+        self.buffer_range_combobox.addItem("")
+        self.buffer_range_combobox.addItem("")
+        self.buffer_range_combobox.addItem("")
+        self.buffer_range_combobox.addItem("")
         self.buffer_range_combobox.setObjectName(u"buffer_range_combobox")
         self.buffer_range_combobox.setMinimumSize(QSize(150, 28))
         self.buffer_range_combobox.setMaximumSize(QSize(150, 26))
@@ -1058,6 +1184,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_10.addWidget(self.baseline_label)
 
         self.baseline_combobox = QComboBox(self.options_frame)
+        self.baseline_combobox.addItem("")
+        self.baseline_combobox.addItem("")
         self.baseline_combobox.setObjectName(u"baseline_combobox")
         self.baseline_combobox.setMinimumSize(QSize(150, 28))
         self.baseline_combobox.setMaximumSize(QSize(150, 26))
@@ -1097,6 +1225,19 @@ class Ui_MainWindow(object):
         font6 = QFont()
         font6.setBold(True)
         self.std_check_button.setFont(font6)
+        self.std_check_button.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.measurement_frame_grid_layout.addWidget(self.std_check_button, 0, 0, 1, 1)
 
@@ -1138,6 +1279,19 @@ class Ui_MainWindow(object):
         self.measurement_button.setSizePolicy(sizePolicy14)
         self.measurement_button.setMinimumSize(QSize(0, 60))
         self.measurement_button.setFont(font3)
+        self.measurement_button.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.measurement_frame_grid_layout.addWidget(self.measurement_button, 1, 0, 2, 1)
 
@@ -1221,6 +1375,19 @@ class Ui_MainWindow(object):
         sizePolicy11.setHeightForWidth(self.recalculation_button.sizePolicy().hasHeightForWidth())
         self.recalculation_button.setSizePolicy(sizePolicy11)
         self.recalculation_button.setFont(font6)
+        self.recalculation_button.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.measurement_frame_grid_layout.addWidget(self.recalculation_button, 3, 0, 1, 1)
 
@@ -1278,45 +1445,12 @@ class Ui_MainWindow(object):
         self.tab_frame.setFrameShadow(QFrame.Shadow.Raised)
         self.formLayout_7 = QFormLayout(self.tab_frame)
         self.formLayout_7.setObjectName(u"formLayout_7")
-        self.tabWidget = QTabWidget(self.tab_frame)
-        self.tabWidget.setObjectName(u"tabWidget")
-        sizePolicy6.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
-        self.tabWidget.setSizePolicy(sizePolicy6)
-        self.tabWidget.setAutoFillBackground(False)
-        self.tabWidget.setStyleSheet(u"color: black;\n"
+        self.sample_table = QTableWidget(self.tab_frame)
+        self.sample_table.setObjectName(u"sample_table")
+        self.sample_table.setStyleSheet(u"color: black;\n"
 "")
-        self.check = QWidget()
-        self.check.setObjectName(u"check")
-        self.tabWidget.addTab(self.check, "")
-        self.date = QWidget()
-        self.date.setObjectName(u"date")
-        self.tabWidget.addTab(self.date, "")
-        self.project_name = QWidget()
-        self.project_name.setObjectName(u"project_name")
-        self.tabWidget.addTab(self.project_name, "")
-        self.sample_no = QWidget()
-        self.sample_no.setObjectName(u"sample_no")
-        self.tabWidget.addTab(self.sample_no, "")
-        self.sample_id = QWidget()
-        self.sample_id.setObjectName(u"sample_id")
-        self.tabWidget.addTab(self.sample_id, "")
-        self.replication = QWidget()
-        self.replication.setObjectName(u"replication")
-        self.tabWidget.addTab(self.replication, "")
-        self.chloride_in_soil = QWidget()
-        self.chloride_in_soil.setObjectName(u"chloride_in_soil")
-        self.tabWidget.addTab(self.chloride_in_soil, "")
-        self.chloride_in_liquid = QWidget()
-        self.chloride_in_liquid.setObjectName(u"chloride_in_liquid")
-        self.tabWidget.addTab(self.chloride_in_liquid, "")
-        self.potential = QWidget()
-        self.potential.setObjectName(u"potential")
-        self.tabWidget.addTab(self.potential, "")
-        self.cl_criteria = QWidget()
-        self.cl_criteria.setObjectName(u"cl_criteria")
-        self.tabWidget.addTab(self.cl_criteria, "")
 
-        self.formLayout_7.setWidget(0, QFormLayout.ItemRole.SpanningRole, self.tabWidget)
+        self.formLayout_7.setWidget(0, QFormLayout.ItemRole.SpanningRole, self.sample_table)
 
 
         self.verticalLayout_2.addWidget(self.tab_frame)
@@ -1383,6 +1517,19 @@ class Ui_MainWindow(object):
         sizePolicy18.setHeightForWidth(self.export_data_button.sizePolicy().hasHeightForWidth())
         self.export_data_button.setSizePolicy(sizePolicy18)
         self.export_data_button.setFont(font3)
+        self.export_data_button.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
 
         self.horizontalLayout_bottom.addWidget(self.export_data_button)
 
@@ -1395,8 +1542,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(0)
-        self.tabWidget.setCurrentIndex(8)
+        self.sample_measurement_tab_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1442,6 +1588,10 @@ class Ui_MainWindow(object):
         self.replication_label.setText(QCoreApplication.translate("MainWindow", u"Replication", None))
         self.auto_sample_naming_checkbox.setText(QCoreApplication.translate("MainWindow", u"Auto Sample Naming", None))
         self.sample_type_label.setText(QCoreApplication.translate("MainWindow", u"Sample Type", None))
+        self.sample_type_combobox_2.setItemText(0, QCoreApplication.translate("MainWindow", u"Soil", None))
+        self.sample_type_combobox_2.setItemText(1, QCoreApplication.translate("MainWindow", u"Ground Water", None))
+        self.sample_type_combobox_2.setItemText(2, QCoreApplication.translate("MainWindow", u"Surface Water", None))
+
         self.bore_hole_id_label.setText(QCoreApplication.translate("MainWindow", u"Bore Hole ID", None))
         self.bore_hole_no_label.setText(QCoreApplication.translate("MainWindow", u"Bore Hole No", None))
         self.top_depth_label.setText(QCoreApplication.translate("MainWindow", u"Top Depth (m)", None))
@@ -1459,10 +1609,24 @@ class Ui_MainWindow(object):
         self.chloride_label.setText(QCoreApplication.translate("MainWindow", u"Chloride (mg/kg)", None))
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.guideline), QCoreApplication.translate("MainWindow", u"Guideline", None))
         self.moisture_label.setText(QCoreApplication.translate("MainWindow", u"Moisture (%)", None))
+        self.moisture_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"Dry (0)", None))
+        self.moisture_combobox.setItemText(1, QCoreApplication.translate("MainWindow", u"Damp (1-25)", None))
+        self.moisture_combobox.setItemText(2, QCoreApplication.translate("MainWindow", u"Moist (26-70)", None))
+        self.moisture_combobox.setItemText(3, QCoreApplication.translate("MainWindow", u"Wet (51-75)", None))
+        self.moisture_combobox.setItemText(4, QCoreApplication.translate("MainWindow", u"Saturated (76-99)", None))
+
         self.buffer_range_label.setText(QCoreApplication.translate("MainWindow", u"Buffer (%)", None))
+        self.buffer_range_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"20", None))
+        self.buffer_range_combobox.setItemText(1, QCoreApplication.translate("MainWindow", u"30", None))
+        self.buffer_range_combobox.setItemText(2, QCoreApplication.translate("MainWindow", u"40", None))
+        self.buffer_range_combobox.setItemText(3, QCoreApplication.translate("MainWindow", u"50", None))
+
         self.advanced_parameters_checkbox.setText(QCoreApplication.translate("MainWindow", u"Advanced Parameters", None))
         self.stabilization_time_label.setText(QCoreApplication.translate("MainWindow", u"Stabilization Time (s)", None))
         self.baseline_label.setText(QCoreApplication.translate("MainWindow", u"Baseline", None))
+        self.baseline_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"Yes", None))
+        self.baseline_combobox.setItemText(1, QCoreApplication.translate("MainWindow", u"No", None))
+
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.options), QCoreApplication.translate("MainWindow", u"Options", None))
         self.std_check_button.setText(QCoreApplication.translate("MainWindow", u"STD check", None))
         self.average_potential_label.setText(QCoreApplication.translate("MainWindow", u"Average Potential (mV)", None))
@@ -1471,16 +1635,6 @@ class Ui_MainWindow(object):
         self.salt_in_ground_label.setText(QCoreApplication.translate("MainWindow", u"Cl Conc. in Soil (mg/kg)", None))
         self.recalculation_button.setText(QCoreApplication.translate("MainWindow", u"Recalculation", None))
         self.cl_criteria_label.setText(QCoreApplication.translate("MainWindow", u"Cl Criteria (mg/kg)", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.check), QCoreApplication.translate("MainWindow", u"Check", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.date), QCoreApplication.translate("MainWindow", u"Date", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.project_name), QCoreApplication.translate("MainWindow", u"Project Name", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.sample_no), QCoreApplication.translate("MainWindow", u"Sample No", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.sample_id), QCoreApplication.translate("MainWindow", u"Sample ID", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.replication), QCoreApplication.translate("MainWindow", u"Replication", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.chloride_in_soil), QCoreApplication.translate("MainWindow", u"Chloride in Soil (mg/kg)", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.chloride_in_liquid), QCoreApplication.translate("MainWindow", u"Chloride in Liquid (mg/L)", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.potential), QCoreApplication.translate("MainWindow", u"Potential (mV)", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.cl_criteria), QCoreApplication.translate("MainWindow", u"Cl Criteria (mg/kg)", None))
         self.measurement_range_label.setText(QCoreApplication.translate("MainWindow", u"*Measurement Range (mg/kg): 50~5,000, N.D. = non detective, M.C. = meet criteria", None))
         self.auto_file_naming_checkbox.setText(QCoreApplication.translate("MainWindow", u"Auto File Naming", None))
         self.file_name_label.setText(QCoreApplication.translate("MainWindow", u"File Name:", None))

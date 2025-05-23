@@ -187,6 +187,21 @@ background-color: transparent;
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
+                 </property>
                  <property name="text">
                   <string>System 
 Connection</string>
@@ -738,6 +753,21 @@ Note</string>
                  <bold>true</bold>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
+               </property>
                <property name="text">
                 <string>Refresh</string>
                </property>
@@ -791,7 +821,7 @@ Note</string>
 </string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="calibration">
               <attribute name="title">
@@ -819,7 +849,18 @@ Note</string>
                     <bool>false</bool>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">color: black;
+                    <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
 </string>
                    </property>
                    <property name="text">
@@ -833,7 +874,18 @@ Note</string>
                     <bool>false</bool>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">color: black;
+                    <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
 </string>
                    </property>
                    <property name="text">
@@ -859,6 +911,21 @@ Note</string>
                    <widget class="QPushButton" name="STD5000MeasurementButton">
                     <property name="enabled">
                      <bool>false</bool>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
                     </property>
                     <property name="text">
                      <string>Measurement</string>
@@ -915,6 +982,21 @@ Note</string>
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
+                    </property>
                     <property name="text">
                      <string>Measurement</string>
                     </property>
@@ -924,6 +1006,21 @@ Note</string>
                    <widget class="QPushButton" name="STD100MeasurementButton">
                     <property name="enabled">
                      <bool>false</bool>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
                     </property>
                     <property name="text">
                      <string>Measurement</string>
@@ -1042,6 +1139,21 @@ Note</string>
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
+                    </property>
                     <property name="text">
                      <string>Measurement</string>
                     </property>
@@ -1051,6 +1163,21 @@ Note</string>
                    <widget class="QPushButton" name="CalibrationCurveFittingButton">
                     <property name="enabled">
                      <bool>false</bool>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
                     </property>
                     <property name="text">
                      <string>Calibration Curve Fitting</string>
@@ -1289,6 +1416,21 @@ Note</string>
                    <property name="frame">
                     <bool>true</bool>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>Soil</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Ground Water</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Surface Water</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                 </layout>
@@ -1521,9 +1663,7 @@ Note</string>
                     <bool>false</bool>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">
-
-</string>
+                    <string notr="true"/>
                    </property>
                    <property name="text">
                     <string>Reset</string>
@@ -1536,8 +1676,7 @@ Note</string>
                     <bool>false</bool>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">
-</string>
+                    <string notr="true"/>
                    </property>
                    <property name="text">
                     <string>Apply</string>
@@ -1766,6 +1905,31 @@ Note</string>
                    <property name="frame">
                     <bool>true</bool>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>Dry (0)</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Damp (1-25)</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Moist (26-70)</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Wet (51-75)</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Saturated (76-99)</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                  <item>
@@ -1816,6 +1980,26 @@ Note</string>
                    <property name="frame">
                     <bool>true</bool>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>20</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>30</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>40</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>50</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                 </layout>
@@ -1894,6 +2078,16 @@ Note</string>
                     <property name="frame">
                      <bool>true</bool>
                     </property>
+                    <item>
+                     <property name="text">
+                      <string>Yes</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>No</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>
@@ -1938,6 +2132,21 @@ Note</string>
                 <font>
                  <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
                </property>
                <property name="text">
                 <string>STD check</string>
@@ -2017,6 +2226,21 @@ Note</string>
                  <pointsize>12</pointsize>
                  <bold>true</bold>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
                </property>
                <property name="text">
                 <string>Measurement</string>
@@ -2203,6 +2427,21 @@ px;
                  <bold>true</bold>
                 </font>
                </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
+               </property>
                <property name="text">
                 <string>Recalculation</string>
                </property>
@@ -2297,73 +2536,11 @@ px;
       </property>
       <layout class="QFormLayout" name="formLayout_7">
        <item row="0" column="0" colspan="2">
-        <widget class="QTabWidget" name="tabWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>1</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
+        <widget class="QTableWidget" name="sample_table">
          <property name="styleSheet">
           <string notr="true">color: black;
 </string>
          </property>
-         <property name="currentIndex">
-          <number>8</number>
-         </property>
-         <widget class="QWidget" name="check">
-          <attribute name="title">
-           <string>Check</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="date">
-          <attribute name="title">
-           <string>Date</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="project_name">
-          <attribute name="title">
-           <string>Project Name</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="sample_no">
-          <attribute name="title">
-           <string>Sample No</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="sample_id">
-          <attribute name="title">
-           <string>Sample ID</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="replication">
-          <attribute name="title">
-           <string>Replication</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="chloride_in_soil">
-          <attribute name="title">
-           <string>Chloride in Soil (mg/kg)</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="chloride_in_liquid">
-          <attribute name="title">
-           <string>Chloride in Liquid (mg/L)</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="potential">
-          <attribute name="title">
-           <string>Potential (mV)</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="cl_criteria">
-          <attribute name="title">
-           <string>Cl Criteria (mg/kg)</string>
-          </attribute>
-         </widget>
         </widget>
        </item>
       </layout>
@@ -2488,6 +2665,21 @@ background: transparent</string>
           <pointsize>12</pointsize>
           <bold>true</bold>
          </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: lightgray;
+    border: 1px solid #888;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+QPushButton:disabled {
+    background-color: #cccccc;
+    color: #999999;
+    border: 1px solid #aaaaaa;
+}
+</string>
         </property>
         <property name="text">
          <string>Export Data</string>

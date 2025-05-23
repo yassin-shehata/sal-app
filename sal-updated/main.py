@@ -23,6 +23,7 @@ from ui_sal import Ui_MainWindow
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QTextEdit
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QTableWidgetItem
 
 try: # try importing external packages 
     import subprocess
@@ -196,6 +197,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.std_check_button.setEnabled(False)
         self.recalculation_button.setEnabled(False) # start with Refresh disabled
         self.cl_criteria_input.setPlainText("100")
+        self.sample_table.setColumnCount(10)
+        self.sample_table.setHorizontalHeaderLabels([
+            "Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication",
+            "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)" ])
+        self.sample_table.resizeColumnsToContents()
         self.main()
 
 
@@ -595,8 +601,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # flip mode
         self.calibration_mode = True
         self.refresh_plot_button.setEnabled(True)   # user can go back to live feed
-        self.measurement_button.setEnabled(True)
-
+        
     def refreshPlotButtonPushed(self):
         self.calibration_mode = False
         self.axes.clear()
@@ -810,8 +815,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.STD10ppm = std_val
         self.STDValues[0][0] = std_val  # 10 ppm slot
-        if any(not np.isnan(val) for val in self.STDValues[0]):
-            self.reset_button_measurement.setEnabled(True)
+       ## if any(not np.isnan(val) for val in self.STDValues[0]):
+          ##  self.reset_button_measurement.setEnabled(True)
 
 
         if self.ReadyForCalibration():
@@ -991,8 +996,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD100ppmEditField.setStyleSheet("color: black; background-color: white;")
         self.STD100ppm = result
         self.STDValues[0][1] = result
-        if any(not np.isnan(val) for val in self.STDValues[0]):
-            self.reset_button_measurement.setEnabled(True)
+      #  if any(not np.isnan(val) for val in self.STDValues[0]):
+          #  self.reset_button_measurement.setEnabled(True)
 
 
         if self.ReadyForCalibration():
@@ -1165,8 +1170,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD1000ppmEditField.setStyleSheet("color: black; background-color: white;")
         self.STD1000ppm = result
         self.STDValues[0][2] = result
-        if any(not np.isnan(val) for val in self.STDValues[0]):
-            self.reset_button_measurement.setEnabled(True)
+       # if any(not np.isnan(val) for val in self.STDValues[0]):
+        #    self.reset_button_measurement.setEnabled(True)
 
 
         if self.ReadyForCalibration():
@@ -1341,8 +1346,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD5000ppmEditField.setStyleSheet("color: black; background-color: white;")
         self.STD5000ppm = result
         self.STDValues[0][3] = result
-        if any(not np.isnan(val) for val in self.STDValues[0]):
-            self.reset_button_measurement.setEnabled(True)
+      #  if any(not np.isnan(val) for val in self.STDValues[0]):
+        #    self.reset_button_measurement.setEnabled(True)
 
 
 
@@ -1547,6 +1552,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.nd_zone_label.setText("2nd Zone")
             self.rd_zone_label.setText("3rd Zone")
             self.cl_criteria_input.setText(str(self.cl_zone1.value()))
+    
+    def showMessage(self, title, message):
+        QMessageBox.information(self, title, message)
 
     def chlorideMgkgFieldValueChanged(self):
         value_of_single_chloride_criteria = self.chloride_mgkg_field.value()
@@ -1784,7 +1792,11 @@ class Window(QMainWindow, Ui_MainWindow):
         # Validation of STD result
         if self.stdCheck < 80 or self.stdCheck > 120:
             code = "02.01" if self.stdCheck < 80 else "02.02"
-            self.showMessage("STD Check Error", f"STD check error [code {code}]\nSTD value out of expected range.\nReset calibration and retry.")
+            QMessageBox.warning(
+                self,
+                "STD Check Error",
+                f"STD check error [code {code}]\nSTD value out of expected range.\nReset calibration and retry."
+            )
             self.lbl_system_note.setText("REQUIRED")
             self.setCircleColour(self.indicator_note_status, "yellow")
             self.setEnableButtons(True)
@@ -2069,6 +2081,12 @@ class Window(QMainWindow, Ui_MainWindow):
         append_or_create_excel(self.rawFileName, "AISCT_SAL", [sampledata], header_sample)
         append_or_create_excel(self.rawFileName, "Measurement Conditions", [measurementdata], header_measurement)
         append_or_create_excel(self.rawFileName, "STD value", [stddata], header_std)
+        row_position = self.sample_table.rowCount()
+        self.sample_table.insertRow(row_position)
+
+        for col, item in enumerate(sampledata):
+            self.sample_table.setItem(row_position, col, QTableWidgetItem(str(item)))
+
 
     def recalculateButtonPushed(self):
         self.setEnableButtons(False)
