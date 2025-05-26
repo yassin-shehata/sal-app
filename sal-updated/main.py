@@ -224,10 +224,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.std_check_button.clicked.connect(self.STDcheckButtonPushed)
         self.chloride_input.textChanged.connect(self.syncChlorideCriteriaToBottom)
         self.advanced_parameters_checkbox.stateChanged.connect(self.advancedParametersCheckboxValueChanged)
+        self.advanced_parameters_checkbox.stateChanged.connect(self.advancedParametersCheckboxValueChanged)
 
     def syncChlorideCriteriaToBottom(self, val):
-        self.cl_criteria_input.setPlainText(f"{float(val):.2f}")
-
+        self.cl_criteria_input.setPlainText(f"{float(val):.2f}") 
+#updated
 
     def cl_close(self):
         """Disconnects the Go Direct Cl sensor."""
