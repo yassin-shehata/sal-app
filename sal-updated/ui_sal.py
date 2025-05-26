@@ -15,12 +15,12 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
-    QFrame, QGridLayout, QHBoxLayout, QHeaderView,
-    QLabel, QMainWindow, QProgressBar, QPushButton,
-    QSizePolicy, QSpacerItem, QSpinBox, QTabWidget,
-    QTableWidget, QTableWidgetItem, QTextEdit, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDoubleSpinBox,
+    QFormLayout, QFrame, QGridLayout, QHBoxLayout,
+    QHeaderView, QLabel, QMainWindow, QProgressBar,
+    QPushButton, QSizePolicy, QSpacerItem, QSpinBox,
+    QTabWidget, QTableWidget, QTableWidgetItem, QTextEdit,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -1077,14 +1077,14 @@ class Ui_MainWindow(object):
 
         self.gridLayout_6.addWidget(self.chloride_label, 2, 0, 1, 1)
 
-        self.chloride_input = QTextEdit(self.guideline_frame)
+        self.chloride_input = QDoubleSpinBox(self.guideline_frame)
         self.chloride_input.setObjectName(u"chloride_input")
-        self.chloride_input.setMinimumSize(QSize(150, 28))
-        self.chloride_input.setMaximumSize(QSize(150, 26))
-        self.chloride_input.setStyleSheet(u"color: black;\n"
-"")
-        self.chloride_input.setFrameShape(QFrame.Shape.Box)
-        self.chloride_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.chloride_input.setStyleSheet(u" background-color: white;\n"
+"    color: black;\n"
+"    border: 1px solid gray;\n"
+"    padding: 2px;\n"
+"    font: 10pt \"Segoe UI\";")
+        self.chloride_input.setMaximum(5000.000000000000000)
 
         self.gridLayout_6.addWidget(self.chloride_input, 2, 1, 1, 1)
 
@@ -1542,7 +1542,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(1)
+        self.sample_measurement_tab_widget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

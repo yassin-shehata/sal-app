@@ -221,6 +221,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.measurement_button.clicked.connect(self.measurementButtonPushed)
         self.recalculation_button.clicked.connect(self.recalculateButtonPushed)
         self.std_check_button.clicked.connect(self.STDcheckButtonPushed)
+        self.chloride_input.textChanged.connect(self.syncChlorideCriteriaToBottom)
+
+    def syncChlorideCriteriaToBottom(self, val):
+        self.cl_criteria_input.setPlainText(f"{float(val):.2f}")
 
 
     def cl_close(self):
@@ -1455,7 +1459,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.sample_id_input_label.setVisible(False)
 
     def topDepthFieldValueChanged(self):
-        self.topDepthSetting = self.top_depth_input.value()
+        self.topDepthSetting = top_depth = self.top_depth_input.toPlainText()
         self.bottomDepthSetting = self.bottom_depth_input.value()
         self.depth1value = self.top_depth1.value()
         self.depth2value = self.top_depth2.value()
@@ -1483,7 +1487,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.cl_criteria_input.setText(str(self.cl_zone3.value()))
     
     def bottomDepthFieldValueChanged(self):
-        self.topDepthSetting = self.top_depth_input.value()
+        self.topDepthSetting = top_depth = self.top_depth_input.toPlainText()
         self.bottomDepthSetting = self.bottom_depth_input.value()
 
         if self.topDepthSetting >= self.bottomDepthSetting:
@@ -1515,7 +1519,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.main_parameter_input.setText("N/A")
             self.sub_parameter_input.setText("N/A")
 
-            self.chloride_mgkg_field.setValue(100)
+            self.chloride_input.setValue(100)
             self.cl_criteria_input.setText(str(100))
 
         else:
@@ -1557,7 +1561,7 @@ class Window(QMainWindow, Ui_MainWindow):
         QMessageBox.information(self, title, message)
 
     def chlorideMgkgFieldValueChanged(self):
-        value_of_single_chloride_criteria = self.chloride_mgkg_field.value()
+        value_of_single_chloride_criteria = self.chloride_input.value()
         self.cl_criteria_input.setText(str(value_of_single_chloride_criteria))
 
     def multipleGuidelineCheckboxValueChanged(self):
@@ -1614,7 +1618,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.input.setText("N/A")
             self.sub_parameter_edit_input.setText("N/A")
 
-            self.chloride_mgkg_field.setValue(100)
+            self.chloride_input.setValue(100)
             self.cl_criteria_input.setText(str(100))
     
     def applyButtonPushed(self):
@@ -2110,7 +2114,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         borehole_id = self.bore_hole_id_input.toPlainText()
         borehole_no = self.bore_hole_no_input.toPlainText()
-        top_depth = str(self.top_depth_input.value())
+        top_depth = str(self.top_depth_input.toPlainText())
         bottom_depth = str(self.bottom_depth_input.value())
 
 
