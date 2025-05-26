@@ -196,6 +196,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.measurement_button.setEnabled(False)
         self.std_check_button.setEnabled(False)
         self.recalculation_button.setEnabled(False) # start with Refresh disabled
+        self.options_frame.setVisible(False)
         self.cl_criteria_input.setPlainText("100")
         self.sample_table.setColumnCount(10)
         self.sample_table.setHorizontalHeaderLabels([
@@ -222,6 +223,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.recalculation_button.clicked.connect(self.recalculateButtonPushed)
         self.std_check_button.clicked.connect(self.STDcheckButtonPushed)
         self.chloride_input.textChanged.connect(self.syncChlorideCriteriaToBottom)
+        self.advanced_parameters_checkbox.stateChanged.connect(self.advancedParametersCheckboxValueChanged)
 
     def syncChlorideCriteriaToBottom(self, val):
         self.cl_criteria_input.setPlainText(f"{float(val):.2f}")
@@ -1686,11 +1688,8 @@ class Window(QMainWindow, Ui_MainWindow):
     
     def advancedParametersCheckboxValueChanged(self):
         value_of_advanced_parameters = self.advanced_parameters_checkbox.isChecked()
+        self.options_frame.setVisible(value_of_advanced_parameters)
 
-        if value_of_advanced_parameters:
-            self.advanced_parameters_panel.setVisible(True)
-        else:
-            self.advanced_parameters_panel.setVisible(False)
 
     def graphSelectorDropdownValueChanged(self):
         value = self.r_squared_input.currentText()
