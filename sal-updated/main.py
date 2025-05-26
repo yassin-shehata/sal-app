@@ -224,7 +224,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.std_check_button.clicked.connect(self.STDcheckButtonPushed)
         self.chloride_input.textChanged.connect(self.syncChlorideCriteriaToBottom)
         self.advanced_parameters_checkbox.stateChanged.connect(self.advancedParametersCheckboxValueChanged)
-        self.advanced_parameters_checkbox.stateChanged.connect(self.advancedParametersCheckboxValueChanged)
+        self.top_depth_input.textChanged.connect(self.topDepthFieldValueChanged)
+        self.bottom_depth_input.textChanged.connect(self.topDepthFieldValueChanged)
+
 
     def syncChlorideCriteriaToBottom(self, val):
         self.cl_criteria_input.setPlainText(f"{float(val):.2f}") 
@@ -1837,6 +1839,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
         borehole_id = self.bore_hole_id_input.toPlainText()
         borehole_no = self.bore_hole_no_input.toPlainText()
+        top_depth = self.top_depth_input.toPlainText()
+        bottom_depth = self.bottom_depth_input.toPlainText()
         self.sampleID = (
             f"{borehole_id}-{borehole_no}_{top_depth}-{bottom_depth}"
             if self.auto_sample_naming_checkbox.isChecked()
@@ -2115,7 +2119,7 @@ class Window(QMainWindow, Ui_MainWindow):
         borehole_id = self.bore_hole_id_input.toPlainText()
         borehole_no = self.bore_hole_no_input.toPlainText()
         top_depth = str(self.top_depth_input.toPlainText())
-        bottom_depth = str(self.bottom_depth_input.value())
+        bottom_depth = self.bottom_depth_input.toPlainText()
 
 
         if self.auto_sample_naming_checkbox.isChecked():
