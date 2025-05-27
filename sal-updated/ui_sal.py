@@ -17,10 +17,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDoubleSpinBox,
     QFormLayout, QFrame, QGridLayout, QHBoxLayout,
-    QHeaderView, QLabel, QMainWindow, QProgressBar,
-    QPushButton, QSizePolicy, QSpacerItem, QSpinBox,
-    QTabWidget, QTableWidget, QTableWidgetItem, QTextEdit,
-    QVBoxLayout, QWidget)
+    QHeaderView, QLabel, QLineEdit, QMainWindow,
+    QProgressBar, QPushButton, QSizePolicy, QSpacerItem,
+    QSpinBox, QTabWidget, QTableWidget, QTableWidgetItem,
+    QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -1495,17 +1495,8 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_bottom.addWidget(self.file_name_label)
 
-        self.file_name_input = QTextEdit(self.centralwidget)
+        self.file_name_input = QLineEdit(self.centralwidget)
         self.file_name_input.setObjectName(u"file_name_input")
-        self.file_name_input.setEnabled(False)
-        self.file_name_input.setMinimumSize(QSize(150, 28))
-        self.file_name_input.setMaximumSize(QSize(150, 26))
-        self.file_name_input.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.file_name_input.setAutoFillBackground(False)
-        self.file_name_input.setStyleSheet(u"color: black;\n"
-"")
-        self.file_name_input.setFrameShape(QFrame.Shape.Box)
-        self.file_name_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         self.horizontalLayout_bottom.addWidget(self.file_name_input)
 
@@ -1542,7 +1533,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(2)
+        self.sample_measurement_tab_widget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

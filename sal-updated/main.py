@@ -144,7 +144,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.coeff = None    
         self.structure = None    
         self.rsquared = None    
-        self.ionEquation = float('nan')
+        self.ionEquation = None
 
         # guideline selection 
         self.index = None    
@@ -197,11 +197,16 @@ class Window(QMainWindow, Ui_MainWindow):
         self.std_check_button.setEnabled(False)
         self.recalculation_button.setEnabled(False) # start with Refresh disabled
         self.options_frame.setVisible(False)
+        self.export_data_button.setEnabled(False)
         self.cl_criteria_input.setPlainText("100")
+        self.cl_criteria_input.setReadOnly(True)
+        self.chloride_input.setValue(100.0)
         self.sample_table.setColumnCount(10)
         self.sample_table.setHorizontalHeaderLabels([
             "Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication",
             "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)" ])
+        self.measurementData = []
+        self.stddata = []
         self.sample_table.resizeColumnsToContents()
         self.main()
 
@@ -222,15 +227,19 @@ class Window(QMainWindow, Ui_MainWindow):
         self.measurement_button.clicked.connect(self.measurementButtonPushed)
         self.recalculation_button.clicked.connect(self.recalculateButtonPushed)
         self.std_check_button.clicked.connect(self.STDcheckButtonPushed)
-        self.chloride_input.textChanged.connect(self.syncChlorideCriteriaToBottom)
+        self.chloride_input.valueChanged.connect(self.syncChlorideToClCriteria)
         self.advanced_parameters_checkbox.stateChanged.connect(self.advancedParametersCheckboxValueChanged)
         self.top_depth_input.textChanged.connect(self.topDepthFieldValueChanged)
         self.bottom_depth_input.textChanged.connect(self.topDepthFieldValueChanged)
+        self.export_data_button.clicked.connect(self.exportDataButtonPushed)
+        self.auto_file_naming_checkbox.stateChanged.connect(self.autoFileNamingCheckBoxValueChanged)
 
 
-    def syncChlorideCriteriaToBottom(self, val):
-        self.cl_criteria_input.setPlainText(f"{float(val):.2f}") 
-#updated
+    def syncChlorideToClCriteria(self):
+        value = self.chloride_input.value()
+        self.cl_criteria_input.setPlainText(f"{value:.2f}")
+
+
 
     def cl_close(self):
         """Disconnects the Go Direct Cl sensor."""
@@ -352,6 +361,16 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ion_timer = QTimer()
         self.ion_timer.timeout.connect(update_ion_plot)
         self.ion_timer.start(int(self.period * 1000))  # milliseconds
+    
+    def loadDataFrameIntoTable(self, dataframe):
+        self.sample_table.setRowCount(0)
+        self.sample_table.setColumnCount(len(dataframe.columns))
+        self.sample_table.setHorizontalHeaderLabels([str(col) for col in dataframe.columns])
+
+        for row_idx, row in dataframe.iterrows():
+            self.sample_table.insertRow(row_idx)
+            for col_idx, value in enumerate(row):
+                self.sample_table.setItem(row_idx, col_idx, QTableWidgetItem(str(value)))
 
     def setCircleColour(self, widget, color):
 
@@ -375,13 +394,22 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Looks for old files
         if os.path.isfile(self.rawFileName):
-            file_choice = QMessageBox.question(self,
-                "Old File Detection",
-                f'An older "{self.rawFileName}" file was detected.\n\nDo you want to Delete the file or Backup it or Restore the past session?\n\nYou can also Cancel and move the file before starting a new session.',
-                QMessageBox.StandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel),
-                QMessageBox.Cancel)
+            msg_box = QMessageBox(self)
+            msg_box.setWindowTitle("Old File Detection")
+            msg_box.setText(
+                f'An older "{self.rawFileName}" file was detected.\n\n'
+                "Do you want to Delete the file, Backup it, or Restore the past session?\n\n"
+                "You can also Cancel and move the file before starting a new session."
+            )
 
-            if file_choice == QMessageBox.Yes:
+            delete_btn = msg_box.addButton("Delete", QMessageBox.AcceptRole)
+            backup_btn = msg_box.addButton("Backup", QMessageBox.ActionRole)
+            restore_btn = msg_box.addButton("Restore", QMessageBox.ActionRole)
+            cancel_btn = msg_box.addButton("Cancel", QMessageBox.RejectRole)
+
+            msg_box.exec()
+
+            if msg_box.clickedButton() == delete_btn:
                 confirm = QMessageBox.warning(self,
                     "Confirm Delete",
                     "Do you really want to delete the files?",
@@ -389,7 +417,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 if confirm == QMessageBox.Ok:
                     os.remove(self.rawFileName)
 
-            elif file_choice == QMessageBox.Restore:
+            elif msg_box.clickedButton() == restore_btn:
                 dlg = QProgressDialog("Restoring session from past data", None, 0, 0, self)
                 dlg.setWindowTitle("Restore Session")
                 dlg.setCancelButton(None)
@@ -397,28 +425,34 @@ class Window(QMainWindow, Ui_MainWindow):
                 dlg.setValue(0)
                 dlg.show()
 
-                self.ion_table_data = pd.read_excel(self.rawFileName, sheet_name="AISCT_SAL", skiprows=1)
-                self.table_widget.setDataFrame(self.ion_table_data)
+                self.ion_table_data = pd.read_excel(self.rawFileName, sheet_name="AISCT_SAL")
+                self.loadDataFrameIntoSampleTable(self.ion_table_data)
+                self.sample_table.resizeColumnsToContents()
 
                 self.measurement_data = pd.read_excel(self.rawFileName, sheet_name="Measurement Conditions", skiprows=1)
                 self.std_data = pd.read_excel(self.rawFileName, sheet_name="STD value", skiprows=1)
 
-                self.std_10.setValue(float(self.std_data.iloc[-1, 5]))
-                self.std_100.setValue(float(self.std_data.iloc[-1, 6]))
-                self.std_1000.setValue(float(self.std_data.iloc[-1, 7]))
-                self.std_5000.setValue(float(self.std_data.iloc[-1, 8]))
-                self.btn_curve_fitting.setEnabled(True)
+                if not self.std_data.empty:
+                    self.STD10ppmEditField.setPlainText(str(float(self.std_data.iloc[-1, 5])))
+                    self.STD100ppmEditField.setPlainText(str(float(self.std_data.iloc[-1, 6])))
+                    self.STD1000ppmEditField.setPlainText(str(float(self.std_data.iloc[-1, 7])))
+                    self.STD5000ppmEditField.setPlainText(str(float(self.std_data.iloc[-1, 8])))
+                    self.STDValues[0] = [
+                        float(self.STD10ppmEditField.toPlainText()),
+                        float(self.STD100ppmEditField.toPlainText()),
+                        float(self.STD1000ppmEditField.toPlainText()),
+                        float(self.STD5000ppmEditField.toPlainText())
+                    ]
+                else:
+                    print("⚠️ No STD data found in Excel.")
 
-                self.std_values = [
-                    float(self.std_10.value()),
-                    float(self.std_100.value()),
-                    float(self.std_1000.value()),
-                    float(self.std_5000.value())
-                ]
-                self.spinner_sample_no.setValue(len(self.ion_table_data) + 1)
+                self.CalibrationCurveFittingButton.setEnabled(True)
+
+                
+                self.sample_no_spinbox.setValue(len(self.ion_table_data) + 1)
                 dlg.close()
 
-            elif file_choice == QMessageBox.Backup:
+            elif msg_box.clickedButton() == backup_btn:
                 dlg = QProgressDialog("Backup the past data", None, 0, 0, self)
                 dlg.setWindowTitle("Backup Session")
                 dlg.setCancelButton(None)
@@ -543,6 +577,16 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD1000MeasurementButton.setEnabled(True)
         self.STD5000MeasurementButton.setEnabled(True)
         self.calibration_frame.setEnabled(True)
+
+    def loadDataFrameIntoSampleTable(self, df):
+        self.sample_table.setRowCount(0)
+        self.sample_table.setColumnCount(len(df.columns))
+        self.sample_table.setHorizontalHeaderLabels(df.columns.tolist())
+
+        for i, row in df.iterrows():
+            self.sample_table.insertRow(i)
+            for j, val in enumerate(row):
+                self.sample_table.setItem(i, j, QTableWidgetItem(str(val)))
 
     def ReadyForCalibration(self):
         return all(not np.isnan(val) for val in self.STDValues[0])
@@ -2094,7 +2138,11 @@ class Window(QMainWindow, Ui_MainWindow):
 
         for col, item in enumerate(sampledata):
             self.sample_table.setItem(row_position, col, QTableWidgetItem(str(item)))
+        if self.sample_table.rowCount() > 0:
+            self.export_data_button.setEnabled(True)
 
+        self.measurementData.append(measurementdata)
+        self.stddata.append(stddata)
 
     def recalculateButtonPushed(self):
         self.setEnableButtons(False)
@@ -2125,7 +2173,7 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.auto_sample_naming_checkbox.isChecked():
             self.sampleID = f"{borehole_id}-{borehole_no}_{top_depth}-{bottom_depth}"
         else:
-            self.sampleID = self.sample_id_input.text()
+            self.sampleID = self.sample_id_input.toPlainText()
 
         confirm = QMessageBox.question(self, "Sample Info", f"Sample ID: {self.sampleID}\nConfirm this info?", QMessageBox.Yes | QMessageBox.Retry)
         if confirm == QMessageBox.Retry:
@@ -2139,7 +2187,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.moisture = self.moisture_combobox.currentText()
         self.buffer = self.buffer_range_combobox.currentText()
         self.guidelineType = self.guideline_type_combobox.currentText()
-        self.stabilizationTime = self.stabilization_time_field.value()
+        self.stabilizationTime = self.StabilizationTimeEditField.value()
         self.baselineType = self.baseline_combobox.currentText()
 
         self.mainParameter = self.main_parameter_input.toPlainText() if self.guidelineType == "Manual" else self.main_parameter_dropdown.currentText()
@@ -2149,13 +2197,34 @@ class Window(QMainWindow, Ui_MainWindow):
         buffer_map = {"20%": 0.2, "30%": 0.3, "40%": 0.4, "50%": 0.5}
         self.moisture = moisture_map.get(self.moisture, 0.0)
         self.buffer = buffer_map.get(self.buffer, 0.2)
+        try:
+            chloride_value = self.chloride_input.value()
+        except ValueError:
+            QMessageBox.warning(self, "Input Error", "Please enter a valid chloride value.")
+            return
 
-        self.cl_criteria = float(self.cl_criteria_input.text())
+        else:
+            self.cl_criteria = self.chloride_input.value()
         if self.cl_criteria < 50:
             choice = QMessageBox.question(self, "Guideline Warning", "Current criteria < 50. Reset?", QMessageBox.Yes | QMessageBox.Ignore)
             if choice == QMessageBox.Yes:
                 self.setEnableButtons(True)
                 return
+        print("📉 self.coeff before ionEquation call:", self.coeff)
+        print("🧪 ionEquation:", self.ionEquation)
+        print("📊 samplePotential:", self.samplePotential)
+        print("🔎 type(ionEquation):", type(self.ionEquation))
+
+        if not callable(self.ionEquation):
+            QMessageBox.warning(self, "Calibration Error", "ionEquation is not set properly.")
+            return
+       
+        if self.samplePotential is None:
+            QMessageBox.warning(self, "Missing Data", "Sample potential is missing. Please measure the sample first.")
+            self.setEnableButtons(True)
+            return
+
+
 
         self.rawSample = self.ionEquation(self.samplePotential)
         self.average_potential_input.setPlainText(f"{self.samplePotential:.2f}")
@@ -2195,23 +2264,29 @@ class Window(QMainWindow, Ui_MainWindow):
 
         header_sample = ["Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication", "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)"]
         header_measurement = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication", "Guideline Type", "MainParameter", "SubParameter", "Cl Criteria (mg/kg)", "Moisture(%)", "Buffer Range (%)", "Stabilization Time (s)", "Baseline"]
-        header_std = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication", "STD 10ppm", "STD 100˜ppm", "STD 1000ppm", "STD 5000ppm", "STD check (100ppm)", "STD check potential (mV)"]
+        header_std = [ "Date", "ProjectName", "SampleNo", "SampleID", "Replication", "STD 10ppm", "STD 100ppm", "STD 1000ppm", "STD 5000ppm","STD check (100ppm)", "STD check potential (mV)"]
 
         append_or_create_excel(self.rawFileName, "AISCT_SAL", [sampledata], header_sample)
         append_or_create_excel(self.rawFileName, "Measurement Conditions", [measurementdata], header_measurement)
         append_or_create_excel(self.rawFileName, "STD value", [stddata], header_std)
+
 
         self.txt_system_note.setVisible(True)
         self.txt_system_note.setText("The standard solution value is within the normal range.")
         self.lbl_system_note.setText("NORMAL")
         self.setCircleColour(self.indicator_note_status, "green")
         self.setEnableButtons(True)
+        if self.sample_table.rowCount() > 0:
+            self.export_data_button.setEnabled(True)
+
+        self.measurementData.append(measurementdata)
+        self.stddata.append(stddata)
 
     def autoFileNamingCheckBoxValueChanged(self):
         is_checked = self.auto_file_naming_checkbox.isChecked()
-        self.file_name_field.setEnabled(not is_checked)
+        self.file_name_input.setEnabled(not is_checked)
         self.file_name_label.setEnabled(not is_checked)
-        self.file_name_field.setText("")
+        self.file_name_input.setText("")
    
     def exportDataButtonPushed(self):
         self.setEnableButtons(False)
@@ -2220,10 +2295,21 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setCircleColour(self.indicator_note_status, "grey")
         self.lbl_system_note.setText("")
 
-        self.ionTableData = self.table_model.getDataAsDataFrame()
+        row_count = self.sample_table.rowCount()
+        col_count = self.sample_table.columnCount()
 
-        header_sample = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication",
-                        "Chloride in Soil (mg/kg)", "Chlorie in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)"]
+        data = []
+        for row in range(row_count):
+            row_data = []
+            for col in range(col_count):
+                item = self.sample_table.item(row, col)
+                row_data.append(item.text() if item else "")
+            data.append(row_data)
+
+        self.ionTableData = pd.DataFrame(data)
+
+        header_sample = ["Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication",
+                 "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)"]
         header_measurement = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication",
                             "Guideline Type", "MainParameter", "SubParameter", "Cl Criteria (mg/kg)",
                             "Moisture(%)", "Buffer Range (%)", "Stabilization Time (s)", "Baseline"]
@@ -2232,13 +2318,12 @@ class Window(QMainWindow, Ui_MainWindow):
                     "STD check (100ppm)", "STD check potential (mV)"]
 
         if not self.auto_file_naming_checkbox.isChecked():
-            self.filename = self.file_name_field.text() + ".xlsx"
+            self.filename = self.file_name_input.text() + ".xlsx"
         else:
             self.filename = f"{self.project_name_input.toPlainText()}_SAL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
 
         df_sample = self.ionTableData.copy()
-        df_sample = df_sample[df_sample.iloc[:, 0] != 0]
-        df_sample = df_sample.iloc[:, 1:]
+        df_sample = df_sample[df_sample.iloc[:, 0] == "True"]
 
         if df_sample.empty:
             QMessageBox.warning(self, "Export Warning", "No rows selected for export.")
@@ -2246,11 +2331,24 @@ class Window(QMainWindow, Ui_MainWindow):
 
         df_sample.columns = header_sample
         df_measurement = pd.DataFrame(self.measurementData, columns=header_measurement)
-        df_std = pd.DataFrame(self.stdData, columns=header_std)
+        df_std = pd.DataFrame(self.stddata, columns=header_std)
+        print(f"📦 df_sample rows: {len(df_sample)}")
+        print(f"📐 df_measurement rows: {len(self.measurementData)}")
+        print(f"📊 df_std rows: {len(self.stddata)}")
+        # Align measurement and STD data by row count, not index
+        # Only export the number of rows you actually have measurement + STD data for
+        valid_row_count = min(len(df_sample), len(self.measurementData), len(self.stddata))
 
-        df_measurement = df_measurement.loc[df_sample.index]
-        df_std = df_std.loc[df_sample.index]
+        if valid_row_count == 0:
+            QMessageBox.warning(self, "Export Error", "Not enough valid measurement data.")
+            return
 
+        df_sample = df_sample.iloc[:valid_row_count]
+        df_measurement = pd.DataFrame(self.measurementData[:valid_row_count], columns=header_measurement)
+        df_std = pd.DataFrame(self.stddata[:valid_row_count], columns=header_std)
+
+
+        # Export to Excel
         with pd.ExcelWriter(self.filename, engine='openpyxl') as writer:
             df_sample.to_excel(writer, sheet_name='AISCT_SAL', index=False)
             df_measurement.to_excel(writer, sheet_name='Measurement Conditions', index=False)
