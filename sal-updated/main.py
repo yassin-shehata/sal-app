@@ -338,7 +338,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
             # Update live fields
             self.potential_input.setPlainText(f"{reading:.3f}")
-            self.cl_conc_input.setPlainText(f"{conc:.3f}")
+            self.cl_conc_input.setPlainText(f"{conc:.2f}")
             self.potential_input.setStyleSheet("color: black;")
             self.cl_conc_input.setStyleSheet("color: black;")
 
@@ -1736,7 +1736,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def advancedParametersCheckboxValueChanged(self):
         value_of_advanced_parameters = self.advanced_parameters_checkbox.isChecked()
         self.options_frame.setVisible(value_of_advanced_parameters)
-
+        self.options_frame.setEnabled(value_of_advanced_parameters)
 
     def graphSelectorDropdownValueChanged(self):
         value = self.r_squared_input.currentText()
