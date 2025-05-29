@@ -777,6 +777,13 @@ class Ui_MainWindow(object):
 
         self.sample_information_top_grid_layout.addWidget(self.project_name_label, 0, 0, 1, 1)
 
+        self.sample_type_label = QLabel(self.sample_information)
+        self.sample_type_label.setObjectName(u"sample_type_label")
+        self.sample_type_label.setStyleSheet(u"color: black;\n"
+"")
+
+        self.sample_information_top_grid_layout.addWidget(self.sample_type_label, 2, 2, 1, 1)
+
         self.project_name_input = QTextEdit(self.sample_information)
         self.project_name_input.setObjectName(u"project_name_input")
         self.project_name_input.setMinimumSize(QSize(150, 28))
@@ -789,13 +796,6 @@ class Ui_MainWindow(object):
 
         self.sample_information_top_grid_layout.addWidget(self.project_name_input, 0, 1, 1, 1)
 
-        self.sample_no_label = QLabel(self.sample_information)
-        self.sample_no_label.setObjectName(u"sample_no_label")
-        self.sample_no_label.setStyleSheet(u"color: black;\n"
-"")
-
-        self.sample_information_top_grid_layout.addWidget(self.sample_no_label, 0, 2, 1, 1)
-
         self.sample_no_spinbox = QSpinBox(self.sample_information)
         self.sample_no_spinbox.setObjectName(u"sample_no_spinbox")
         self.sample_no_spinbox.setMinimumSize(QSize(150, 28))
@@ -805,13 +805,12 @@ class Ui_MainWindow(object):
 
         self.sample_information_top_grid_layout.addWidget(self.sample_no_spinbox, 0, 3, 1, 1)
 
-        self.sample_id_label = QLabel(self.sample_information)
-        self.sample_id_label.setObjectName(u"sample_id_label")
-        self.sample_id_label.setStyleSheet(u"color: black;\n"
+        self.sample_no_label = QLabel(self.sample_information)
+        self.sample_no_label.setObjectName(u"sample_no_label")
+        self.sample_no_label.setStyleSheet(u"color: black;\n"
 "")
-        self.sample_id_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
-        self.sample_information_top_grid_layout.addWidget(self.sample_id_label, 1, 0, 1, 1)
+        self.sample_information_top_grid_layout.addWidget(self.sample_no_label, 0, 2, 1, 1)
 
         self.sample_id_input = QTextEdit(self.sample_information)
         self.sample_id_input.setObjectName(u"sample_id_input")
@@ -832,6 +831,28 @@ class Ui_MainWindow(object):
 
         self.sample_information_top_grid_layout.addWidget(self.replication_label, 1, 2, 1, 1)
 
+        self.sample_id_label = QLabel(self.sample_information)
+        self.sample_id_label.setObjectName(u"sample_id_label")
+        self.sample_id_label.setStyleSheet(u"color: black;\n"
+"")
+        self.sample_id_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.sample_information_top_grid_layout.addWidget(self.sample_id_label, 1, 0, 1, 1)
+
+        self.sample_type_combobox_2 = QComboBox(self.sample_information)
+        self.sample_type_combobox_2.addItem("")
+        self.sample_type_combobox_2.addItem("")
+        self.sample_type_combobox_2.addItem("")
+        self.sample_type_combobox_2.setObjectName(u"sample_type_combobox_2")
+        self.sample_type_combobox_2.setMinimumSize(QSize(150, 28))
+        self.sample_type_combobox_2.setMaximumSize(QSize(150, 26))
+        self.sample_type_combobox_2.setStyleSheet(u"color: black;\n"
+"\n"
+"")
+        self.sample_type_combobox_2.setFrame(True)
+
+        self.sample_information_top_grid_layout.addWidget(self.sample_type_combobox_2, 2, 3, 1, 1)
+
         self.replication_spinbox = QSpinBox(self.sample_information)
         self.replication_spinbox.setObjectName(u"replication_spinbox")
         self.replication_spinbox.setMinimumSize(QSize(150, 28))
@@ -848,27 +869,6 @@ class Ui_MainWindow(object):
 
         self.sample_information_top_grid_layout.addWidget(self.auto_sample_naming_checkbox, 2, 0, 1, 1)
 
-        self.sample_type_label = QLabel(self.sample_information)
-        self.sample_type_label.setObjectName(u"sample_type_label")
-        self.sample_type_label.setStyleSheet(u"color: black;\n"
-"")
-
-        self.sample_information_top_grid_layout.addWidget(self.sample_type_label, 2, 2, 1, 1)
-
-        self.sample_type_combobox_2 = QComboBox(self.sample_information)
-        self.sample_type_combobox_2.addItem("")
-        self.sample_type_combobox_2.addItem("")
-        self.sample_type_combobox_2.addItem("")
-        self.sample_type_combobox_2.setObjectName(u"sample_type_combobox_2")
-        self.sample_type_combobox_2.setMinimumSize(QSize(150, 28))
-        self.sample_type_combobox_2.setMaximumSize(QSize(150, 26))
-        self.sample_type_combobox_2.setStyleSheet(u"color: black;\n"
-"\n"
-"")
-        self.sample_type_combobox_2.setFrame(True)
-
-        self.sample_information_top_grid_layout.addWidget(self.sample_type_combobox_2, 2, 3, 1, 1)
-
 
         self.verticalLayout_5.addLayout(self.sample_information_top_grid_layout)
 
@@ -881,34 +881,6 @@ class Ui_MainWindow(object):
         self.gridLayout_5.setObjectName(u"gridLayout_5")
         self.sample_information_grid_layout_ = QGridLayout()
         self.sample_information_grid_layout_.setObjectName(u"sample_information_grid_layout_")
-        self.bore_hole_id_label = QLabel(self.sample_information_frame)
-        self.bore_hole_id_label.setObjectName(u"bore_hole_id_label")
-        self.bore_hole_id_label.setStyleSheet(u"color: black;\n"
-"")
-        self.bore_hole_id_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.sample_information_grid_layout_.addWidget(self.bore_hole_id_label, 0, 0, 1, 1)
-
-        self.bore_hole_id_input = QTextEdit(self.sample_information_frame)
-        self.bore_hole_id_input.setObjectName(u"bore_hole_id_input")
-        self.bore_hole_id_input.setMinimumSize(QSize(150, 28))
-        self.bore_hole_id_input.setMaximumSize(QSize(150, 26))
-        self.bore_hole_id_input.setAutoFillBackground(False)
-        self.bore_hole_id_input.setStyleSheet(u"color: black;\n"
-"")
-        self.bore_hole_id_input.setFrameShape(QFrame.Shape.Box)
-        self.bore_hole_id_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.sample_information_grid_layout_.addWidget(self.bore_hole_id_input, 0, 1, 1, 1)
-
-        self.bore_hole_no_label = QLabel(self.sample_information_frame)
-        self.bore_hole_no_label.setObjectName(u"bore_hole_no_label")
-        self.bore_hole_no_label.setStyleSheet(u"color: black;\n"
-"")
-        self.bore_hole_no_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.sample_information_grid_layout_.addWidget(self.bore_hole_no_label, 0, 2, 1, 1)
-
         self.bore_hole_no_input = QTextEdit(self.sample_information_frame)
         self.bore_hole_no_input.setObjectName(u"bore_hole_no_input")
         self.bore_hole_no_input.setMinimumSize(QSize(150, 28))
@@ -920,26 +892,6 @@ class Ui_MainWindow(object):
         self.bore_hole_no_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         self.sample_information_grid_layout_.addWidget(self.bore_hole_no_input, 0, 3, 1, 1)
-
-        self.top_depth_label = QLabel(self.sample_information_frame)
-        self.top_depth_label.setObjectName(u"top_depth_label")
-        self.top_depth_label.setStyleSheet(u"color: black;\n"
-"")
-        self.top_depth_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.sample_information_grid_layout_.addWidget(self.top_depth_label, 1, 0, 1, 1)
-
-        self.top_depth_input = QTextEdit(self.sample_information_frame)
-        self.top_depth_input.setObjectName(u"top_depth_input")
-        self.top_depth_input.setMinimumSize(QSize(150, 28))
-        self.top_depth_input.setMaximumSize(QSize(150, 26))
-        self.top_depth_input.setAutoFillBackground(False)
-        self.top_depth_input.setStyleSheet(u"color: black;\n"
-"")
-        self.top_depth_input.setFrameShape(QFrame.Shape.Box)
-        self.top_depth_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.sample_information_grid_layout_.addWidget(self.top_depth_input, 1, 1, 1, 1)
 
         self.bottom_depth_label = QLabel(self.sample_information_frame)
         self.bottom_depth_label.setObjectName(u"bottom_depth_label")
@@ -960,6 +912,54 @@ class Ui_MainWindow(object):
         self.bottom_depth_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         self.sample_information_grid_layout_.addWidget(self.bottom_depth_input, 1, 3, 1, 1)
+
+        self.bore_hole_id_label = QLabel(self.sample_information_frame)
+        self.bore_hole_id_label.setObjectName(u"bore_hole_id_label")
+        self.bore_hole_id_label.setStyleSheet(u"color: black;\n"
+"")
+        self.bore_hole_id_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.sample_information_grid_layout_.addWidget(self.bore_hole_id_label, 0, 0, 1, 1)
+
+        self.top_depth_input = QTextEdit(self.sample_information_frame)
+        self.top_depth_input.setObjectName(u"top_depth_input")
+        self.top_depth_input.setMinimumSize(QSize(150, 28))
+        self.top_depth_input.setMaximumSize(QSize(150, 26))
+        self.top_depth_input.setAutoFillBackground(False)
+        self.top_depth_input.setStyleSheet(u"color: black;\n"
+"")
+        self.top_depth_input.setFrameShape(QFrame.Shape.Box)
+        self.top_depth_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.sample_information_grid_layout_.addWidget(self.top_depth_input, 1, 1, 1, 1)
+
+        self.bore_hole_no_label = QLabel(self.sample_information_frame)
+        self.bore_hole_no_label.setObjectName(u"bore_hole_no_label")
+        self.bore_hole_no_label.setStyleSheet(u"color: black;\n"
+"")
+        self.bore_hole_no_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.sample_information_grid_layout_.addWidget(self.bore_hole_no_label, 0, 2, 1, 1)
+
+        self.top_depth_label = QLabel(self.sample_information_frame)
+        self.top_depth_label.setObjectName(u"top_depth_label")
+        self.top_depth_label.setStyleSheet(u"color: black;\n"
+"")
+        self.top_depth_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.sample_information_grid_layout_.addWidget(self.top_depth_label, 1, 0, 1, 1)
+
+        self.bore_hole_id_input = QTextEdit(self.sample_information_frame)
+        self.bore_hole_id_input.setObjectName(u"bore_hole_id_input")
+        self.bore_hole_id_input.setMinimumSize(QSize(150, 28))
+        self.bore_hole_id_input.setMaximumSize(QSize(150, 26))
+        self.bore_hole_id_input.setAutoFillBackground(False)
+        self.bore_hole_id_input.setStyleSheet(u"color: black;\n"
+"")
+        self.bore_hole_id_input.setFrameShape(QFrame.Shape.Box)
+        self.bore_hole_id_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.sample_information_grid_layout_.addWidget(self.bore_hole_id_input, 0, 1, 1, 1)
 
 
         self.gridLayout_5.addLayout(self.sample_information_grid_layout_, 0, 0, 1, 1)
@@ -1533,7 +1533,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(3)
+        self.sample_measurement_tab_widget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1574,19 +1574,19 @@ class Ui_MainWindow(object):
         self.CalibrationCurveFittingButton.setText(QCoreApplication.translate("MainWindow", u"Calibration Curve Fitting", None))
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.calibration), QCoreApplication.translate("MainWindow", u"Calibration", None))
         self.project_name_label.setText(QCoreApplication.translate("MainWindow", u"Project Name", None))
-        self.sample_no_label.setText(QCoreApplication.translate("MainWindow", u"Sample No", None))
-        self.sample_id_label.setText(QCoreApplication.translate("MainWindow", u"Sample ID", None))
-        self.replication_label.setText(QCoreApplication.translate("MainWindow", u"Replication", None))
-        self.auto_sample_naming_checkbox.setText(QCoreApplication.translate("MainWindow", u"Auto Sample Naming", None))
         self.sample_type_label.setText(QCoreApplication.translate("MainWindow", u"Sample Type", None))
+        self.sample_no_label.setText(QCoreApplication.translate("MainWindow", u"Sample No", None))
+        self.replication_label.setText(QCoreApplication.translate("MainWindow", u"Replication", None))
+        self.sample_id_label.setText(QCoreApplication.translate("MainWindow", u"Sample ID", None))
         self.sample_type_combobox_2.setItemText(0, QCoreApplication.translate("MainWindow", u"Soil", None))
         self.sample_type_combobox_2.setItemText(1, QCoreApplication.translate("MainWindow", u"Ground Water", None))
         self.sample_type_combobox_2.setItemText(2, QCoreApplication.translate("MainWindow", u"Surface Water", None))
 
+        self.auto_sample_naming_checkbox.setText(QCoreApplication.translate("MainWindow", u"Auto Sample Naming", None))
+        self.bottom_depth_label.setText(QCoreApplication.translate("MainWindow", u"Bottom Depth (m)", None))
         self.bore_hole_id_label.setText(QCoreApplication.translate("MainWindow", u"Bore Hole ID", None))
         self.bore_hole_no_label.setText(QCoreApplication.translate("MainWindow", u"Bore Hole No", None))
         self.top_depth_label.setText(QCoreApplication.translate("MainWindow", u"Top Depth (m)", None))
-        self.bottom_depth_label.setText(QCoreApplication.translate("MainWindow", u"Bottom Depth (m)", None))
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.sample_information), QCoreApplication.translate("MainWindow", u"Sample Information", None))
         self.single_guideline_checkbox.setText(QCoreApplication.translate("MainWindow", u"Single Guideline", None))
         self.multiple_guideline_checkbox.setText(QCoreApplication.translate("MainWindow", u"Multiple Guideline", None))

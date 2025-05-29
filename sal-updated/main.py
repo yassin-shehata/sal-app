@@ -208,6 +208,23 @@ class Window(QMainWindow, Ui_MainWindow):
         self.measurementData = []
         self.stddata = []
         self.sample_table.resizeColumnsToContents()
+        # At startup, hide borehole fields
+        self.sample_information_frame.setEnabled(True)  
+        self.bore_hole_id_input.setVisible(False)
+        self.bore_hole_id_label.setVisible(False)
+        self.bore_hole_no_input.setVisible(False)
+        self.bore_hole_no_label.setVisible(False)
+        self.top_depth_input.setVisible(False)
+        self.top_depth_label.setVisible(False)
+        self.bottom_depth_input.setVisible(False)
+        self.bottom_depth_label.setVisible(False)
+
+        # Also disable editing
+        self.bore_hole_id_input.setReadOnly(False)
+        self.bore_hole_no_input.setReadOnly(False)
+        self.top_depth_input.setReadOnly(False)
+        self.bottom_depth_input.setReadOnly(False)
+       
         self.main()
 
 
@@ -233,6 +250,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.bottom_depth_input.textChanged.connect(self.topDepthFieldValueChanged)
         self.export_data_button.clicked.connect(self.exportDataButtonPushed)
         self.auto_file_naming_checkbox.stateChanged.connect(self.autoFileNamingCheckBoxValueChanged)
+        self.auto_sample_naming_checkbox.stateChanged.connect(self.autoSampleNamingCheckboxValueChanged)
 
 
     def syncChlorideToClCriteria(self):
@@ -1471,41 +1489,49 @@ class Window(QMainWindow, Ui_MainWindow):
         selected = self.sample_type_combobox_2.currentText()
 
         if selected == "Soil":
-            self.cl_conc_extract_label.setText("Cl Conc. in Extract (mg/L)")
-            self.cl_conc_soil_label.setText("Cl Conc. in Soil (mg/kg)")
+            self.salt_in_liquid_label.setText("Cl Conc. in Extract (mg/L)")
+            self.salt_in_ground_label.setText("Cl Conc. in Soil (mg/kg)")
             self.cl_criteria_label.setText("Cl Criteria (mg/kg)")
         elif selected == "Ground Water":
-            self.cl_conc_extract_label.setText("Cl Conc. in GW (mg/L)")
-            self.cl_conc_soil_label.setText("Cl Conc. in GW (mg/L)")
+            self.salt_in_liquid_label.setText("Cl Conc. in GW (mg/L)")
+            self.salt_in_ground_label.setText("Cl Conc. in GW (mg/L)")
             self.cl_criteria_label.setText("Cl Criteria (mg/L)")
         elif selected == "Surface Water":
-            self.cl_conc_extract_label.setText("Cl Conc. in SW (mg/L)")
-            self.cl_conc_soil_label.setText("Cl Conc. in SW (mg/L)")
+            self.salt_in_liquid_label.setText("Cl Conc. in SW (mg/L)")
+            self.salt_in_ground_label.setText("Cl Conc. in SW (mg/L)")
             self.cl_criteria_label.setText("Cl Criteria (mg/L)")
     
     def autoSampleNamingCheckboxValueChanged(self):
-        value_of_auto_sample_naming = self.auto_sample_naming_checkbox.isChecked()
+        is_checked = self.auto_sample_naming_checkbox.isChecked()
 
-        if value_of_auto_sample_naming:
-            self.auto_sample_naming_panel.setVisible(True)
-            self.sample_id_input.setVisible(False)
-            self.sample_id_input_label.setVisible(False)
-        else:
-            self.auto_sample_naming_panel.setVisible(False)
-            self.sample_id_input.setVisible(True)
-            self.sample_id_input_label.setVisible(True)
+        self.sample_id_input.setVisible(not is_checked)
+        self.sample_id_label.setVisible(not is_checked)
 
-            if self.multiple_guideline_checkbox.isChecked():
-                QMessageBox.information(
-                    self,
-                    "Auto Sample Naming",
-                    "The multiple guideline is using.\nYou must use the auto sample naming function."
-                )
-                # Revert to auto naming
-                self.auto_sample_naming_checkbox.setChecked(True)
-                self.auto_sample_naming_panel.setVisible(True)
-                self.sample_id_input.setVisible(False)
-                self.sample_id_input_label.setVisible(False)
+        self.bore_hole_id_input.setVisible(is_checked)
+        self.bore_hole_id_label.setVisible(is_checked)
+        self.bore_hole_no_input.setVisible(is_checked)
+        self.bore_hole_no_label.setVisible(is_checked)
+        self.top_depth_input.setVisible(is_checked)
+        self.top_depth_label.setVisible(is_checked)
+        self.bottom_depth_input.setVisible(is_checked)
+        self.bottom_depth_label.setVisible(is_checked)
+
+        self.bore_hole_id_input.setEnabled(is_checked)
+        self.bore_hole_no_input.setEnabled(is_checked)
+        self.top_depth_input.setEnabled(is_checked)
+        self.bottom_depth_input.setEnabled(is_checked)
+
+        if not is_checked and self.multiple_guideline_checkbox.isChecked():
+            QMessageBox.information(
+                self,
+                "Auto Sample Naming",
+                "The multiple guideline is in use.\nYou must use the auto sample naming function."
+            )
+            self.auto_sample_naming_checkbox.setChecked(True)
+            self.autoSampleNamingCheckboxValueChanged()
+            return  
+
+    
 
     def topDepthFieldValueChanged(self):
         self.topDepthSetting = top_depth = self.top_depth_input.toPlainText()
