@@ -251,6 +251,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.export_data_button.clicked.connect(self.exportDataButtonPushed)
         self.auto_file_naming_checkbox.stateChanged.connect(self.autoFileNamingCheckBoxValueChanged)
         self.auto_sample_naming_checkbox.stateChanged.connect(self.autoSampleNamingCheckboxValueChanged)
+        self.sample_type_combobox_2.currentTextChanged.connect(self.sampleTypeDropdownValueChanged)
 
 
     def syncChlorideToClCriteria(self):
