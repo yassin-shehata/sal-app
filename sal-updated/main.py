@@ -218,6 +218,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.top_depth_label.setVisible(False)
         self.bottom_depth_input.setVisible(False)
         self.bottom_depth_label.setVisible(False)
+        self.force_auto_naming_on = False
+
 
         # Also disable editing
         self.bore_hole_id_input.setReadOnly(False)
@@ -252,7 +254,14 @@ class Window(QMainWindow, Ui_MainWindow):
         self.auto_file_naming_checkbox.stateChanged.connect(self.autoFileNamingCheckBoxValueChanged)
         self.auto_sample_naming_checkbox.stateChanged.connect(self.autoSampleNamingCheckboxValueChanged)
         self.sample_type_combobox_2.currentTextChanged.connect(self.sampleTypeDropdownValueChanged)
+        self.single_guideline_checkbox.stateChanged.connect(self.singleGuidelineCheckboxChanged)
+        self.multiple_guideline_checkbox.stateChanged.connect(self.multipleGuidelineCheckboxValueChanged)
+        self.apply_button_guideline.clicked.connect(self.applyButtonPushed)
+        self.reset_button_guideline.clicked.connect(self.resetButtonPushed)
+        self.rd_zone_checkbox.stateChanged.connect(self.rdZoneCheckboxValueChanged)  
 
+
+   
 
     def syncChlorideToClCriteria(self):
         value = self.chloride_input.value()
@@ -1505,6 +1514,19 @@ class Window(QMainWindow, Ui_MainWindow):
     def autoSampleNamingCheckboxValueChanged(self):
         is_checked = self.auto_sample_naming_checkbox.isChecked()
 
+        # ⛔ Enforce lock when multiple guideline is active
+        if not is_checked and self.enforce_auto_sample_naming:
+            QMessageBox.information(
+                self,
+                "Auto Sample Naming",
+                "The multiple guideline is in use.\nYou must use the auto sample naming function."
+            )
+            self.auto_sample_naming_checkbox.blockSignals(True)
+            self.auto_sample_naming_checkbox.setChecked(True)
+            self.auto_sample_naming_checkbox.blockSignals(False)
+            return  # ❗Don't run the rest of the logic
+
+        # ✅ Update UI normally
         self.sample_id_input.setVisible(not is_checked)
         self.sample_id_label.setVisible(not is_checked)
 
@@ -1522,20 +1544,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.top_depth_input.setEnabled(is_checked)
         self.bottom_depth_input.setEnabled(is_checked)
 
-        if not is_checked and self.multiple_guideline_checkbox.isChecked():
-            QMessageBox.information(
-                self,
-                "Auto Sample Naming",
-                "The multiple guideline is in use.\nYou must use the auto sample naming function."
-            )
-            self.auto_sample_naming_checkbox.setChecked(True)
-            self.autoSampleNamingCheckboxValueChanged()
-            return  
-
-    
 
     def topDepthFieldValueChanged(self):
-        self.topDepthSetting = top_depth = self.top_depth_input.toPlainText()
+        self.topDepthSetting = top_depth = self.top_depth_input.value()
+
         self.bottomDepthSetting = self.bottom_depth_input.value()
         self.depth1value = self.top_depth1.value()
         self.depth2value = self.top_depth2.value()
@@ -1563,7 +1575,8 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.cl_criteria_input.setText(str(self.cl_zone3.value()))
     
     def bottomDepthFieldValueChanged(self):
-        self.topDepthSetting = top_depth = self.top_depth_input.toPlainText()
+        self.topDepthSetting = top_depth = self.top_depth_input.value()
+
         self.bottomDepthSetting = self.bottom_depth_input.value()
 
         if self.topDepthSetting >= self.bottomDepthSetting:
@@ -1581,9 +1594,9 @@ class Window(QMainWindow, Ui_MainWindow):
         if value_of_single_guideline:
             self.multiple_guideline_checkbox.setChecked(False)
             self.single_guideline_panel.setVisible(True)
-            self.multi_guideline_panel.setVisible(False)
-            self.apply_button.setVisible(False)
-            self.reset_button.setVisible(False)
+            self.multiple_guideline_panel.setVisible(False)
+            self.apply_button_guideline.setVisible(False)
+            self.reset_button_guideline.setVisible(False)
 
             self.top_depth_input.setValue(0)
             self.bottom_depth_input.setValue(0.1)
@@ -1601,14 +1614,14 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.multiple_guideline_checkbox.setChecked(True)
             self.single_guideline_panel.setVisible(False)
-            self.multi_guideline_panel.setVisible(True)
-            self.apply_button.setVisible(True)
-            self.reset_button.setVisible(True)
-            self.apply_button.setEnabled(True)
-            self.reset_button.setEnabled(False)
+            self.multiple_guideline_panel.setVisible(True)
+            self.apply_button_guideline.setVisible(True)
+            self.reset_button_guideline.setVisible(True)
+            self.apply_button_guideline.setEnabled(True)
+            self.reset_button_guideline.setEnabled(False)
             self.auto_sample_naming_checkbox.setChecked(True)
-            self.auto_sample_naming_panel.setVisible(True)
-            self.sample_id_field.setVisible(False)
+            self.sample_information_frame.setVisible(True)
+            self.sample_id_input.setVisible(False)
             self.sample_id_label.setVisible(False)
             self.top_depth1.setEnabled(True)
             self.top_depth2.setEnabled(True)
@@ -1630,7 +1643,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.cl_zone3.setVisible(False)
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
-            self.rd_zone_label.setText("3rd Zone")
+            # self.rd_zone_label.setText("3rd Zone") (i dont think this is needed)
             self.cl_criteria_input.setText(str(self.cl_zone1.value()))
     
     def showMessage(self, title, message):
@@ -1646,21 +1659,23 @@ class Window(QMainWindow, Ui_MainWindow):
         if value_of_multiple_guideline:
             self.single_guideline_checkbox.setChecked(False)
             self.single_guideline_panel.setVisible(False)
-            self.multi_guideline_panel.setVisible(True)
+            self.multiple_guideline_panel.setVisible(True)
             self.auto_sample_naming_checkbox.setChecked(True)
-            self.auto_sample_naming_panel.setVisible(True)
+            self.sample_information_frame.setVisible(True)
             self.sample_id_input.setVisible(False)
-            self.sample_id_input_label.setVisible(False)
-            self.apply_button.setVisible(True)
-            self.reset_button.setVisible(True)
-            self.apply_button.setEnabled(True)
-            self.reset_button.setEnabled(False)
+            self.sample_id_input.setVisible(False)
+            self.apply_button_guideline.setVisible(True)
+            self.reset_button_guideline.setVisible(True)
+            self.apply_button_guideline.setEnabled(True)
+            self.reset_button_guideline.setEnabled(False)
             self.top_depth1.setEnabled(True)
             self.top_depth2.setEnabled(True)
             self.cl_zone1.setEnabled(True)
             self.cl_zone2.setEnabled(True)
             self.cl_zone3.setEnabled(True)
             self.rd_zone_checkbox.setEnabled(True)
+            self.enforce_auto_sample_naming = True
+
 
             self.top_depth_input.setValue(0)
             self.bottom_depth_input.setValue(0.1)
@@ -1676,23 +1691,24 @@ class Window(QMainWindow, Ui_MainWindow):
 
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
-            self.rd_zone_label.setText("3rd Zone")
+           # self.rd_zone_label.setText("3rd Zone")
             self.cl_criteria_input.setText(str(self.cl_zone1.value()))
         else:
             self.single_guideline_checkbox.setChecked(True)
             self.single_guideline_panel.setVisible(True)
-            self.multi_guideline_panel.setVisible(False)
-            self.apply_button.setVisible(False)
-            self.reset_button.setVisible(False)
+            self.multiple_guideline_panel.setVisible(False)
+            self.apply_button_guideline.setVisible(False)
+            self.reset_button_guideline.setVisible(False)
+            self.enforce_auto_sample_naming = False
 
             self.top_depth_input.setValue(0)
             self.bottom_depth_input.setValue(0.1)
 
             self.guideline_type_combobox.setCurrentText("Manual")
             self.main_parameter_input.setVisible(True)
-            self.sub_parameter_edit_input.setVisible(True)
-            self.input.setText("N/A")
-            self.sub_parameter_edit_input.setText("N/A")
+            self.sub_parameter_input.setVisible(True)
+            self.main_parameter_input.setText("N/A")
+            self.sub_parameter_input.setText("N/A")
 
             self.chloride_input.setValue(100)
             self.cl_criteria_input.setText(str(100))
@@ -1717,32 +1733,32 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.st_zone_label.setText(f"1st Zone (0-{self.depth1value})")
             self.nd_zone_label.setText(f"2nd Zone ({self.depth1value}-{self.depth2value})")
-            self.rd_zone_label.setText(f"3rd Zone ({self.depth2value}~)")
+        #    self.rd_zone_label.setText(f"3rd Zone ({self.depth2value}~)")
 
         self.cl_criteria_input.setText(str(self.cl_zone1.value()))
         self.top_depth_input.setValue(0)
         self.bottom_depth_input.setValue(0.1)
 
         # Deactivate editing
-        self.reset_button.setEnabled(True)
+        self.reset_button_guideline.setEnabled(True)
         self.top_depth1.setEnabled(False)
         self.top_depth2.setEnabled(False)
         self.cl_zone1.setEnabled(False)
         self.cl_zone2.setEnabled(False)
         self.cl_zone3.setEnabled(False)
         self.rd_zone_checkbox.setEnabled(False)
-        self.apply_button.setEnabled(False)
+        self.apply_button_guideline.setEnabled(False)
     
     def resetButtonPushed(self):
         # Activate the edit
-        self.reset_button.setEnabled(False)
+        self.reset_button_guideline.setEnabled(False)
         self.top_depth1.setEnabled(True)
         self.top_depth2.setEnabled(True)
         self.cl_zone1.setEnabled(True)
         self.cl_zone2.setEnabled(True)
         self.cl_zone3.setEnabled(True)
         self.rd_zone_checkbox.setEnabled(True)
-        self.apply_button.setEnabled(True)
+        self.apply_button_guideline.setEnabled(True)
 
         self.top_depth_input.setValue(0)
         self.bottom_depth_input.setValue(0.1)
@@ -1758,7 +1774,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.cl_zone3.setVisible(False)
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
-            self.rd_zone_label.setText("3rd Zone")
+          #  self.rd_zone_label.setText("3rd Zone")
     
     def advancedParametersCheckboxValueChanged(self):
         value_of_advanced_parameters = self.advanced_parameters_checkbox.isChecked()
@@ -1910,8 +1926,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
         borehole_id = self.bore_hole_id_input.toPlainText()
         borehole_no = self.bore_hole_no_input.toPlainText()
-        top_depth = self.top_depth_input.toPlainText()
-        bottom_depth = self.bottom_depth_input.toPlainText()
+        top_depth = top_depth = self.top_depth_input.value()
+        bottom_depth = self.bottom_depth_input.value()
         self.sampleID = (
             f"{borehole_id}-{borehole_no}_{top_depth}-{bottom_depth}"
             if self.auto_sample_naming_checkbox.isChecked()
@@ -2193,8 +2209,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
         borehole_id = self.bore_hole_id_input.toPlainText()
         borehole_no = self.bore_hole_no_input.toPlainText()
-        top_depth = str(self.top_depth_input.toPlainText())
-        bottom_depth = self.bottom_depth_input.toPlainText()
+        top_depth = str(self.top_depth_input.value())
+        bottom_depth = str(self.bottom_depth_input.value())
 
 
         if self.auto_sample_naming_checkbox.isChecked():

@@ -881,6 +881,14 @@ class Ui_MainWindow(object):
         self.gridLayout_5.setObjectName(u"gridLayout_5")
         self.sample_information_grid_layout_ = QGridLayout()
         self.sample_information_grid_layout_.setObjectName(u"sample_information_grid_layout_")
+        self.bottom_depth_label = QLabel(self.sample_information_frame)
+        self.bottom_depth_label.setObjectName(u"bottom_depth_label")
+        self.bottom_depth_label.setStyleSheet(u"color: black;\n"
+"")
+        self.bottom_depth_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.sample_information_grid_layout_.addWidget(self.bottom_depth_label, 1, 2, 1, 1)
+
         self.bore_hole_no_input = QTextEdit(self.sample_information_frame)
         self.bore_hole_no_input.setObjectName(u"bore_hole_no_input")
         self.bore_hole_no_input.setMinimumSize(QSize(150, 28))
@@ -892,62 +900,6 @@ class Ui_MainWindow(object):
         self.bore_hole_no_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
         self.sample_information_grid_layout_.addWidget(self.bore_hole_no_input, 0, 3, 1, 1)
-
-        self.bottom_depth_label = QLabel(self.sample_information_frame)
-        self.bottom_depth_label.setObjectName(u"bottom_depth_label")
-        self.bottom_depth_label.setStyleSheet(u"color: black;\n"
-"")
-        self.bottom_depth_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.sample_information_grid_layout_.addWidget(self.bottom_depth_label, 1, 2, 1, 1)
-
-        self.bottom_depth_input = QTextEdit(self.sample_information_frame)
-        self.bottom_depth_input.setObjectName(u"bottom_depth_input")
-        self.bottom_depth_input.setMinimumSize(QSize(150, 28))
-        self.bottom_depth_input.setMaximumSize(QSize(150, 26))
-        self.bottom_depth_input.setAutoFillBackground(False)
-        self.bottom_depth_input.setStyleSheet(u"color: black;\n"
-"")
-        self.bottom_depth_input.setFrameShape(QFrame.Shape.Box)
-        self.bottom_depth_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.sample_information_grid_layout_.addWidget(self.bottom_depth_input, 1, 3, 1, 1)
-
-        self.bore_hole_id_label = QLabel(self.sample_information_frame)
-        self.bore_hole_id_label.setObjectName(u"bore_hole_id_label")
-        self.bore_hole_id_label.setStyleSheet(u"color: black;\n"
-"")
-        self.bore_hole_id_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.sample_information_grid_layout_.addWidget(self.bore_hole_id_label, 0, 0, 1, 1)
-
-        self.top_depth_input = QTextEdit(self.sample_information_frame)
-        self.top_depth_input.setObjectName(u"top_depth_input")
-        self.top_depth_input.setMinimumSize(QSize(150, 28))
-        self.top_depth_input.setMaximumSize(QSize(150, 26))
-        self.top_depth_input.setAutoFillBackground(False)
-        self.top_depth_input.setStyleSheet(u"color: black;\n"
-"")
-        self.top_depth_input.setFrameShape(QFrame.Shape.Box)
-        self.top_depth_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.sample_information_grid_layout_.addWidget(self.top_depth_input, 1, 1, 1, 1)
-
-        self.bore_hole_no_label = QLabel(self.sample_information_frame)
-        self.bore_hole_no_label.setObjectName(u"bore_hole_no_label")
-        self.bore_hole_no_label.setStyleSheet(u"color: black;\n"
-"")
-        self.bore_hole_no_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.sample_information_grid_layout_.addWidget(self.bore_hole_no_label, 0, 2, 1, 1)
-
-        self.top_depth_label = QLabel(self.sample_information_frame)
-        self.top_depth_label.setObjectName(u"top_depth_label")
-        self.top_depth_label.setStyleSheet(u"color: black;\n"
-"")
-        self.top_depth_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.sample_information_grid_layout_.addWidget(self.top_depth_label, 1, 0, 1, 1)
 
         self.bore_hole_id_input = QTextEdit(self.sample_information_frame)
         self.bore_hole_id_input.setObjectName(u"bore_hole_id_input")
@@ -961,6 +913,50 @@ class Ui_MainWindow(object):
 
         self.sample_information_grid_layout_.addWidget(self.bore_hole_id_input, 0, 1, 1, 1)
 
+        self.top_depth_label = QLabel(self.sample_information_frame)
+        self.top_depth_label.setObjectName(u"top_depth_label")
+        self.top_depth_label.setStyleSheet(u"color: black;\n"
+"")
+        self.top_depth_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.sample_information_grid_layout_.addWidget(self.top_depth_label, 1, 0, 1, 1)
+
+        self.bore_hole_id_label = QLabel(self.sample_information_frame)
+        self.bore_hole_id_label.setObjectName(u"bore_hole_id_label")
+        self.bore_hole_id_label.setStyleSheet(u"color: black;\n"
+"")
+        self.bore_hole_id_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.sample_information_grid_layout_.addWidget(self.bore_hole_id_label, 0, 0, 1, 1)
+
+        self.bore_hole_no_label = QLabel(self.sample_information_frame)
+        self.bore_hole_no_label.setObjectName(u"bore_hole_no_label")
+        self.bore_hole_no_label.setStyleSheet(u"color: black;\n"
+"")
+        self.bore_hole_no_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.sample_information_grid_layout_.addWidget(self.bore_hole_no_label, 0, 2, 1, 1)
+
+        self.top_depth_input = QDoubleSpinBox(self.sample_information_frame)
+        self.top_depth_input.setObjectName(u"top_depth_input")
+        self.top_depth_input.setStyleSheet(u"background-color: white;\n"
+"    color: black;\n"
+"    border: 1px solid gray;\n"
+"    padding: 2px;\n"
+"    font: 10pt \"Segoe UI\";")
+
+        self.sample_information_grid_layout_.addWidget(self.top_depth_input, 1, 1, 1, 1)
+
+        self.bottom_depth_input = QDoubleSpinBox(self.sample_information_frame)
+        self.bottom_depth_input.setObjectName(u"bottom_depth_input")
+        self.bottom_depth_input.setStyleSheet(u"background-color: white;\n"
+"    color: black;\n"
+"    border: 1px solid gray;\n"
+"    padding: 2px;\n"
+"    font: 10pt \"Segoe UI\";")
+
+        self.sample_information_grid_layout_.addWidget(self.bottom_depth_input, 1, 3, 1, 1)
+
 
         self.gridLayout_5.addLayout(self.sample_information_grid_layout_, 0, 0, 1, 1)
 
@@ -970,127 +966,157 @@ class Ui_MainWindow(object):
         self.sample_measurement_tab_widget.addTab(self.sample_information, "")
         self.guideline = QWidget()
         self.guideline.setObjectName(u"guideline")
-        self.verticalLayout_7 = QVBoxLayout(self.guideline)
-        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
-        self.horizontalLayout_guideline = QHBoxLayout()
-        self.horizontalLayout_guideline.setObjectName(u"horizontalLayout_guideline")
-        self.single_guideline_checkbox = QCheckBox(self.guideline)
-        self.single_guideline_checkbox.setObjectName(u"single_guideline_checkbox")
-        self.single_guideline_checkbox.setStyleSheet(u"color: black;\n"
-"")
-
-        self.horizontalLayout_guideline.addWidget(self.single_guideline_checkbox)
-
-        self.multiple_guideline_checkbox = QCheckBox(self.guideline)
-        self.multiple_guideline_checkbox.setObjectName(u"multiple_guideline_checkbox")
-        self.multiple_guideline_checkbox.setStyleSheet(u"color: black;\n"
-"")
-
-        self.horizontalLayout_guideline.addWidget(self.multiple_guideline_checkbox)
-
-        self.reset_button_guideline = QPushButton(self.guideline)
-        self.reset_button_guideline.setObjectName(u"reset_button_guideline")
-        self.reset_button_guideline.setEnabled(False)
-        self.reset_button_guideline.setStyleSheet(u"")
-
-        self.horizontalLayout_guideline.addWidget(self.reset_button_guideline)
-
-        self.apply_button_guideline = QPushButton(self.guideline)
-        self.apply_button_guideline.setObjectName(u"apply_button_guideline")
-        self.apply_button_guideline.setEnabled(False)
-        self.apply_button_guideline.setStyleSheet(u"")
-
-        self.horizontalLayout_guideline.addWidget(self.apply_button_guideline)
-
-        self.horizontalLayout_guideline.setStretch(0, 1)
-        self.horizontalLayout_guideline.setStretch(1, 1)
-        self.horizontalLayout_guideline.setStretch(2, 1)
-        self.horizontalLayout_guideline.setStretch(3, 1)
-
-        self.verticalLayout_7.addLayout(self.horizontalLayout_guideline)
-
-        self.guideline_frame = QFrame(self.guideline)
-        self.guideline_frame.setObjectName(u"guideline_frame")
-        self.guideline_frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.guideline_frame.setFrameShadow(QFrame.Shadow.Raised)
-        self.gridLayout_6 = QGridLayout(self.guideline_frame)
-        self.gridLayout_6.setObjectName(u"gridLayout_6")
-        self.guideline_type_label = QLabel(self.guideline_frame)
-        self.guideline_type_label.setObjectName(u"guideline_type_label")
-        self.guideline_type_label.setStyleSheet(u"color: black;\n"
-"")
-
-        self.gridLayout_6.addWidget(self.guideline_type_label, 0, 0, 1, 1)
-
-        self.guideline_type_combobox = QComboBox(self.guideline_frame)
+        self.single_guideline_panel = QFrame(self.guideline)
+        self.single_guideline_panel.setObjectName(u"single_guideline_panel")
+        self.single_guideline_panel.setGeometry(QRect(20, 50, 550, 91))
+        self.single_guideline_panel.setFrameShape(QFrame.Shape.StyledPanel)
+        self.single_guideline_panel.setFrameShadow(QFrame.Shadow.Raised)
+        self.guideline_type_combobox = QComboBox(self.single_guideline_panel)
         self.guideline_type_combobox.addItem("")
         self.guideline_type_combobox.setObjectName(u"guideline_type_combobox")
+        self.guideline_type_combobox.setGeometry(QRect(387, 14, 150, 28))
         self.guideline_type_combobox.setMinimumSize(QSize(150, 28))
         self.guideline_type_combobox.setMaximumSize(QSize(150, 26))
         self.guideline_type_combobox.setStyleSheet(u"color: black;\n"
 "\n"
 "")
         self.guideline_type_combobox.setFrame(True)
-
-        self.gridLayout_6.addWidget(self.guideline_type_combobox, 0, 1, 1, 1)
-
-        self.main_parameter_label = QLabel(self.guideline_frame)
+        self.guideline_type_label = QLabel(self.single_guideline_panel)
+        self.guideline_type_label.setObjectName(u"guideline_type_label")
+        self.guideline_type_label.setGeometry(QRect(285, 13, 90, 16))
+        self.guideline_type_label.setStyleSheet(u"color: black;\n"
+"")
+        self.main_parameter_label = QLabel(self.single_guideline_panel)
         self.main_parameter_label.setObjectName(u"main_parameter_label")
+        self.main_parameter_label.setGeometry(QRect(13, 13, 95, 16))
         self.main_parameter_label.setStyleSheet(u"color: black;\n"
 "")
-
-        self.gridLayout_6.addWidget(self.main_parameter_label, 1, 0, 1, 1)
-
-        self.main_parameter_input = QTextEdit(self.guideline_frame)
+        self.main_parameter_input = QTextEdit(self.single_guideline_panel)
         self.main_parameter_input.setObjectName(u"main_parameter_input")
+        self.main_parameter_input.setGeometry(QRect(125, 14, 150, 28))
         self.main_parameter_input.setMinimumSize(QSize(150, 28))
         self.main_parameter_input.setMaximumSize(QSize(150, 26))
         self.main_parameter_input.setStyleSheet(u"color: black;\n"
 "")
         self.main_parameter_input.setFrameShape(QFrame.Shape.Box)
         self.main_parameter_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.gridLayout_6.addWidget(self.main_parameter_input, 1, 1, 1, 1)
-
-        self.sub_parameter_label = QLabel(self.guideline_frame)
-        self.sub_parameter_label.setObjectName(u"sub_parameter_label")
-        self.sub_parameter_label.setStyleSheet(u"color: black;\n"
-"")
-
-        self.gridLayout_6.addWidget(self.sub_parameter_label, 1, 2, 1, 1)
-
-        self.sub_parameter_input = QTextEdit(self.guideline_frame)
-        self.sub_parameter_input.setObjectName(u"sub_parameter_input")
-        self.sub_parameter_input.setMinimumSize(QSize(150, 28))
-        self.sub_parameter_input.setMaximumSize(QSize(150, 26))
-        self.sub_parameter_input.setStyleSheet(u"color: black;\n"
-"")
-        self.sub_parameter_input.setFrameShape(QFrame.Shape.Box)
-        self.sub_parameter_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.gridLayout_6.addWidget(self.sub_parameter_input, 1, 3, 1, 1)
-
-        self.chloride_label = QLabel(self.guideline_frame)
-        self.chloride_label.setObjectName(u"chloride_label")
-        self.chloride_label.setStyleSheet(u"color: black;\n"
-"")
-
-        self.gridLayout_6.addWidget(self.chloride_label, 2, 0, 1, 1)
-
-        self.chloride_input = QDoubleSpinBox(self.guideline_frame)
+        self.chloride_input = QDoubleSpinBox(self.single_guideline_panel)
         self.chloride_input.setObjectName(u"chloride_input")
+        self.chloride_input.setGeometry(QRect(125, 54, 66, 22))
         self.chloride_input.setStyleSheet(u" background-color: white;\n"
 "    color: black;\n"
 "    border: 1px solid gray;\n"
 "    padding: 2px;\n"
 "    font: 10pt \"Segoe UI\";")
         self.chloride_input.setMaximum(5000.000000000000000)
-
-        self.gridLayout_6.addWidget(self.chloride_input, 2, 1, 1, 1)
-
-
-        self.verticalLayout_7.addWidget(self.guideline_frame)
-
+        self.chloride_label = QLabel(self.single_guideline_panel)
+        self.chloride_label.setObjectName(u"chloride_label")
+        self.chloride_label.setGeometry(QRect(13, 51, 102, 16))
+        self.sub_parameter_label = QLabel(self.single_guideline_panel)
+        self.sub_parameter_label.setObjectName(u"sub_parameter_label")
+        self.sub_parameter_label.setGeometry(QRect(285, 51, 89, 16))
+        self.sub_parameter_input = QTextEdit(self.single_guideline_panel)
+        self.sub_parameter_input.setObjectName(u"sub_parameter_input")
+        self.sub_parameter_input.setGeometry(QRect(387, 52, 150, 28))
+        self.sub_parameter_input.setMinimumSize(QSize(150, 28))
+        self.sub_parameter_input.setMaximumSize(QSize(150, 26))
+        self.sub_parameter_input.setStyleSheet(u"color: black;\n"
+"")
+        self.sub_parameter_input.setFrameShape(QFrame.Shape.Box)
+        self.sub_parameter_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.multiple_guideline_panel = QFrame(self.guideline)
+        self.multiple_guideline_panel.setObjectName(u"multiple_guideline_panel")
+        self.multiple_guideline_panel.setGeometry(QRect(23, 150, 551, 131))
+        self.multiple_guideline_panel.setFrameShape(QFrame.Shape.StyledPanel)
+        self.multiple_guideline_panel.setFrameShadow(QFrame.Shadow.Raised)
+        self.cl_zone1 = QDoubleSpinBox(self.multiple_guideline_panel)
+        self.cl_zone1.setObjectName(u"cl_zone1")
+        self.cl_zone1.setGeometry(QRect(150, 90, 101, 22))
+        self.cl_zone1.setStyleSheet(u" background-color: white;\n"
+"    color: black;\n"
+"    border: 1px solid gray;\n"
+"    padding: 2px;\n"
+"    font: 10pt \"Segoe UI\";")
+        self.cl_zone1.setMaximum(5000.000000000000000)
+        self.cl_zone2 = QDoubleSpinBox(self.multiple_guideline_panel)
+        self.cl_zone2.setObjectName(u"cl_zone2")
+        self.cl_zone2.setGeometry(QRect(280, 90, 101, 22))
+        self.cl_zone2.setStyleSheet(u" background-color: white;\n"
+"    color: black;\n"
+"    border: 1px solid gray;\n"
+"    padding: 2px;\n"
+"    font: 10pt \"Segoe UI\";")
+        self.cl_zone2.setMaximum(5000.000000000000000)
+        self.cl_zone3 = QDoubleSpinBox(self.multiple_guideline_panel)
+        self.cl_zone3.setObjectName(u"cl_zone3")
+        self.cl_zone3.setGeometry(QRect(430, 90, 101, 22))
+        self.cl_zone3.setStyleSheet(u" background-color: white;\n"
+"    color: black;\n"
+"    border: 1px solid gray;\n"
+"    padding: 2px;\n"
+"    font: 10pt \"Segoe UI\";")
+        self.cl_zone3.setMaximum(5000.000000000000000)
+        self.chloride_labell = QLabel(self.multiple_guideline_panel)
+        self.chloride_labell.setObjectName(u"chloride_labell")
+        self.chloride_labell.setGeometry(QRect(10, 90, 102, 16))
+        self.rd_zone_checkbox = QCheckBox(self.multiple_guideline_panel)
+        self.rd_zone_checkbox.setObjectName(u"rd_zone_checkbox")
+        self.rd_zone_checkbox.setGeometry(QRect(390, 10, 134, 20))
+        self.rd_zone_checkbox.setStyleSheet(u"color: black;\n"
+"")
+        self.st_zone_label = QLabel(self.multiple_guideline_panel)
+        self.st_zone_label.setObjectName(u"st_zone_label")
+        self.st_zone_label.setGeometry(QRect(60, 10, 141, 16))
+        self.st_zone_label.setStyleSheet(u"color: black;\n"
+"")
+        self.nd_zone_label = QLabel(self.multiple_guideline_panel)
+        self.nd_zone_label.setObjectName(u"nd_zone_label")
+        self.nd_zone_label.setGeometry(QRect(220, 10, 161, 16))
+        self.nd_zone_label.setStyleSheet(u"color: black;\n"
+"")
+        self.st_zone_label_2 = QLabel(self.multiple_guideline_panel)
+        self.st_zone_label_2.setObjectName(u"st_zone_label_2")
+        self.st_zone_label_2.setGeometry(QRect(20, 60, 95, 16))
+        self.st_zone_label_2.setStyleSheet(u"color: black;\n"
+"")
+        self.top_depth1 = QDoubleSpinBox(self.multiple_guideline_panel)
+        self.top_depth1.setObjectName(u"top_depth1")
+        self.top_depth1.setGeometry(QRect(200, 60, 101, 22))
+        self.top_depth1.setStyleSheet(u" background-color: white;\n"
+"    color: black;\n"
+"    border: 1px solid gray;\n"
+"    padding: 2px;\n"
+"    font: 10pt \"Segoe UI\";")
+        self.top_depth1.setMaximum(5000.000000000000000)
+        self.top_depth2 = QDoubleSpinBox(self.multiple_guideline_panel)
+        self.top_depth2.setObjectName(u"top_depth2")
+        self.top_depth2.setGeometry(QRect(350, 60, 101, 22))
+        self.top_depth2.setStyleSheet(u" background-color: white;\n"
+"    color: black;\n"
+"    border: 1px solid gray;\n"
+"    padding: 2px;\n"
+"    font: 10pt \"Segoe UI\";")
+        self.top_depth2.setMaximum(5000.000000000000000)
+        self.single_guideline_checkbox = QCheckBox(self.guideline)
+        self.single_guideline_checkbox.setObjectName(u"single_guideline_checkbox")
+        self.single_guideline_checkbox.setGeometry(QRect(20, 19, 123, 20))
+        self.single_guideline_checkbox.setStyleSheet(u"color: black;\n"
+"")
+        self.apply_button_guideline = QPushButton(self.guideline)
+        self.apply_button_guideline.setObjectName(u"apply_button_guideline")
+        self.apply_button_guideline.setEnabled(False)
+        self.apply_button_guideline.setGeometry(QRect(344, 15, 47, 28))
+        self.apply_button_guideline.setStyleSheet(u"")
+        self.reset_button_guideline = QPushButton(self.guideline)
+        self.reset_button_guideline.setObjectName(u"reset_button_guideline")
+        self.reset_button_guideline.setEnabled(False)
+        self.reset_button_guideline.setGeometry(QRect(283, 15, 47, 28))
+        self.reset_button_guideline.setStyleSheet(u"")
+        self.multiple_guideline_checkbox = QCheckBox(self.guideline)
+        self.multiple_guideline_checkbox.setObjectName(u"multiple_guideline_checkbox")
+        self.multiple_guideline_checkbox.setGeometry(QRect(144, 19, 134, 20))
+        self.multiple_guideline_checkbox.setStyleSheet(u"color: black;\n"
+"")
         self.sample_measurement_tab_widget.addTab(self.guideline, "")
         self.options = QWidget()
         self.options.setObjectName(u"options")
@@ -1215,68 +1241,13 @@ class Ui_MainWindow(object):
         self.gridLayout_7.setObjectName(u"gridLayout_7")
         self.measurement_frame_grid_layout = QGridLayout()
         self.measurement_frame_grid_layout.setObjectName(u"measurement_frame_grid_layout")
-        self.std_check_button = QPushButton(self.measurement_frame)
-        self.std_check_button.setObjectName(u"std_check_button")
-        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy11.setHorizontalStretch(0)
-        sizePolicy11.setVerticalStretch(0)
-        sizePolicy11.setHeightForWidth(self.std_check_button.sizePolicy().hasHeightForWidth())
-        self.std_check_button.setSizePolicy(sizePolicy11)
-        font6 = QFont()
-        font6.setBold(True)
-        self.std_check_button.setFont(font6)
-        self.std_check_button.setStyleSheet(u"QPushButton {\n"
-"    background-color: lightgray;\n"
-"    border: 1px solid #888;\n"
-"    border-radius: 8px;\n"
-"    padding: 5px;\n"
-"}\n"
-"\n"
-"QPushButton:disabled {\n"
-"    background-color: #cccccc;\n"
-"    color: #999999;\n"
-"    border: 1px solid #aaaaaa;\n"
-"}\n"
-"")
-
-        self.measurement_frame_grid_layout.addWidget(self.std_check_button, 0, 0, 1, 1)
-
-        self.average_potential_label = QLabel(self.measurement_frame)
-        self.average_potential_label.setObjectName(u"average_potential_label")
-        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
-        sizePolicy12.setHorizontalStretch(0)
-        sizePolicy12.setVerticalStretch(0)
-        sizePolicy12.setHeightForWidth(self.average_potential_label.sizePolicy().hasHeightForWidth())
-        self.average_potential_label.setSizePolicy(sizePolicy12)
-        self.average_potential_label.setFont(font6)
-        self.average_potential_label.setStyleSheet(u"color: black;\n"
-"")
-
-        self.measurement_frame_grid_layout.addWidget(self.average_potential_label, 0, 1, 1, 1)
-
-        self.average_potential_input = QTextEdit(self.measurement_frame)
-        self.average_potential_input.setObjectName(u"average_potential_input")
-        sizePolicy13 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
-        sizePolicy13.setHorizontalStretch(0)
-        sizePolicy13.setVerticalStretch(0)
-        sizePolicy13.setHeightForWidth(self.average_potential_input.sizePolicy().hasHeightForWidth())
-        self.average_potential_input.setSizePolicy(sizePolicy13)
-        self.average_potential_input.setMinimumSize(QSize(150, 28))
-        self.average_potential_input.setMaximumSize(QSize(150, 26))
-        self.average_potential_input.setStyleSheet(u"color: black;\n"
-"")
-        self.average_potential_input.setFrameShape(QFrame.Shape.Box)
-        self.average_potential_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.measurement_frame_grid_layout.addWidget(self.average_potential_input, 0, 2, 1, 1)
-
         self.measurement_button = QPushButton(self.measurement_frame)
         self.measurement_button.setObjectName(u"measurement_button")
-        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy14.setHorizontalStretch(0)
-        sizePolicy14.setVerticalStretch(30)
-        sizePolicy14.setHeightForWidth(self.measurement_button.sizePolicy().hasHeightForWidth())
-        self.measurement_button.setSizePolicy(sizePolicy14)
+        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy11.setHorizontalStretch(0)
+        sizePolicy11.setVerticalStretch(30)
+        sizePolicy11.setHeightForWidth(self.measurement_button.sizePolicy().hasHeightForWidth())
+        self.measurement_button.setSizePolicy(sizePolicy11)
         self.measurement_button.setMinimumSize(QSize(0, 60))
         self.measurement_button.setFont(font3)
         self.measurement_button.setStyleSheet(u"QPushButton {\n"
@@ -1295,59 +1266,44 @@ class Ui_MainWindow(object):
 
         self.measurement_frame_grid_layout.addWidget(self.measurement_button, 1, 0, 2, 1)
 
-        self.salt_in_liquid_label = QLabel(self.measurement_frame)
-        self.salt_in_liquid_label.setObjectName(u"salt_in_liquid_label")
-        sizePolicy12.setHeightForWidth(self.salt_in_liquid_label.sizePolicy().hasHeightForWidth())
-        self.salt_in_liquid_label.setSizePolicy(sizePolicy12)
-        self.salt_in_liquid_label.setFont(font6)
-        self.salt_in_liquid_label.setStyleSheet(u"color: black;\n"
+        self.average_potential_label = QLabel(self.measurement_frame)
+        self.average_potential_label.setObjectName(u"average_potential_label")
+        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy12.setHorizontalStretch(0)
+        sizePolicy12.setVerticalStretch(0)
+        sizePolicy12.setHeightForWidth(self.average_potential_label.sizePolicy().hasHeightForWidth())
+        self.average_potential_label.setSizePolicy(sizePolicy12)
+        font6 = QFont()
+        font6.setBold(True)
+        self.average_potential_label.setFont(font6)
+        self.average_potential_label.setStyleSheet(u"color: black;\n"
 "")
 
-        self.measurement_frame_grid_layout.addWidget(self.salt_in_liquid_label, 1, 1, 1, 1)
+        self.measurement_frame_grid_layout.addWidget(self.average_potential_label, 0, 1, 1, 1)
 
-        self.salt_in_liquid_input = QTextEdit(self.measurement_frame)
-        self.salt_in_liquid_input.setObjectName(u"salt_in_liquid_input")
-        sizePolicy13.setHeightForWidth(self.salt_in_liquid_input.sizePolicy().hasHeightForWidth())
-        self.salt_in_liquid_input.setSizePolicy(sizePolicy13)
-        self.salt_in_liquid_input.setMinimumSize(QSize(150, 28))
-        self.salt_in_liquid_input.setMaximumSize(QSize(150, 26))
-        self.salt_in_liquid_input.setStyleSheet(u"color: black;\n"
+        self.cl_criteria_input = QTextEdit(self.measurement_frame)
+        self.cl_criteria_input.setObjectName(u"cl_criteria_input")
+        sizePolicy13 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
+        sizePolicy13.setHorizontalStretch(0)
+        sizePolicy13.setVerticalStretch(0)
+        sizePolicy13.setHeightForWidth(self.cl_criteria_input.sizePolicy().hasHeightForWidth())
+        self.cl_criteria_input.setSizePolicy(sizePolicy13)
+        self.cl_criteria_input.setMinimumSize(QSize(150, 28))
+        self.cl_criteria_input.setMaximumSize(QSize(150, 26))
+        self.cl_criteria_input.setStyleSheet(u"color: black;\n"
 "")
-        self.salt_in_liquid_input.setFrameShape(QFrame.Shape.Box)
-        self.salt_in_liquid_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.cl_criteria_input.setFrameShape(QFrame.Shape.Box)
+        self.cl_criteria_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
-        self.measurement_frame_grid_layout.addWidget(self.salt_in_liquid_input, 1, 2, 1, 1)
-
-        self.salt_in_ground_label = QLabel(self.measurement_frame)
-        self.salt_in_ground_label.setObjectName(u"salt_in_ground_label")
-        sizePolicy12.setHeightForWidth(self.salt_in_ground_label.sizePolicy().hasHeightForWidth())
-        self.salt_in_ground_label.setSizePolicy(sizePolicy12)
-        self.salt_in_ground_label.setFont(font6)
-        self.salt_in_ground_label.setStyleSheet(u"color: black;\n"
-"")
-
-        self.measurement_frame_grid_layout.addWidget(self.salt_in_ground_label, 2, 1, 1, 1)
-
-        self.salt_in_ground_input = QTextEdit(self.measurement_frame)
-        self.salt_in_ground_input.setObjectName(u"salt_in_ground_input")
-        sizePolicy13.setHeightForWidth(self.salt_in_ground_input.sizePolicy().hasHeightForWidth())
-        self.salt_in_ground_input.setSizePolicy(sizePolicy13)
-        self.salt_in_ground_input.setMinimumSize(QSize(150, 28))
-        self.salt_in_ground_input.setMaximumSize(QSize(150, 26))
-        self.salt_in_ground_input.setStyleSheet(u"color: black;\n"
-"")
-        self.salt_in_ground_input.setFrameShape(QFrame.Shape.Box)
-        self.salt_in_ground_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-
-        self.measurement_frame_grid_layout.addWidget(self.salt_in_ground_input, 2, 2, 1, 1)
+        self.measurement_frame_grid_layout.addWidget(self.cl_criteria_input, 3, 2, 1, 1)
 
         self.measurement_circle = QFrame(self.measurement_frame)
         self.measurement_circle.setObjectName(u"measurement_circle")
-        sizePolicy15 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy15.setHorizontalStretch(0)
-        sizePolicy15.setVerticalStretch(0)
-        sizePolicy15.setHeightForWidth(self.measurement_circle.sizePolicy().hasHeightForWidth())
-        self.measurement_circle.setSizePolicy(sizePolicy15)
+        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy14.setHorizontalStretch(0)
+        sizePolicy14.setVerticalStretch(0)
+        sizePolicy14.setHeightForWidth(self.measurement_circle.sizePolicy().hasHeightForWidth())
+        self.measurement_circle.setSizePolicy(sizePolicy14)
         self.measurement_circle.setMinimumSize(QSize(30, 30))
         self.measurement_circle.setMaximumSize(QSize(30, 30))
         self.measurement_circle.setSizeIncrement(QSize(0, 0))
@@ -1370,10 +1326,70 @@ class Ui_MainWindow(object):
 
         self.measurement_frame_grid_layout.addWidget(self.measurement_circle, 2, 3, 1, 1)
 
+        self.std_check_button = QPushButton(self.measurement_frame)
+        self.std_check_button.setObjectName(u"std_check_button")
+        sizePolicy15 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy15.setHorizontalStretch(0)
+        sizePolicy15.setVerticalStretch(0)
+        sizePolicy15.setHeightForWidth(self.std_check_button.sizePolicy().hasHeightForWidth())
+        self.std_check_button.setSizePolicy(sizePolicy15)
+        self.std_check_button.setFont(font6)
+        self.std_check_button.setStyleSheet(u"QPushButton {\n"
+"    background-color: lightgray;\n"
+"    border: 1px solid #888;\n"
+"    border-radius: 8px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QPushButton:disabled {\n"
+"    background-color: #cccccc;\n"
+"    color: #999999;\n"
+"    border: 1px solid #aaaaaa;\n"
+"}\n"
+"")
+
+        self.measurement_frame_grid_layout.addWidget(self.std_check_button, 0, 0, 1, 1)
+
+        self.average_potential_input = QTextEdit(self.measurement_frame)
+        self.average_potential_input.setObjectName(u"average_potential_input")
+        sizePolicy13.setHeightForWidth(self.average_potential_input.sizePolicy().hasHeightForWidth())
+        self.average_potential_input.setSizePolicy(sizePolicy13)
+        self.average_potential_input.setMinimumSize(QSize(150, 28))
+        self.average_potential_input.setMaximumSize(QSize(150, 26))
+        self.average_potential_input.setStyleSheet(u"color: black;\n"
+"")
+        self.average_potential_input.setFrameShape(QFrame.Shape.Box)
+        self.average_potential_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.measurement_frame_grid_layout.addWidget(self.average_potential_input, 0, 2, 1, 1)
+
+        self.salt_in_ground_input = QTextEdit(self.measurement_frame)
+        self.salt_in_ground_input.setObjectName(u"salt_in_ground_input")
+        sizePolicy13.setHeightForWidth(self.salt_in_ground_input.sizePolicy().hasHeightForWidth())
+        self.salt_in_ground_input.setSizePolicy(sizePolicy13)
+        self.salt_in_ground_input.setMinimumSize(QSize(150, 28))
+        self.salt_in_ground_input.setMaximumSize(QSize(150, 26))
+        self.salt_in_ground_input.setStyleSheet(u"color: black;\n"
+"")
+        self.salt_in_ground_input.setFrameShape(QFrame.Shape.Box)
+        self.salt_in_ground_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.measurement_frame_grid_layout.addWidget(self.salt_in_ground_input, 2, 2, 1, 1)
+
+        self.salt_in_liquid_label = QLabel(self.measurement_frame)
+        self.salt_in_liquid_label.setObjectName(u"salt_in_liquid_label")
+        sizePolicy12.setHeightForWidth(self.salt_in_liquid_label.sizePolicy().hasHeightForWidth())
+        self.salt_in_liquid_label.setSizePolicy(sizePolicy12)
+        self.salt_in_liquid_label.setFont(font6)
+        self.salt_in_liquid_label.setStyleSheet(u"color: black;\n"
+"")
+
+        self.measurement_frame_grid_layout.addWidget(self.salt_in_liquid_label, 1, 1, 1, 1)
+
         self.recalculation_button = QPushButton(self.measurement_frame)
         self.recalculation_button.setObjectName(u"recalculation_button")
-        sizePolicy11.setHeightForWidth(self.recalculation_button.sizePolicy().hasHeightForWidth())
-        self.recalculation_button.setSizePolicy(sizePolicy11)
+        sizePolicy15.setHeightForWidth(self.recalculation_button.sizePolicy().hasHeightForWidth())
+        self.recalculation_button.setSizePolicy(sizePolicy15)
         self.recalculation_button.setFont(font6)
         self.recalculation_button.setStyleSheet(u"QPushButton {\n"
 "    background-color: lightgray;\n"
@@ -1391,6 +1407,19 @@ class Ui_MainWindow(object):
 
         self.measurement_frame_grid_layout.addWidget(self.recalculation_button, 3, 0, 1, 1)
 
+        self.salt_in_liquid_input = QTextEdit(self.measurement_frame)
+        self.salt_in_liquid_input.setObjectName(u"salt_in_liquid_input")
+        sizePolicy13.setHeightForWidth(self.salt_in_liquid_input.sizePolicy().hasHeightForWidth())
+        self.salt_in_liquid_input.setSizePolicy(sizePolicy13)
+        self.salt_in_liquid_input.setMinimumSize(QSize(150, 28))
+        self.salt_in_liquid_input.setMaximumSize(QSize(150, 26))
+        self.salt_in_liquid_input.setStyleSheet(u"color: black;\n"
+"")
+        self.salt_in_liquid_input.setFrameShape(QFrame.Shape.Box)
+        self.salt_in_liquid_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        self.measurement_frame_grid_layout.addWidget(self.salt_in_liquid_input, 1, 2, 1, 1)
+
         self.cl_criteria_label = QLabel(self.measurement_frame)
         self.cl_criteria_label.setObjectName(u"cl_criteria_label")
         sizePolicy12.setHeightForWidth(self.cl_criteria_label.sizePolicy().hasHeightForWidth())
@@ -1404,23 +1433,17 @@ class Ui_MainWindow(object):
 
         self.measurement_frame_grid_layout.addWidget(self.cl_criteria_label, 3, 1, 1, 1)
 
-        self.cl_criteria_input = QTextEdit(self.measurement_frame)
-        self.cl_criteria_input.setObjectName(u"cl_criteria_input")
-        sizePolicy13.setHeightForWidth(self.cl_criteria_input.sizePolicy().hasHeightForWidth())
-        self.cl_criteria_input.setSizePolicy(sizePolicy13)
-        self.cl_criteria_input.setMinimumSize(QSize(150, 28))
-        self.cl_criteria_input.setMaximumSize(QSize(150, 26))
-        self.cl_criteria_input.setStyleSheet(u"color: black;\n"
+        self.salt_in_ground_label = QLabel(self.measurement_frame)
+        self.salt_in_ground_label.setObjectName(u"salt_in_ground_label")
+        sizePolicy12.setHeightForWidth(self.salt_in_ground_label.sizePolicy().hasHeightForWidth())
+        self.salt_in_ground_label.setSizePolicy(sizePolicy12)
+        self.salt_in_ground_label.setFont(font6)
+        self.salt_in_ground_label.setStyleSheet(u"color: black;\n"
 "")
-        self.cl_criteria_input.setFrameShape(QFrame.Shape.Box)
-        self.cl_criteria_input.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
 
-        self.measurement_frame_grid_layout.addWidget(self.cl_criteria_input, 3, 2, 1, 1)
+        self.measurement_frame_grid_layout.addWidget(self.salt_in_ground_label, 2, 1, 1, 1)
 
         self.measurement_frame_grid_layout.setRowStretch(0, 1)
-        self.measurement_frame_grid_layout.setRowStretch(1, 1)
-        self.measurement_frame_grid_layout.setRowStretch(2, 1)
-        self.measurement_frame_grid_layout.setRowStretch(3, 1)
 
         self.gridLayout_7.addLayout(self.measurement_frame_grid_layout, 0, 0, 1, 1)
 
@@ -1533,7 +1556,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(1)
+        self.sample_measurement_tab_widget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1584,20 +1607,33 @@ class Ui_MainWindow(object):
 
         self.auto_sample_naming_checkbox.setText(QCoreApplication.translate("MainWindow", u"Auto Sample Naming", None))
         self.bottom_depth_label.setText(QCoreApplication.translate("MainWindow", u"Bottom Depth (m)", None))
+        self.bore_hole_no_input.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"hr { height: 1px; border-width: 0; }\n"
+"li.unchecked::marker { content: \"\\2610\"; }\n"
+"li.checked::marker { content: \"\\2612\"; }\n"
+"</style></head><body style=\" font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
+        self.top_depth_label.setText(QCoreApplication.translate("MainWindow", u"Top Depth (m)", None))
         self.bore_hole_id_label.setText(QCoreApplication.translate("MainWindow", u"Bore Hole ID", None))
         self.bore_hole_no_label.setText(QCoreApplication.translate("MainWindow", u"Bore Hole No", None))
-        self.top_depth_label.setText(QCoreApplication.translate("MainWindow", u"Top Depth (m)", None))
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.sample_information), QCoreApplication.translate("MainWindow", u"Sample Information", None))
-        self.single_guideline_checkbox.setText(QCoreApplication.translate("MainWindow", u"Single Guideline", None))
-        self.multiple_guideline_checkbox.setText(QCoreApplication.translate("MainWindow", u"Multiple Guideline", None))
-        self.reset_button_guideline.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
-        self.apply_button_guideline.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
-        self.guideline_type_label.setText(QCoreApplication.translate("MainWindow", u"Guideline Type", None))
         self.guideline_type_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"Manual", None))
 
+        self.guideline_type_label.setText(QCoreApplication.translate("MainWindow", u"Guideline Type", None))
         self.main_parameter_label.setText(QCoreApplication.translate("MainWindow", u"Main Parameter", None))
-        self.sub_parameter_label.setText(QCoreApplication.translate("MainWindow", u"Sub Parameter", None))
         self.chloride_label.setText(QCoreApplication.translate("MainWindow", u"Chloride (mg/kg)", None))
+        self.sub_parameter_label.setText(QCoreApplication.translate("MainWindow", u"Sub Parameter", None))
+        self.chloride_labell.setText(QCoreApplication.translate("MainWindow", u"Chloride (mg/kg)", None))
+        self.rd_zone_checkbox.setText(QCoreApplication.translate("MainWindow", u"3rd Zone", None))
+        self.st_zone_label.setText(QCoreApplication.translate("MainWindow", u"1st Zone", None))
+        self.nd_zone_label.setText(QCoreApplication.translate("MainWindow", u"2nd Zone", None))
+        self.st_zone_label_2.setText(QCoreApplication.translate("MainWindow", u"Depth Criteria", None))
+        self.single_guideline_checkbox.setText(QCoreApplication.translate("MainWindow", u"Single Guideline", None))
+        self.apply_button_guideline.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
+        self.reset_button_guideline.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
+        self.multiple_guideline_checkbox.setText(QCoreApplication.translate("MainWindow", u"Multiple Guideline", None))
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.guideline), QCoreApplication.translate("MainWindow", u"Guideline", None))
         self.moisture_label.setText(QCoreApplication.translate("MainWindow", u"Moisture (%)", None))
         self.moisture_combobox.setItemText(0, QCoreApplication.translate("MainWindow", u"Dry (0)", None))
@@ -1619,13 +1655,13 @@ class Ui_MainWindow(object):
         self.baseline_combobox.setItemText(1, QCoreApplication.translate("MainWindow", u"No", None))
 
         self.sample_measurement_tab_widget.setTabText(self.sample_measurement_tab_widget.indexOf(self.options), QCoreApplication.translate("MainWindow", u"Options", None))
-        self.std_check_button.setText(QCoreApplication.translate("MainWindow", u"STD check", None))
-        self.average_potential_label.setText(QCoreApplication.translate("MainWindow", u"Average Potential (mV)", None))
         self.measurement_button.setText(QCoreApplication.translate("MainWindow", u"Measurement", None))
+        self.average_potential_label.setText(QCoreApplication.translate("MainWindow", u"Average Potential (mV)", None))
+        self.std_check_button.setText(QCoreApplication.translate("MainWindow", u"STD check", None))
         self.salt_in_liquid_label.setText(QCoreApplication.translate("MainWindow", u"Cl Conc. inExtract(mg/L)", None))
-        self.salt_in_ground_label.setText(QCoreApplication.translate("MainWindow", u"Cl Conc. in Soil (mg/kg)", None))
         self.recalculation_button.setText(QCoreApplication.translate("MainWindow", u"Recalculation", None))
         self.cl_criteria_label.setText(QCoreApplication.translate("MainWindow", u"Cl Criteria (mg/kg)", None))
+        self.salt_in_ground_label.setText(QCoreApplication.translate("MainWindow", u"Cl Conc. in Soil (mg/kg)", None))
         self.measurement_range_label.setText(QCoreApplication.translate("MainWindow", u"*Measurement Range (mg/kg): 50~5,000, N.D. = non detective, M.C. = meet criteria", None))
         self.auto_file_naming_checkbox.setText(QCoreApplication.translate("MainWindow", u"Auto File Naming", None))
         self.file_name_label.setText(QCoreApplication.translate("MainWindow", u"File Name:", None))
