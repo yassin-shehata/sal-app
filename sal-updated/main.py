@@ -1020,7 +1020,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Stability check
 
-        while np.any(err > self.stabilityError):
+        while np.all(err > self.stabilityError):
             stability_timer = QMessageBox.question(
                 self,
                 "Sensor Stabilization",
