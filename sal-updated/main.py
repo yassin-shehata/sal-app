@@ -965,7 +965,7 @@ class Window(QMainWindow, Ui_MainWindow):
             progress.setWindowTitle("Sensor Stabilization Timer")
             progress.setWindowModality(Qt.WindowModal)
             progress.setMinimumDuration(0)
-            for i in range(1, self.StabilizationTimeEditField.value() + 1):
+            for i in range(1, self .StabilizationTimeEditField.value() + 1):
                 if progress.wasCanceled():
                     progress.setLabelText("Stopping Timer...")
                     time.sleep(1)
@@ -1643,7 +1643,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.cl_zone3.setVisible(False)
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
-            # self.rd_zone_label.setText("3rd Zone") (i dont think this is needed)
+            self.rd_zone_label.setText("3rd Zone") 
             self.cl_criteria_input.setText(str(self.cl_zone1.value()))
     
     def showMessage(self, title, message):
@@ -1691,7 +1691,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
-           # self.rd_zone_label.setText("3rd Zone")
+            self.rd_zone_label.setText("3rd Zone")
             self.cl_criteria_input.setText(str(self.cl_zone1.value()))
         else:
             self.single_guideline_checkbox.setChecked(True)
@@ -1733,7 +1733,7 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.st_zone_label.setText(f"1st Zone (0-{self.depth1value})")
             self.nd_zone_label.setText(f"2nd Zone ({self.depth1value}-{self.depth2value})")
-        #    self.rd_zone_label.setText(f"3rd Zone ({self.depth2value}~)")
+            self.rd_zone_label.setText(f"3rd Zone ({self.depth2value}~)")
 
         self.cl_criteria_input.setText(str(self.cl_zone1.value()))
         self.top_depth_input.setValue(0)
@@ -1774,7 +1774,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.cl_zone3.setVisible(False)
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
-          #  self.rd_zone_label.setText("3rd Zone")
+            self.rd_zone_label.setText("3rd Zone")
     
     def advancedParametersCheckboxValueChanged(self):
         value_of_advanced_parameters = self.advanced_parameters_checkbox.isChecked()

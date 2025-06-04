@@ -1892,9 +1892,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
                <widget class="QCheckBox" name="rd_zone_checkbox">
                 <property name="geometry">
                  <rect>
-                  <x>390</x>
+                  <x>370</x>
                   <y>10</y>
-                  <width>134</width>
+                  <width>81</width>
                   <height>20</height>
                  </rect>
                 </property>
@@ -1903,7 +1903,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
 </string>
                 </property>
                 <property name="text">
-                 <string>3rd Zone</string>
+                 <string/>
                 </property>
                </widget>
                <widget class="QLabel" name="st_zone_label">
@@ -1926,7 +1926,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
                <widget class="QLabel" name="nd_zone_label">
                 <property name="geometry">
                  <rect>
-                  <x>220</x>
+                  <x>200</x>
                   <y>10</y>
                   <width>161</width>
                   <height>16</height>
@@ -1995,6 +1995,23 @@ li.checked::marker { content: &quot;\2612&quot;; }
                 </property>
                 <property name="maximum">
                  <double>5000.000000000000000</double>
+                </property>
+               </widget>
+               <widget class="QLabel" name="rd_zone_label">
+                <property name="geometry">
+                 <rect>
+                  <x>390</x>
+                  <y>10</y>
+                  <width>151</width>
+                  <height>20</height>
+                 </rect>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">color: black;
+</string>
+                </property>
+                <property name="text">
+                 <string/>
                 </property>
                </widget>
               </widget>

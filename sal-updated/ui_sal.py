@@ -1061,7 +1061,7 @@ class Ui_MainWindow(object):
         self.chloride_labell.setGeometry(QRect(10, 90, 102, 16))
         self.rd_zone_checkbox = QCheckBox(self.multiple_guideline_panel)
         self.rd_zone_checkbox.setObjectName(u"rd_zone_checkbox")
-        self.rd_zone_checkbox.setGeometry(QRect(390, 10, 134, 20))
+        self.rd_zone_checkbox.setGeometry(QRect(370, 10, 81, 20))
         self.rd_zone_checkbox.setStyleSheet(u"color: black;\n"
 "")
         self.st_zone_label = QLabel(self.multiple_guideline_panel)
@@ -1071,7 +1071,7 @@ class Ui_MainWindow(object):
 "")
         self.nd_zone_label = QLabel(self.multiple_guideline_panel)
         self.nd_zone_label.setObjectName(u"nd_zone_label")
-        self.nd_zone_label.setGeometry(QRect(220, 10, 161, 16))
+        self.nd_zone_label.setGeometry(QRect(200, 10, 161, 16))
         self.nd_zone_label.setStyleSheet(u"color: black;\n"
 "")
         self.st_zone_label_2 = QLabel(self.multiple_guideline_panel)
@@ -1097,6 +1097,11 @@ class Ui_MainWindow(object):
 "    padding: 2px;\n"
 "    font: 10pt \"Segoe UI\";")
         self.top_depth2.setMaximum(5000.000000000000000)
+        self.rd_zone_label = QLabel(self.multiple_guideline_panel)
+        self.rd_zone_label.setObjectName(u"rd_zone_label")
+        self.rd_zone_label.setGeometry(QRect(390, 10, 151, 20))
+        self.rd_zone_label.setStyleSheet(u"color: black;\n"
+"")
         self.single_guideline_checkbox = QCheckBox(self.guideline)
         self.single_guideline_checkbox.setObjectName(u"single_guideline_checkbox")
         self.single_guideline_checkbox.setGeometry(QRect(20, 19, 123, 20))
@@ -1626,10 +1631,11 @@ class Ui_MainWindow(object):
         self.chloride_label.setText(QCoreApplication.translate("MainWindow", u"Chloride (mg/kg)", None))
         self.sub_parameter_label.setText(QCoreApplication.translate("MainWindow", u"Sub Parameter", None))
         self.chloride_labell.setText(QCoreApplication.translate("MainWindow", u"Chloride (mg/kg)", None))
-        self.rd_zone_checkbox.setText(QCoreApplication.translate("MainWindow", u"3rd Zone", None))
+        self.rd_zone_checkbox.setText("")
         self.st_zone_label.setText(QCoreApplication.translate("MainWindow", u"1st Zone", None))
         self.nd_zone_label.setText(QCoreApplication.translate("MainWindow", u"2nd Zone", None))
         self.st_zone_label_2.setText(QCoreApplication.translate("MainWindow", u"Depth Criteria", None))
+        self.rd_zone_label.setText("")
         self.single_guideline_checkbox.setText(QCoreApplication.translate("MainWindow", u"Single Guideline", None))
         self.apply_button_guideline.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
         self.reset_button_guideline.setText(QCoreApplication.translate("MainWindow", u"Reset", None))
