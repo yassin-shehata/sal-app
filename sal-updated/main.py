@@ -10,6 +10,8 @@ TODO:
 
 # from fake_sensor import cl_startup
 from matplotlib.ticker import FormatStrFormatter  # add once at top of file
+from PySide6.QtWidgets import QFrame
+from PySide6.QtWidgets import QHBoxLayout
 
 import re
 from excel_exporter import append_or_create_excel
@@ -144,7 +146,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.coeff = None    
         self.structure = None    
         self.rsquared = None    
-        self.ionEquation = None
+        self.ionEquation = float('nan')
 
         # guideline selection 
         self.index = None    
@@ -184,6 +186,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.replication  = None 
         self.stabilizationTime  = None 
         self.filename = None 
+
+        self.enforce_auto_sample_naming = False
+        self.session_only_rows = []
+        self.session_only_data_indices = []
+
         
         print("✅ btn_system_connect found:", self.btn_system_connect is not None)
         print("✅ indicator_connection found:", self.indicator_connection is not None)
@@ -226,6 +233,21 @@ class Window(QMainWindow, Ui_MainWindow):
         self.bore_hole_no_input.setReadOnly(False)
         self.top_depth_input.setReadOnly(False)
         self.bottom_depth_input.setReadOnly(False)
+
+        # settign defualt single guidline
+        self.single_guideline_checkbox.setChecked(True)
+        self.multiple_guideline_checkbox.setChecked(False)
+        self.singleGuidelineCheckboxChanged()
+
+        self.StabilizationTimeEditField.setValue(120)
+        self.bottom_depth_input.setValue(0.1)
+        self.sample_no_spinbox.setValue(1)
+
+
+        
+
+
+      
        
         self.main()
 
@@ -756,17 +778,19 @@ class Window(QMainWindow, Ui_MainWindow):
             QMessageBox.Yes | QMessageBox.No
         )
         if stab_choice == QMessageBox.Yes:
-            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
+            dlg = QProgressDialog("Stabilizing sensor", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             dlg.setWindowTitle("Sensor Stabilization Timer")
             dlg.setWindowModality(Qt.ApplicationModal)
             dlg.setCancelButtonText("Stop Timer")
             dlg.setAutoClose(True)
             dlg.setMinimumDuration(0)
 
+            canceled = False
             for i in range(1, self.StabilizationTimeEditField.value() + 1):
                 if dlg.wasCanceled():
                     dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
+                    canceled = True
                     break
                 time_r = self.StabilizationTimeEditField.value() - i
                 dlg.setValue(i)
@@ -777,6 +801,9 @@ class Window(QMainWindow, Ui_MainWindow):
             dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
+        
+            if canceled:
+                QMessageBox.information(self, "Timer Cancelled", "Timer was stopped. Proceeding to calibration anyway.")
 
         # Start Progress Gauge
         self.txt_system_note.setVisible(False)
@@ -960,24 +987,35 @@ class Window(QMainWindow, Ui_MainWindow):
             QMessageBox.No
         )
 
-        if stability_timer == QMessageBox.Yes:  # Timer
-            progress = QProgressDialog("Preparing to setup timer...", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
-            progress.setWindowTitle("Sensor Stabilization Timer")
-            progress.setWindowModality(Qt.WindowModal)
-            progress.setMinimumDuration(0)
-            for i in range(1, self .StabilizationTimeEditField.value() + 1):
-                if progress.wasCanceled():
-                    progress.setLabelText("Stopping Timer...")
+        if stability_timer == QMessageBox.Yes:
+            dlg = QProgressDialog("Stabilizing sensor", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
+            dlg.setWindowTitle("Sensor Stabilization Timer")
+            dlg.setWindowModality(Qt.ApplicationModal)
+            dlg.setCancelButtonText("Stop Timer")
+            dlg.setAutoClose(True)
+            dlg.setMinimumDuration(0)
+
+            canceled = False
+            for i in range(1, self.StabilizationTimeEditField.value() + 1):
+                if dlg.wasCanceled():
+                    dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
+                    canceled = True
                     break
                 time_r = self.StabilizationTimeEditField.value() - i
-                progress.setValue(i)
-                progress.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
+                dlg.setValue(i)
+                dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
+                QCoreApplication.processEvents()
                 time.sleep(1)
-            progress.setValue(self.StabilizationTimeEditField.value())
-            progress.setLabelText("Finishing...")
+
+            dlg.setValue(self.StabilizationTimeEditField.value())
+            dlg.setLabelText("Finishing...")
             time.sleep(1)
-            progress.close()
+            dlg.close()
+
+            if canceled:
+                # If the timer was canceled, show a message box
+                QMessageBox.information(self, "Timer Cancelled", "Timer was stopped. Proceeding to calibration anyway.")
 
         # Start progress bar
         self.txt_system_note.setVisible(False)
@@ -1125,28 +1163,33 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Sensor stabilization check
         stability_check = QMessageBox.question(self, "Sensor Stabilization", "Have you stabilized the sensor yet?\nIf not, start the Timer. Otherwise, skip.")
-        if stability_check == QMessageBox.Yes:  # Timer
-            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
+        if stability_check == QMessageBox.Yes:
+            dlg = QProgressDialog("Stabilizing sensor", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             dlg.setWindowTitle("Sensor Stabilization Timer")
-            dlg.setAutoClose(False)
+            dlg.setWindowModality(Qt.ApplicationModal)
             dlg.setCancelButtonText("Stop Timer")
+            dlg.setAutoClose(True)
             dlg.setMinimumDuration(0)
 
-            for i in range(self.StabilizationTimeEditField.value()):
+            canceled = False
+            for i in range(1, self.StabilizationTimeEditField.value() + 1):
                 if dlg.wasCanceled():
                     dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
+                    canceled = True
                     break
                 time_r = self.StabilizationTimeEditField.value() - i
                 dlg.setValue(i)
                 dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
-                QApplication.processEvents()
+                QCoreApplication.processEvents()
                 time.sleep(1)
 
             dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
-            dlg.close()
+
+            if canceled:
+                QMessageBox.information(self, "Timer Cancelled", "Timer was stopped. Proceeding to calibration anyway.")
 
         # Show progress
         self.txt_system_note.hide()
@@ -1309,26 +1352,33 @@ class Window(QMainWindow, Ui_MainWindow):
         )
 
         if stab_confirm == QMessageBox.Yes:
-            dlg = QProgressDialog("Preparing to setup timer", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
+            dlg = QProgressDialog("Stabilizing sensor", "Stop Timer", 0, self.StabilizationTimeEditField.value(), self)
             dlg.setWindowTitle("Sensor Stabilization Timer")
             dlg.setWindowModality(Qt.ApplicationModal)
+            dlg.setCancelButtonText("Stop Timer")
             dlg.setAutoClose(True)
             dlg.setMinimumDuration(0)
 
+            canceled = False
             for i in range(1, self.StabilizationTimeEditField.value() + 1):
                 if dlg.wasCanceled():
                     dlg.setLabelText("Stopping Timer...")
                     time.sleep(1)
+                    canceled = True
                     break
                 time_r = self.StabilizationTimeEditField.value() - i
                 dlg.setValue(i)
-                dlg.setLabelText(f"Waiting... ({time_r//60}:{time_r%60:02d})")
+                dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
                 QCoreApplication.processEvents()
                 time.sleep(1)
 
             dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
+
+            if canceled:
+                QMessageBox.information(self, "Timer Cancelled", "Timer was stopped. Proceeding to calibration anyway.")
+
 
         # Start progress
         self.txt_system_note.setVisible(False)
@@ -1906,11 +1956,16 @@ class Window(QMainWindow, Ui_MainWindow):
     def measurementButtonPushed(self):
         # Disable all relevant buttons
         self.setEnableButtons(False)
+        self.measurementData.clear()
+        self.stddata.clear()
+        self.ionTableData = pd.DataFrame()
+        self.session_only_data_indices.append(len(self.measurementData) - 1)
 
         self.setCircleColour(self.indicator_note_status, "grey") 
         self.lbl_system_note.setText("") 
         self.average_potential_input.setPlainText("0.00")  
-        self.cl_criteria_input.setPlainText("")  
+        if not self.cl_criteria_input.toPlainText():
+            self.cl_criteria_input.setPlainText("100")
         self.salt_in_liquid_input.setText("")  
         self.salt_in_ground_input.setText("")
 
@@ -2014,7 +2069,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.lbl_progress_status.setText("Preparing to gather 100 data point to stabilization")
         QApplication.processEvents()
         time.sleep(0.5)
-
         # Start new plot
         self.startPlotting()
 
@@ -2178,6 +2232,9 @@ class Window(QMainWindow, Ui_MainWindow):
         append_or_create_excel(self.rawFileName, "STD value", [stddata], header_std)
         row_position = self.sample_table.rowCount()
         self.sample_table.insertRow(row_position)
+        self.session_only_rows.append(row_position)
+
+
 
         for col, item in enumerate(sampledata):
             self.sample_table.setItem(row_position, col, QTableWidgetItem(str(item)))
@@ -2186,6 +2243,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.measurementData.append(measurementdata)
         self.stddata.append(stddata)
+        self.sample_no_spinbox.setValue(self.sample_no_spinbox.value() + 1)
 
     def recalculateButtonPushed(self):
         self.setEnableButtons(False)
@@ -2322,8 +2380,16 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.sample_table.rowCount() > 0:
             self.export_data_button.setEnabled(True)
 
+        
         self.measurementData.append(measurementdata)
         self.stddata.append(stddata)
+        self.sample_no_spinbox.setValue(self.sample_no_spinbox.value() + 1)
+        row_position = self.sample_table.rowCount()
+        self.sample_table.insertRow(row_position)
+        self.session_only_rows.append(row_position)
+
+        for col, item in enumerate(sampledata):
+            self.sample_table.setItem(row_position, col, QTableWidgetItem(str(item)))
 
     def autoFileNamingCheckBoxValueChanged(self):
         is_checked = self.auto_file_naming_checkbox.isChecked()
@@ -2341,8 +2407,8 @@ class Window(QMainWindow, Ui_MainWindow):
         row_count = self.sample_table.rowCount()
         col_count = self.sample_table.columnCount()
 
-        data = []
-        for row in range(row_count):
+        data = []   
+        for row in self.session_only_rows:
             row_data = []
             for col in range(col_count):
                 item = self.sample_table.item(row, col)
@@ -2361,20 +2427,32 @@ class Window(QMainWindow, Ui_MainWindow):
                     "STD check (100ppm)", "STD check potential (mV)"]
 
         if not self.auto_file_naming_checkbox.isChecked():
-            self.filename = self.file_name_input.text() + ".xlsx"
+            file_name = self.file_name_input.text().strip()
+            if not file_name:
+                QMessageBox.warning(self, "Missing Filename", "Please enter a valid file name.")
+                self.setEnableButtons(True)
+                return
+            self.filename = file_name + ".xlsx"
         else:
             self.filename = f"{self.project_name_input.toPlainText()}_SAL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+        
+        session_rows = [self.sample_table.item(i, j).text() if self.sample_table.item(i, j) else "" 
+                for i in self.session_only_rows 
+                for j in range(self.sample_table.columnCount())]
+        reshaped_rows = [session_rows[i:i + self.sample_table.columnCount()] 
+                        for i in range(0, len(session_rows), self.sample_table.columnCount())]
+        df_sample = pd.DataFrame(reshaped_rows, columns=[
+            "Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication",
+            "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)",
+            "Potential (mV)", "Cl Criteria (mg/kg)"
+])
 
-        df_sample = self.ionTableData.copy()
-        df_sample = df_sample[df_sample.iloc[:, 0] == "True"]
 
         if df_sample.empty:
             QMessageBox.warning(self, "Export Warning", "No rows selected for export.")
             return
 
         df_sample.columns = header_sample
-        df_measurement = pd.DataFrame(self.measurementData, columns=header_measurement)
-        df_std = pd.DataFrame(self.stddata, columns=header_std)
         print(f"📦 df_sample rows: {len(df_sample)}")
         print(f"📐 df_measurement rows: {len(self.measurementData)}")
         print(f"📊 df_std rows: {len(self.stddata)}")
@@ -2387,10 +2465,11 @@ class Window(QMainWindow, Ui_MainWindow):
             return
 
         df_sample = df_sample.iloc[:valid_row_count]
-        df_measurement = pd.DataFrame(self.measurementData[:valid_row_count], columns=header_measurement)
-        df_std = pd.DataFrame(self.stddata[:valid_row_count], columns=header_std)
+        df_measurement = pd.DataFrame([self.measurementData[i] for i in self.session_only_data_indices], columns=header_measurement)
+        df_std = pd.DataFrame([self.stddata[i] for i in self.session_only_data_indices], columns=header_std)
 
-
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
         # Export to Excel
         with pd.ExcelWriter(self.filename, engine='openpyxl') as writer:
             df_sample.to_excel(writer, sheet_name='AISCT_SAL', index=False)

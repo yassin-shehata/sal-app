@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
 "    background-color: transparent;\n"
 "}\n"
 "QMainWindow {\n"
-"    background-color: rgb(227, 229, 123);\n"
+"    background-color: rgb(0, 0, 0); \n"
 "}\n"
 "QPushButton {\n"
 "    border: 1px solid black;\n"
@@ -1202,6 +1202,7 @@ class Ui_MainWindow(object):
 
         self.StabilizationTimeEditField = QSpinBox(self.options_frame)
         self.StabilizationTimeEditField.setObjectName(u"StabilizationTimeEditField")
+        self.StabilizationTimeEditField.setMaximum(1000)
 
         self.horizontalLayout_10.addWidget(self.StabilizationTimeEditField)
 
@@ -1493,7 +1494,7 @@ class Ui_MainWindow(object):
         sizePolicy16.setHeightForWidth(self.measurement_range_label.sizePolicy().hasHeightForWidth())
         self.measurement_range_label.setSizePolicy(sizePolicy16)
         self.measurement_range_label.setFont(font6)
-        self.measurement_range_label.setStyleSheet(u"color: black;\n"
+        self.measurement_range_label.setStyleSheet(u"color: white;\n"
 "background: transparent")
 
         self.horizontalLayout_bottom.addWidget(self.measurement_range_label)
@@ -1506,7 +1507,7 @@ class Ui_MainWindow(object):
         sizePolicy17.setHeightForWidth(self.auto_file_naming_checkbox.sizePolicy().hasHeightForWidth())
         self.auto_file_naming_checkbox.setSizePolicy(sizePolicy17)
         self.auto_file_naming_checkbox.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.auto_file_naming_checkbox.setStyleSheet(u"color: black;\n"
+        self.auto_file_naming_checkbox.setStyleSheet(u"color: white;\n"
 "background: transparent\n"
 "")
 
@@ -1518,13 +1519,15 @@ class Ui_MainWindow(object):
         self.file_name_label.setSizePolicy(sizePolicy9)
         self.file_name_label.setFont(font4)
         self.file_name_label.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
-        self.file_name_label.setStyleSheet(u"color: black;\n"
+        self.file_name_label.setStyleSheet(u"color: white;\n"
 "background: transparent")
 
         self.horizontalLayout_bottom.addWidget(self.file_name_label)
 
         self.file_name_input = QLineEdit(self.centralwidget)
         self.file_name_input.setObjectName(u"file_name_input")
+        self.file_name_input.setStyleSheet(u"color: black;\n"
+"")
 
         self.horizontalLayout_bottom.addWidget(self.file_name_input)
 
@@ -1561,7 +1564,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.sample_measurement_tab_widget.setCurrentIndex(2)
+        self.sample_measurement_tab_widget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1671,6 +1674,7 @@ class Ui_MainWindow(object):
         self.measurement_range_label.setText(QCoreApplication.translate("MainWindow", u"*Measurement Range (mg/kg): 50~5,000, N.D. = non detective, M.C. = meet criteria", None))
         self.auto_file_naming_checkbox.setText(QCoreApplication.translate("MainWindow", u"Auto File Naming", None))
         self.file_name_label.setText(QCoreApplication.translate("MainWindow", u"File Name:", None))
+        self.file_name_input.setText("")
         self.export_data_button.setText(QCoreApplication.translate("MainWindow", u"Export Data", None))
     # retranslateUi
 

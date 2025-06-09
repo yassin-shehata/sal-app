@@ -31,7 +31,7 @@ QWidget {
     background-color: transparent;
 }
 QMainWindow {
-    background-color: rgb(227, 229, 123);
+    background-color: rgb(0, 0, 0); 
 }
 QPushButton {
     border: 1px solid black;
@@ -821,7 +821,7 @@ QPushButton:disabled {
 </string>
              </property>
              <property name="currentIndex">
-              <number>2</number>
+              <number>3</number>
              </property>
              <widget class="QWidget" name="calibration">
               <attribute name="title">
@@ -2269,7 +2269,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="StabilizationTimeEditField"/>
+                   <widget class="QSpinBox" name="StabilizationTimeEditField">
+                    <property name="maximum">
+                     <number>1000</number>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="QLabel" name="baseline_label">
@@ -2800,7 +2804,7 @@ QPushButton:disabled {
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: black;
+         <string notr="true">color: white;
 background: transparent</string>
         </property>
         <property name="text">
@@ -2820,7 +2824,7 @@ background: transparent</string>
          <enum>Qt::LayoutDirection::LeftToRight</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: black;
+         <string notr="true">color: white;
 background: transparent
 </string>
         </property>
@@ -2847,7 +2851,7 @@ background: transparent
          <enum>Qt::LayoutDirection::RightToLeft</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: black;
+         <string notr="true">color: white;
 background: transparent</string>
         </property>
         <property name="text">
@@ -2856,7 +2860,15 @@ background: transparent</string>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="file_name_input"/>
+       <widget class="QLineEdit" name="file_name_input">
+        <property name="styleSheet">
+         <string notr="true">color: black;
+</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="export_data_button">
