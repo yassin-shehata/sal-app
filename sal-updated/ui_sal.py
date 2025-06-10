@@ -1574,6 +1574,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.sample_measurement_tab_widget.setCurrentIndex(3)
+        self.moisture_combobox.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

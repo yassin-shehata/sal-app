@@ -205,7 +205,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.recalculation_button.setEnabled(False) # start with Refresh disabled
         self.options_frame.setVisible(False)
         self.export_data_button.setEnabled(False)
-        self.cl_criteria_input.setPlainText("100")
+        self.cl_criteria_input.setPlainText("50")
         self.cl_criteria_input.setReadOnly(True)
         self.chloride_input.setValue(100.0)
         self.sample_table.setColumnCount(10)
@@ -1670,8 +1670,8 @@ class Window(QMainWindow, Ui_MainWindow):
             self.main_parameter_input.setText("N/A")
             self.sub_parameter_input.setText("N/A")
 
-            self.chloride_input.setValue(100)
-            self.cl_criteria_input.setText(str(100))
+            self.chloride_input.setValue(50)
+            self.cl_criteria_input.setText(str(50))
 
         else:
             self.multiple_guideline_checkbox.setChecked(True)
@@ -1772,8 +1772,8 @@ class Window(QMainWindow, Ui_MainWindow):
             self.main_parameter_input.setText("N/A")
             self.sub_parameter_input.setText("N/A")
 
-            self.chloride_input.setValue(100)
-            self.cl_criteria_input.setText(str(100))
+            self.chloride_input.setValue(50)
+            self.cl_criteria_input.setText(str(50))
     
     def applyButtonPushed(self):
         self.depth1value = self.top_depth1.value()
