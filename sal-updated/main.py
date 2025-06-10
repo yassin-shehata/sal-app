@@ -281,9 +281,16 @@ class Window(QMainWindow, Ui_MainWindow):
         self.apply_button_guideline.clicked.connect(self.applyButtonPushed)
         self.reset_button_guideline.clicked.connect(self.resetButtonPushed)
         self.rd_zone_checkbox.stateChanged.connect(self.rdZoneCheckboxValueChanged)  
+        self.sample_table.itemClicked.connect(self.toggleCheckFlag)
 
 
-   
+    def toggleCheckFlag(self, item):
+        """Single-click toggles the text in column 0 between True / False."""
+        if item.column() != 0:
+            return  # only the “Check” column
+        current = item.text().strip().lower() == "true"
+        item.setText("False" if current else "True")
+
 
     def syncChlorideToClCriteria(self):
         value = self.chloride_input.value()
@@ -482,6 +489,11 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.measurement_data = pd.read_excel(self.rawFileName, sheet_name="Measurement Conditions", skiprows=1)
                 self.std_data = pd.read_excel(self.rawFileName, sheet_name="STD value", skiprows=1)
 
+                self.measurementData          = self.measurement_data.values.tolist()
+                self.stddata                  = self.std_data.values.tolist()
+                self.session_only_rows        = list(range(self.sample_table.rowCount()))
+                self.session_only_data_indices = list(range(len(self.measurementData)))
+                
                 if not self.std_data.empty:
                     self.STD10ppmEditField.setPlainText(str(float(self.std_data.iloc[-1, 5])))
                     self.STD100ppmEditField.setPlainText(str(float(self.std_data.iloc[-1, 6])))
@@ -1863,10 +1875,12 @@ class Window(QMainWindow, Ui_MainWindow):
         )
         if confirm == QMessageBox.No:
             self.lbl_system_note.setText("REQUIRED")
+            self.txt_system_note.setVisible(True)
+            self.txt_system_note.setText("Place the correct 100 ppm standard solution before proceeding with the STD check.")
             self.setCircleColour(self.indicator_note_status, "yellow")
-            self.showMessage("STD Check", "Before collecting the 100 ppm standard solution, place the correct standard solution.")
             self.setEnableButtons(True)
             return
+
 
         # Sensor stabilization dialog
         stab_dialog = QMessageBox(self)
@@ -1877,9 +1891,34 @@ class Window(QMainWindow, Ui_MainWindow):
         stab_dialog.exec()
 
         if stab_dialog.clickedButton() == timer_btn:
+            self.stabilizationTime = self.StabilizationTimeEditField.value()
             duration = self.stabilizationTime if self.stabilizationTime else 60
-            self.timer_dialog = Timer(duration)
-            self.timer_dialog.canceled.connect(self.timer_dialog.cancelEvent)
+            dlg = QProgressDialog("Stabilizing sensor", "Stop Timer", 0, duration, self)
+            dlg.setWindowTitle("Sensor Stabilization Timer")
+            dlg.setWindowModality(Qt.ApplicationModal)
+            dlg.setCancelButtonText("Stop Timer")
+            dlg.setAutoClose(True)
+            dlg.setMinimumDuration(0)
+
+            canceled = False
+            for i in range(1, duration + 1):
+                if dlg.wasCanceled():
+                    dlg.setLabelText("Stopping Timer...")
+                    time.sleep(1)
+                    canceled = True
+                    break
+                time_r = duration - i
+                dlg.setValue(i)
+                dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
+                QCoreApplication.processEvents()
+                time.sleep(1)
+
+            dlg.setValue(duration)
+            dlg.setLabelText("Finishing...")
+            time.sleep(1)
+
+            if canceled:
+                QMessageBox.information(self, "Timer Cancelled", "Timer was stopped. Proceeding anyway.")
 
         # Start plot & progress
         self.startPlotting()
@@ -1916,10 +1955,23 @@ class Window(QMainWindow, Ui_MainWindow):
             else:
                 self.startPlotting()
                 self.ion_data = []
+
+                progress = QProgressDialog("Collecting 100 data points...", "Cancel", 0, 100, self)
+                progress.setWindowTitle("Sensor Data Collection")
+                progress.setValue(0)
+                progress.setAutoClose(True)
+                progress.setAutoReset(True)
+                progress.setCancelButton(None)
+                progress.show()
+
                 for i in range(100):
                     QApplication.processEvents()
+                    if progress.wasCanceled():
+                        break
                     self.ion_data.append([time.time(), self.cl_read(), np.nan])
+                    progress.setValue(i + 1)
                     time.sleep(self.samplingPeriod)
+                    
                 raw = np.array([x[1] for x in self.ion_data[-100:]])
                 avg = np.mean(raw)
                 err = np.abs(raw - avg) / avg
@@ -1935,12 +1987,14 @@ class Window(QMainWindow, Ui_MainWindow):
         # Validation of STD result
         if self.stdCheck < 80 or self.stdCheck > 120:
             code = "02.01" if self.stdCheck < 80 else "02.02"
-            QMessageBox.warning(
-                self,
-                "STD Check Error",
+            message = (
                 f"STD check error [code {code}]\nSTD value out of expected range.\nReset calibration and retry."
             )
+            QMessageBox.warning(self, "STD Check Error", message)
+
             self.lbl_system_note.setText("REQUIRED")
+            self.txt_system_note.setVisible(True)
+            self.txt_system_note.setText(message)
             self.setCircleColour(self.indicator_note_status, "yellow")
             self.setEnableButtons(True)
             return
@@ -1956,10 +2010,6 @@ class Window(QMainWindow, Ui_MainWindow):
     def measurementButtonPushed(self):
         # Disable all relevant buttons
         self.setEnableButtons(False)
-        self.measurementData.clear()
-        self.stddata.clear()
-        self.ionTableData = pd.DataFrame()
-        self.session_only_data_indices.append(len(self.measurementData) - 1)
 
         self.setCircleColour(self.indicator_note_status, "grey") 
         self.lbl_system_note.setText("") 
@@ -2058,8 +2108,33 @@ class Window(QMainWindow, Ui_MainWindow):
             QMessageBox.Yes | QMessageBox.Ignore
         )
         if stab_choice == QMessageBox.Yes:
-            self.timer_dialog = Timer(self.stabilizationTime)
-            self.timer_dialog.canceled.connect(self.timer_dialog.cancelEvent)
+            dlg = QProgressDialog("Stabilizing sensor", "Stop Timer", 0, self.stabilizationTime, self)
+            dlg.setWindowTitle("Sensor Stabilization Timer")
+            dlg.setWindowModality(Qt.ApplicationModal)
+            dlg.setCancelButtonText("Stop Timer")
+            dlg.setAutoClose(True)
+            dlg.setMinimumDuration(0)
+
+            canceled = False
+            for i in range(1, self.stabilizationTime + 1):
+                if dlg.wasCanceled():
+                    dlg.setLabelText("Stopping Timer...")
+                    time.sleep(1)
+                    canceled = True
+                    break
+                time_r = self.stabilizationTime - i
+                dlg.setValue(i)
+                dlg.setLabelText(f"Waiting... ({time_r // 60}:{time_r % 60:02d})")
+                QCoreApplication.processEvents()
+                time.sleep(1)
+
+            dlg.setValue(self.stabilizationTime)
+            dlg.setLabelText("Finishing...")
+            time.sleep(1)
+
+            if canceled:
+                QMessageBox.information(self, "Timer Cancelled", "Timer was stopped. Proceeding anyway.")
+
 
         # Progress gauge
         self.txt_system_note.setVisible(False)
@@ -2098,16 +2173,26 @@ class Window(QMainWindow, Ui_MainWindow):
             if retry == QMessageBox.Ignore:
                 break
             else:
-                self.timer_dialog = Timer(self.stabilizationTime)
-                self.timer_dialog.canceled.connect(self.timer_dialog.cancelEvent)
                 self.startPlotting()
                 self.rawData = []
+
+                self.bar_progress.setVisible(True)
+                self.lbl_progress_status.setVisible(True)
+                self.bar_progress.setValue(0)
+                self.lbl_progress_status.setText("Retrying... Collecting Data")
+                QApplication.processEvents()
+
                 for i in range(100):
                     self.rawData.append(self.cl_read())
+                    self.bar_progress.setValue(20 + 60 * i // 100)
+                    self.lbl_progress_status.setText(f"Retrying... Collecting Data ({i+1}/100)")
+                    QApplication.processEvents()
                     time.sleep(self.samplingPeriod)
+
                 self.rawData = np.array(self.rawData[-100:])
                 avg = np.mean(self.rawData)
                 err = np.abs(self.rawData - avg) / avg
+
 
         self.samplePotential = avg
         self.rawSample = self.ionEquation(avg)
@@ -2234,15 +2319,21 @@ class Window(QMainWindow, Ui_MainWindow):
         self.sample_table.insertRow(row_position)
         self.session_only_rows.append(row_position)
 
+        # --- column 0 : default “True”  -----------------
+        check_item = QTableWidgetItem("True")
+        check_item.setFlags(check_item.flags() & ~Qt.ItemIsEditable)  # still clickable but not text-editable
+        self.sample_table.setItem(row_position, 0, check_item)
 
+        # --- remaining columns 1-9 ----------------------
+        for col, value in enumerate(sampledata[1:], start=1):   # skip first element (“Check”)
+            self.sample_table.setItem(row_position, col, QTableWidgetItem(str(value)))
 
-        for col, item in enumerate(sampledata):
-            self.sample_table.setItem(row_position, col, QTableWidgetItem(str(item)))
         if self.sample_table.rowCount() > 0:
             self.export_data_button.setEnabled(True)
 
         self.measurementData.append(measurementdata)
         self.stddata.append(stddata)
+        self.session_only_data_indices.append(len(self.measurementData) - 1)
         self.sample_no_spinbox.setValue(self.sample_no_spinbox.value() + 1)
 
     def recalculateButtonPushed(self):
@@ -2383,13 +2474,22 @@ class Window(QMainWindow, Ui_MainWindow):
         
         self.measurementData.append(measurementdata)
         self.stddata.append(stddata)
+        # keep the correct index for export
+        self.session_only_data_indices.append(len(self.measurementData) - 1)
         self.sample_no_spinbox.setValue(self.sample_no_spinbox.value() + 1)
         row_position = self.sample_table.rowCount()
         self.sample_table.insertRow(row_position)
         self.session_only_rows.append(row_position)
 
-        for col, item in enumerate(sampledata):
-            self.sample_table.setItem(row_position, col, QTableWidgetItem(str(item)))
+        # --- column 0 : default “True”  -----------------
+        check_item = QTableWidgetItem("True")
+        check_item.setFlags(check_item.flags() & ~Qt.ItemIsEditable)  # still clickable but not text-editable
+        self.sample_table.setItem(row_position, 0, check_item)
+
+        # --- remaining columns 1-9 ----------------------
+        for col, value in enumerate(sampledata[1:], start=1):   # skip first element (“Check”)
+            self.sample_table.setItem(row_position, col, QTableWidgetItem(str(value)))
+
 
     def autoFileNamingCheckBoxValueChanged(self):
         is_checked = self.auto_file_naming_checkbox.isChecked()
@@ -2398,90 +2498,90 @@ class Window(QMainWindow, Ui_MainWindow):
         self.file_name_input.setText("")
    
     def exportDataButtonPushed(self):
+        # lock UI
         self.setEnableButtons(False)
-
-        self.txt_system_note.setText("")
+        self.txt_system_note.clear()
+        self.lbl_system_note.clear()
         self.setCircleColour(self.indicator_note_status, "grey")
-        self.lbl_system_note.setText("")
 
-        row_count = self.sample_table.rowCount()
+        # 1️⃣ read the new checkbox
+        export_true_only = self.only_checked_checkbox.isChecked()
+
         col_count = self.sample_table.columnCount()
+        data = []
+        selected_row_pairs = []   # (tableRow , sessionIdx) for later alignment
 
-        data = []   
-        for row in self.session_only_rows:
-            row_data = []
-            for col in range(col_count):
-                item = self.sample_table.item(row, col)
-                row_data.append(item.text() if item else "")
-            data.append(row_data)
+        for table_row, session_idx in zip(self.session_only_rows,
+                                        self.session_only_data_indices):
+            check_val = self.sample_table.item(table_row, 0).text()
+            if export_true_only and check_val.lower() != "true":
+                continue           # skip rows whose “Check” column ≠ True
 
-        self.ionTableData = pd.DataFrame(data)
+            row = [
+                self.sample_table.item(table_row, c).text()
+                if self.sample_table.item(table_row, c) else ""
+                for c in range(col_count)
+            ]
+            data.append(row)
+            selected_row_pairs.append((table_row, session_idx))
 
-        header_sample = ["Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication",
-                 "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)"]
-        header_measurement = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication",
-                            "Guideline Type", "MainParameter", "SubParameter", "Cl Criteria (mg/kg)",
-                            "Moisture(%)", "Buffer Range (%)", "Stabilization Time (s)", "Baseline"]
+        if not data:
+            QMessageBox.information(self, "Export",
+                                    "No rows matched that filter – nothing exported.")
+            self.setEnableButtons(True)
+            return
+
+        # ---------- build the three DataFrames ----------
+        header_sample = ["Check", "Date", "ProjectName", "SampleNo", "SampleID",
+                        "Replication", "Chloride in Soil (mg/kg)",
+                        "Chloride in Liquid (mg/L)", "Potential (mV)",
+                        "Cl Criteria (mg/kg)"]
+        header_measurement = ["Date", "ProjectName", "SampleNo", "SampleID",
+                            "Replication", "Guideline Type", "MainParameter",
+                            "SubParameter", "Cl Criteria (mg/kg)", "Moisture(%)",
+                            "Buffer Range (%)", "Stabilization Time (s)",
+                            "Baseline"]
         header_std = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication",
                     "STD 10ppm", "STD 100ppm", "STD 1000ppm", "STD 5000ppm",
                     "STD check (100ppm)", "STD check potential (mV)"]
 
+        df_sample = pd.DataFrame(data, columns=header_sample)
+        keep_idx = [p[1] for p in selected_row_pairs]
+        df_measure = pd.DataFrame([self.measurementData[i] for i in keep_idx],
+                                columns=header_measurement)
+        df_std = pd.DataFrame([self.stddata[i] for i in keep_idx],
+                            columns=header_std)
+
+        # ---------- filename logic (unchanged) ----------
         if not self.auto_file_naming_checkbox.isChecked():
             file_name = self.file_name_input.text().strip()
             if not file_name:
-                QMessageBox.warning(self, "Missing Filename", "Please enter a valid file name.")
+                QMessageBox.warning(self, "Missing Filename",
+                                    "Please enter a valid file name.")
                 self.setEnableButtons(True)
                 return
             self.filename = file_name + ".xlsx"
         else:
-            self.filename = f"{self.project_name_input.toPlainText()}_SAL_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
-        
-        session_rows = [self.sample_table.item(i, j).text() if self.sample_table.item(i, j) else "" 
-                for i in self.session_only_rows 
-                for j in range(self.sample_table.columnCount())]
-        reshaped_rows = [session_rows[i:i + self.sample_table.columnCount()] 
-                        for i in range(0, len(session_rows), self.sample_table.columnCount())]
-        df_sample = pd.DataFrame(reshaped_rows, columns=[
-            "Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication",
-            "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)",
-            "Potential (mV)", "Cl Criteria (mg/kg)"
-])
+            self.filename = (f"{self.project_name_input.toPlainText()}_SAL_"
+                            f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx")
 
-
-        if df_sample.empty:
-            QMessageBox.warning(self, "Export Warning", "No rows selected for export.")
-            return
-
-        df_sample.columns = header_sample
-        print(f"📦 df_sample rows: {len(df_sample)}")
-        print(f"📐 df_measurement rows: {len(self.measurementData)}")
-        print(f"📊 df_std rows: {len(self.stddata)}")
-        # Align measurement and STD data by row count, not index
-        # Only export the number of rows you actually have measurement + STD data for
-        valid_row_count = min(len(df_sample), len(self.measurementData), len(self.stddata))
-
-        if valid_row_count == 0:
-            QMessageBox.warning(self, "Export Error", "Not enough valid measurement data.")
-            return
-
-        df_sample = df_sample.iloc[:valid_row_count]
-        df_measurement = pd.DataFrame([self.measurementData[i] for i in self.session_only_data_indices], columns=header_measurement)
-        df_std = pd.DataFrame([self.stddata[i] for i in self.session_only_data_indices], columns=header_std)
-
+        # delete if already exists
         if os.path.exists(self.filename):
             os.remove(self.filename)
-        # Export to Excel
-        with pd.ExcelWriter(self.filename, engine='openpyxl') as writer:
-            df_sample.to_excel(writer, sheet_name='AISCT_SAL', index=False)
-            df_measurement.to_excel(writer, sheet_name='Measurement Conditions', index=False)
-            df_std.to_excel(writer, sheet_name='STD value', index=False)
 
-        self.txt_system_note.setText("The predicted values have been successfully exported.")
+        # ---------- write the three sheets ----------
+        with pd.ExcelWriter(self.filename, engine="openpyxl") as writer:
+            df_sample.to_excel(writer, sheet_name="AISCT_SAL", index=False)
+            df_measure.to_excel(writer, sheet_name="Measurement Conditions",
+                                index=False)
+            df_std.to_excel(writer, sheet_name="STD value", index=False)
+
+        # feedback
+        self.txt_system_note.setText("Selected rows exported successfully.")
         self.lbl_system_note.setText("EXPORTED")
         self.setCircleColour(self.indicator_note_status, "green")
-
         self.setEnableButtons(True)
-
+    
     def AISCTSALUI_Close(self):
         if os.path.isfile(self.rawFileName):
             choice = QMessageBox.question(

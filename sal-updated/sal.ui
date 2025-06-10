@@ -2789,7 +2789,7 @@ QPushButton:disabled {
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_bottom" stretch="1,0,0,0,1">
+     <layout class="QHBoxLayout" name="horizontalLayout_bottom" stretch="1,0,0,0,0,1">
       <item>
        <widget class="QLabel" name="measurement_range_label">
         <property name="sizePolicy">
@@ -2867,6 +2867,19 @@ background: transparent</string>
         </property>
         <property name="text">
          <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="only_checked_checkbox">
+        <property name="styleSheet">
+         <string notr="true">color: red;
+background: transparent
+
+</string>
+        </property>
+        <property name="text">
+         <string>Enable to Export True Only</string>
         </property>
        </widget>
       </item>

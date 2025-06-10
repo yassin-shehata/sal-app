@@ -1531,6 +1531,15 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_bottom.addWidget(self.file_name_input)
 
+        self.only_checked_checkbox = QCheckBox(self.centralwidget)
+        self.only_checked_checkbox.setObjectName(u"only_checked_checkbox")
+        self.only_checked_checkbox.setStyleSheet(u"color: red;\n"
+"background: transparent\n"
+"\n"
+"")
+
+        self.horizontalLayout_bottom.addWidget(self.only_checked_checkbox)
+
         self.export_data_button = QPushButton(self.centralwidget)
         self.export_data_button.setObjectName(u"export_data_button")
         sizePolicy18 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
@@ -1556,7 +1565,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_bottom.addWidget(self.export_data_button)
 
         self.horizontalLayout_bottom.setStretch(0, 1)
-        self.horizontalLayout_bottom.setStretch(4, 1)
+        self.horizontalLayout_bottom.setStretch(5, 1)
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_bottom)
 
@@ -1675,6 +1684,7 @@ class Ui_MainWindow(object):
         self.auto_file_naming_checkbox.setText(QCoreApplication.translate("MainWindow", u"Auto File Naming", None))
         self.file_name_label.setText(QCoreApplication.translate("MainWindow", u"File Name:", None))
         self.file_name_input.setText("")
+        self.only_checked_checkbox.setText(QCoreApplication.translate("MainWindow", u"Enable to Export True Only", None))
         self.export_data_button.setText(QCoreApplication.translate("MainWindow", u"Export Data", None))
     # retranslateUi
 
