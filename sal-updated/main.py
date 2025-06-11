@@ -12,7 +12,7 @@ TODO:
 from matplotlib.ticker import FormatStrFormatter  # add once at top of file
 from PySide6.QtWidgets import QFrame
 from PySide6.QtWidgets import QHBoxLayout
-
+from pathlib import Path 
 import re
 from excel_exporter import append_or_create_excel
 from ui_sal import Ui_MainWindow
@@ -26,6 +26,10 @@ from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QTextEdit
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTableWidgetItem
+
+SAVE_DIR = Path.home() / "Documents" / "AISCTS_DATA"
+SAVE_DIR.mkdir(exist_ok=True)
+
 
 try: # try importing external packages 
     import subprocess
@@ -44,6 +48,7 @@ try: # try importing external packages
     import numpy as np 
     import matplotlib.pyplot as plt
     import inspect 
+
     
 except ImportError as e: # if one of the required packages wasn't found, try to install it 
     print(e) # print error info to the user 
@@ -110,6 +115,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.canvas = FigureCanvas(self.figure)
         self.axes = self.figure.add_subplot(111)
 
+        
 
 # Add canvas to layout or set its geometry manually
         layout = QVBoxLayout(self.graph_frame)
@@ -122,7 +128,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.testing = testing # bool whether we are just testing the app or not (set to False when using)
 
         # system connection 
-        self.rawFileName = "rawDataset_SAL.xlsx"
+        self.rawFileName = str(SAVE_DIR / "rawDataset_SAL.xlsx")
         self.plotMode = "Potential"
         self.ionTableData = {}
         self.measurementData = None   
@@ -2560,11 +2566,11 @@ class Window(QMainWindow, Ui_MainWindow):
                                     "Please enter a valid file name.")
                 self.setEnableButtons(True)
                 return
-            self.filename = file_name + ".xlsx"
+            self.filename = str(SAVE_DIR / (file_name + ".xlsx"))
         else:
-            self.filename = (f"{self.project_name_input.toPlainText()}_SAL_"
-                            f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx")
-
+            self.filename = str(SAVE_DIR / (f"{self.project_name_input.toPlainText()}_SAL_"
+f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    ))
         # delete if already exists
         if os.path.exists(self.filename):
             os.remove(self.filename)
