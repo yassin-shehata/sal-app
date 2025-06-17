@@ -74,33 +74,24 @@ except ImportError as e: # if one of the required packages wasn't found, try to 
     else: 
         print("okay, exiting now.")
         sys.exit()
+
 def cl_startup(period_ms):
     print("🔍 Attempting to connect to GoDirect sensors...")
-    try:
-        from godirect import GoDirect
-        godirect = GoDirect(use_ble=False)
-        device = godirect.get_device()
+    from godirect import GoDirect
+    godirect = GoDirect(use_ble=False)
+    device = godirect.get_device()
 
-        if device is not None and device.open():
-            device.start(period=period_ms)
-            sensors = device.get_enabled_sensors()
+    if device is not None and device.open():
+        device.start(period=period_ms)
+        sensors = device.get_enabled_sensors()
 
-            if sensors is None or len(sensors) == 0:
-                raise RuntimeError("❌ Sensors could not be enabled.")
+        if sensors is None or len(sensors) == 0:
+            raise RuntimeError("❌ Sensors could not be enabled.")
+        print("✅ Device initialized and started.")
+        return device, sensors, godirect
+    else:
+        raise RuntimeError("❌ Sensor not found or failed to open.")
 
-            print("✅ Device initialized and started.")
-            return device, sensors, godirect
-        else:
-            raise RuntimeError("❌ Sensor not found or failed to open.")
-
-    except Exception as e:
-        print("⚠️ Real sensor connection failed, using fake sensor.")
-        print(f"⚠️ Exception: {e}")
-        from fake_sensor import FakeDevice, FakeSensor, FakeGoDirect
-        return FakeDevice(), [FakeSensor()], FakeGoDirect()
-
-
-    
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -586,14 +577,11 @@ class Window(QMainWindow, Ui_MainWindow):
 
         try:
             self.device, self.sensors, self.godirect = cl_startup(self.period * 1000)
-            
-            print("🧪 self.device:", self.device)
-            print("🧪 self.sensors:", self.sensors)
 
             if self.device is None or self.sensors is None:
                 raise RuntimeError("Device or sensors not initialized")
 
-            self.startPlotting()  # Start plotting immediately now that connection is confirmed
+            self.startPlotting()
 
         except RuntimeError as e:
             QMessageBox.warning(self, "Sensor Not Found", f"Sensor connection error [code 01.02]\n\n{str(e)}")
@@ -614,6 +602,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.lbl_progress_status.setVisible(False)
             self.btn_system_connect.setEnabled(True)
             return
+
 
 
         self.update_progress(80, "Wrapping up startup processes")
