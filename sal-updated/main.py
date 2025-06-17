@@ -502,10 +502,17 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.ion_table_data = pd.read_excel(self.rawFileName, sheet_name="AISCT_SAL")
                 self.loadDataFrameIntoSampleTable(self.ion_table_data)
                 self.sample_table.resizeColumnsToContents()
+                xls = pd.ExcelFile(self.rawFileName)
 
-                self.measurement_data = pd.read_excel(self.rawFileName, sheet_name="Measurement Conditions", skiprows=1)
-                self.std_data = pd.read_excel(self.rawFileName, sheet_name="STD value", skiprows=1)
-
+                if "Measurement Conditions" in pd.ExcelFile(self.rawFileName).sheet_names:
+                    self.measurement_data = pd.read_excel(self.rawFileName, sheet_name="Measurement Conditions", skiprows=1)
+                else:
+                    self.measurement_data = pd.DataFrame()
+                
+                if "STD value" in xls.sheet_names:
+                    self.std_data = pd.read_excel(xls, sheet_name="STD value", skiprows=1)
+                else:
+                    self.std_data = pd.DataFrame()
                 self.measurementData          = self.measurement_data.values.tolist()
                 self.stddata                  = self.std_data.values.tolist()
                 self.session_only_rows        = list(range(self.sample_table.rowCount()))

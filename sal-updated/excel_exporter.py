@@ -16,8 +16,12 @@ def append_or_create_excel(filename, sheet_name, data, headers, color_hex_list=N
                 df_std.to_excel(writer, sheet_name="STD value", index=False)
     else:
         # File exists: read and append to avoid duplication
-        existing_df = pd.read_excel(filename, sheet_name=sheet_name)
-        final_df = pd.concat([existing_df, df_new], ignore_index=True)
+        xls = pd.ExcelFile(filename)
+        if sheet_name in xls.sheet_names:
+            existing_df = pd.read_excel(xls, sheet_name=sheet_name)
+            final_df = pd.concat([existing_df, df_new], ignore_index=True)
+        else:
+            final_df = df_new
 
         with pd.ExcelWriter(filename, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
             final_df.to_excel(writer, index=False, sheet_name=sheet_name)
