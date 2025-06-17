@@ -3,7 +3,8 @@ matplotlib==3.10.1
 numpy==2.2.4
 pandas==2.2.3
 scipy==1.15.2
-openpyxl==3.1.2          # needed for ExcelWriter
-PySide6==6.9.0           # Qt runtime
+openpyxl==3.1.2
+xlrd==2.0.1
+PySide6==6.9.0
 PySide6-Addons==6.9.0
 PySide6-Essentials==6.9.0

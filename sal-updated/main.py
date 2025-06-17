@@ -7,6 +7,15 @@ TODO:
 
 # from within module 
 
+from PySide6.QtGui import QColor
+COLOR_NAME_TO_HEX = {
+    "green": "#228B22",
+    "yellow": "FFFF00",
+    "red": "FF0000",
+    "#EDA500": "EDA500",
+    "#FFEDA500": "FFEDA500"
+}
+
 
 # from fake_sensor import cl_startup
 from matplotlib.ticker import FormatStrFormatter  # add once at top of file
@@ -434,7 +443,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.sample_table.insertRow(row_idx)
             for col_idx, value in enumerate(row):
                 self.sample_table.setItem(row_idx, col_idx, QTableWidgetItem(str(value)))
-
+        item = self.sample_table.item(row_idx, 6)
+        if item:
+            item.setBackground(QColor(color))
     def setCircleColour(self, widget, color):
 
         """Set the background color of a circular indicator."""
@@ -654,7 +665,34 @@ class Window(QMainWindow, Ui_MainWindow):
         for i, row in df.iterrows():
             self.sample_table.insertRow(i)
             for j, val in enumerate(row):
-                self.sample_table.setItem(i, j, QTableWidgetItem(str(val)))
+                item = QTableWidgetItem(str(val))
+                self.sample_table.setItem(i, j, item)
+
+                # Apply color only to Chloride in Soil (mg/kg) column
+                if j == 6:
+                    val_str = str(val)
+
+                    # Match text-based results
+                    if val_str == "N.D." or val_str == "M.C.":
+                        item.setBackground(QColor("green"))
+                    elif "M.C. (within Buffer)" in val_str:
+                        item.setBackground(QColor("yellow"))
+                    elif "within Buffer" in val_str:
+                        item.setBackground(QColor("#EDA500"))
+                    elif "Exceeded" in val_str:
+                        item.setBackground(QColor("red"))
+                    else:
+                        # Handle plain numeric values like "184.55"
+                        try:
+                            num_val = float(val_str)
+                            if num_val <= 50:
+                                item.setBackground(QColor("green"))
+                            elif num_val <= 50 * 1.1:
+                                item.setBackground(QColor("#EDA500"))
+                            else:
+                                item.setBackground(QColor("red"))
+                        except ValueError:
+                            pass  # skip invalid strings
 
     def ReadyForCalibration(self):
         return all(not np.isnan(val) for val in self.STDValues[0])
@@ -2012,10 +2050,44 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Re-enable buttons
         self.setEnableButtons(True)
-                   
+    
+    def determine_color_from_value(self, val):
+        try:
+            if isinstance(val, str):
+                val = val.strip()
+                if val == "N.D." or val == "M.C.":
+                    return "228B22"  # green
+                elif "M.C. (within Buffer)" in val:
+                    return "FFFF00"  # yellow
+                elif "within Buffer" in val:
+                    return "EDA500"  # orange
+                elif "Exceeded" in val:
+                    return "FF0000"  # red
+                else:
+                    val = float(val)
+
+            num = float(val)
+            if num <= 50:
+                return "00FF00"
+            elif num <= 50 * 1.1:
+                return "EDA500"
+            else:
+                return "FF0000"
+        except Exception as e:
+            print("❌ Color fallback used:", val, e)
+            return "FFFFFF"  # default white
+
     def measurementButtonPushed(self):
         # Disable all relevant buttons
+        self.recalculation_button.setEnabled(False)
+        self.std_check_button.setEnabled(False)
+        self.STD10MeasurementButton.setEnabled(False)
+        self.STD100MeasurementButton.setEnabled(False)
+        self.STD1000MeasurementButton.setEnabled(False)
+        self.STD5000MeasurementButton.setEnabled(False)
         self.setEnableButtons(False)
+        
+
 
         self.setCircleColour(self.indicator_note_status, "grey") 
         self.lbl_system_note.setText("") 
@@ -2054,6 +2126,13 @@ class Window(QMainWindow, Ui_MainWindow):
         )
         if confirm == QMessageBox.Retry:
             self.setEnableButtons(True)
+            self.recalculation_button.setEnabled(True)
+            self.std_check_button.setEnabled(True)
+            self.STD10MeasurementButton.setEnabled(True)
+            self.STD100MeasurementButton.setEnabled(True)
+            self.STD1000MeasurementButton.setEnabled(True)
+            self.STD5000MeasurementButton.setEnabled(True)
+    
             return
 
         # Measurement conditions
@@ -2241,7 +2320,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.salt_in_ground_input.setText(result)
         self.setCircleColour(self.measurement_circle, color)
-
+    
         # Save to table and Excel — implementation would follow same as your exportToExcel() or related
         # Code for storing/appending to dataframes or writing to Excel goes here...
 
@@ -2318,9 +2397,20 @@ class Window(QMainWindow, Ui_MainWindow):
             "STD 10ppm", "STD 100ppm", "STD 1000ppm", "STD 5000ppm",
             "STD check (100ppm)", "STD check potential (mV)"
         ]
-        append_or_create_excel(self.rawFileName, "AISCT_SAL", [sampledata], header_sample)
+
+        color_list = []
+
+        val = sampledata[header_sample.index("Chloride in Soil (mg/kg)")]
+        color = self.determine_color_from_value(val)
+        color_list.append(color)
+        print("⬇️ Writing color:", color_list)
+
+
+        hex_color = COLOR_NAME_TO_HEX.get(color, color).replace("#", "")
+        append_or_create_excel(self.rawFileName, "AISCT_SAL", [sampledata], header_sample, color_hex_list=color_list)
         append_or_create_excel(self.rawFileName, "Measurement Conditions", [measurementdata], header_measurement)
         append_or_create_excel(self.rawFileName, "STD value", [stddata], header_std)
+        
         row_position = self.sample_table.rowCount()
         self.sample_table.insertRow(row_position)
         self.session_only_rows.append(row_position)
@@ -2336,12 +2426,36 @@ class Window(QMainWindow, Ui_MainWindow):
 
         if self.sample_table.rowCount() > 0:
             self.export_data_button.setEnabled(True)
+        
+        row = self.sample_table.rowCount() - 1
+        soil_col_index = 6  # "Chloride in Soil (mg/kg)"
+
+        item = self.sample_table.item(row, soil_col_index)
+        if item:
+            try:
+                if not color or not isinstance(color, str):
+                    raise ValueError("Invalid color")
+                if not color.startswith("#"):
+                    color = "#" + color  # ✅ fix here
+                print(f"🎯 Applying GUI COLOR: '{color}'")
+                item.setBackground(QColor(color))
+            except Exception as e:
+                print(f"❌ Failed to apply color '{color}' — {e}")
+                item.setBackground(QColor("white"))
+
 
         self.measurementData.append(measurementdata)
         self.stddata.append(stddata)
         self.session_only_data_indices.append(len(self.measurementData) - 1)
         self.sample_no_spinbox.setValue(self.sample_no_spinbox.value() + 1)
 
+        self.recalculation_button.setEnabled(True)
+        self.std_check_button.setEnabled(True)
+        self.STD10MeasurementButton.setEnabled(True)
+        self.STD100MeasurementButton.setEnabled(True)
+        self.STD1000MeasurementButton.setEnabled(True)
+        self.STD5000MeasurementButton.setEnabled(True)
+    
     def recalculateButtonPushed(self):
         self.setEnableButtons(False)
 
@@ -2455,7 +2569,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.salt_in_ground_input.setText(result)
         self.setCircleColour(self.measurement_circle, color)
-
+       
         sampledata = [self.check, self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, result, self.rawSample_liquid, self.samplePotential, self.cl_criteria]
         measurementdata = [self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, self.guidelineType, self.mainParameter, self.subParameter, self.cl_criteria, self.moisture, self.buffer, self.stabilizationTime, self.baselineType]
         stddata = [self.date, self.projectName, self.sampleNo, self.sampleID, self.replication, self.STDValues[0][0], self.STDValues[0][1], self.STDValues[0][2], self.STDValues[0][3], self.stdCheck, self.stdPotential]
@@ -2463,8 +2577,15 @@ class Window(QMainWindow, Ui_MainWindow):
         header_sample = ["Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication", "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)"]
         header_measurement = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication", "Guideline Type", "MainParameter", "SubParameter", "Cl Criteria (mg/kg)", "Moisture(%)", "Buffer Range (%)", "Stabilization Time (s)", "Baseline"]
         header_std = [ "Date", "ProjectName", "SampleNo", "SampleID", "Replication", "STD 10ppm", "STD 100ppm", "STD 1000ppm", "STD 5000ppm","STD check (100ppm)", "STD check potential (mV)"]
+        
+        color_list = []
+        val = sampledata[header_sample.index("Chloride in Soil (mg/kg)")]
+        color = self.determine_color_from_value(val)
+        color_list.append(color)
+        print("⬇️ Writing color:", color_list)
 
-        append_or_create_excel(self.rawFileName, "AISCT_SAL", [sampledata], header_sample)
+        hex_color = COLOR_NAME_TO_HEX.get(color, color).replace("#", "")
+        append_or_create_excel(self.rawFileName, "AISCT_SAL", [sampledata], header_sample, color_hex_list=color_list)
         append_or_create_excel(self.rawFileName, "Measurement Conditions", [measurementdata], header_measurement)
         append_or_create_excel(self.rawFileName, "STD value", [stddata], header_std)
 
@@ -2495,7 +2616,21 @@ class Window(QMainWindow, Ui_MainWindow):
         # --- remaining columns 1-9 ----------------------
         for col, value in enumerate(sampledata[1:], start=1):   # skip first element (“Check”)
             self.sample_table.setItem(row_position, col, QTableWidgetItem(str(value)))
+        row = self.sample_table.rowCount() - 1
+        soil_col_index = 6  # "Chloride in Soil (mg/kg)"
 
+        item = self.sample_table.item(row, soil_col_index)
+        if item:
+            try:
+                if not color or not isinstance(color, str):
+                    raise ValueError("Invalid color")
+                if not color.startswith("#"):
+                    color = "#" + color  # ✅ fix here
+                print(f"🎯 Applying GUI COLOR: '{color}'")
+                item.setBackground(QColor(color))
+            except Exception as e:
+                print(f"❌ Failed to apply color '{color}' — {e}")
+                item.setBackground(QColor("white"))
 
     def autoFileNamingCheckBoxValueChanged(self):
         is_checked = self.auto_file_naming_checkbox.isChecked()
@@ -2517,11 +2652,11 @@ class Window(QMainWindow, Ui_MainWindow):
         data = []
         selected_row_pairs = []   # (tableRow , sessionIdx) for later alignment
 
-        for table_row, session_idx in zip(self.session_only_rows,
-                                        self.session_only_data_indices):
-            check_val = self.sample_table.item(table_row, 0).text()
-            if export_true_only and check_val.lower() != "true":
-                continue           # skip rows whose “Check” column ≠ True
+        for table_row in self.session_only_rows:
+            check_val = self.sample_table.item(table_row, 0)
+            check_text = check_val.text().strip().lower() if check_val and check_val.text() else ""
+            if export_true_only and check_text != "true":
+                continue
 
             row = [
                 self.sample_table.item(table_row, c).text()
@@ -2529,7 +2664,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 for c in range(col_count)
             ]
             data.append(row)
-            selected_row_pairs.append((table_row, session_idx))
+
 
         if not data:
             QMessageBox.information(self, "Export",
@@ -2574,20 +2709,45 @@ f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
         # delete if already exists
         if os.path.exists(self.filename):
             os.remove(self.filename)
+        
+        color_list = []
+        for row in data:
+            try:
+                val_str = row[header_sample.index("Chloride in Soil (mg/kg)")]
+                val_str = str(val_str).strip()
 
-        # ---------- write the three sheets ----------
-        with pd.ExcelWriter(self.filename, engine="openpyxl") as writer:
-            df_sample.to_excel(writer, sheet_name="AISCT_SAL", index=False)
-            df_measure.to_excel(writer, sheet_name="Measurement Conditions",
-                                index=False)
-            df_std.to_excel(writer, sheet_name="STD value", index=False)
+                # Handle special cases
+                if val_str in ["N.D.", "M.C."]:
+                    color = "green"
+                elif val_str == "Exceeded Max.":
+                    color = "red"
+                else:
+                    val = float(val_str)
+                    color = self.determine_color_from_value(val)
 
+                color_hex = COLOR_NAME_TO_HEX.get(color, color)
+                if color_hex:
+                    color_list.append(color_hex.replace("#", "").upper())
+                else:
+                    color_list.append("")
+            except Exception as e:
+                print(f"⚠️ Failed to get color for row: {row} — {e}")
+                color_list.append("")
+
+
+
+        
+
+        # 2. Then reopen and apply color
+        append_or_create_excel(self.filename, "AISCT_SAL", data, header_sample, color_hex_list=color_list, df_measure=df_measure, df_std=df_std)
+        
         # feedback
         self.txt_system_note.setText("Selected rows exported successfully.")
         self.lbl_system_note.setText("EXPORTED")
         self.setCircleColour(self.indicator_note_status, "green")
         self.setEnableButtons(True)
-    
+       
+
     def AISCTSALUI_Close(self):
         if os.path.isfile(self.rawFileName):
             choice = QMessageBox.question(
