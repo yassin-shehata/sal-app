@@ -1,11 +1,11 @@
 """
-TODO: 
-- system note text area ? 
-- creating progress gauge 
+TODO:
+- system note text area ?
+- creating progress gauge
 
 """
 
-# from within module 
+# from within module
 
 from PySide6.QtGui import QColor
 COLOR_NAME_TO_HEX = {
@@ -21,7 +21,7 @@ COLOR_NAME_TO_HEX = {
 from matplotlib.ticker import FormatStrFormatter  # add once at top of file
 from PySide6.QtWidgets import QFrame
 from PySide6.QtWidgets import QHBoxLayout
-from pathlib import Path 
+from pathlib import Path
 import re
 from excel_exporter import append_or_create_excel
 from ui_sal import Ui_MainWindow
@@ -29,7 +29,7 @@ from ui_sal import Ui_MainWindow
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from utils import Timer 
+from utils import Timer
 from ui_sal import Ui_MainWindow
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QTextEdit
@@ -40,91 +40,82 @@ SAVE_DIR = Path.home() / "Documents" / "AISCTS_DATA"
 SAVE_DIR.mkdir(exist_ok=True)
 
 
-try: # try importing external packages 
+try: # try importing external packages
     import subprocess
-    import pandas as pd 
+    import pandas as pd
     from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QProgressDialog, QSizePolicy, QVBoxLayout
     from PySide6.QtGui import QPalette
     from PySide6.QtCore import QTimer, QCoreApplication
     #from PyQt6.QtCore import QTimer, QTime
     from ui_sal import Ui_MainWindow  # or use QUiLoader if not converted
 
-    import time 
+    import time
     import scipy
     from godirect import GoDirect
-    import shutil 
+    import shutil
     from datetime import datetime
-    import numpy as np 
+    import numpy as np
     import matplotlib.pyplot as plt
-    import inspect 
+    import inspect
 
-    
-except ImportError as e: # if one of the required packages wasn't found, try to install it 
-    print(e) # print error info to the user 
-    response = input("Error importing required package. try installing dependencies now? (y/N)") # ask if user wants to install required packages 
+   
+except ImportError as e: # if one of the required packages wasn't found, try to install it
+    print(e) # print error info to the user
+    response = input("Error importing required package. try installing dependencies now? (y/N)") # ask if user wants to install required packages
     if response.upper() == "Y":
         try:
             subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
             print("installed missing package(s)! please try running the code again now. ")
             sys.exit()
-        except Exception as e: 
+        except Exception as e:
             print("something went wrong installing dependencies. ")
             print(e)
             sys.exit()
-    else: 
+    else:
         print("okay, exiting now.")
         sys.exit()
+
 def cl_startup(period_ms):
     print("🔍 Attempting to connect to GoDirect sensors...")
-    try:
-        from godirect import GoDirect
-        godirect = GoDirect(use_ble=False)
-        device = godirect.get_device()
+    from godirect import GoDirect
+    godirect = GoDirect(use_ble=False)
+    device = godirect.get_device()
 
-        if device is not None and device.open():
-            device.start(period=period_ms)
-            sensors = device.get_enabled_sensors()
+    if device is not None and device.open():
+        device.start(period=period_ms)
+        sensors = device.get_enabled_sensors()
 
-            if sensors is None or len(sensors) == 0:
-                raise RuntimeError("❌ Sensors could not be enabled.")
+        if sensors is None or len(sensors) == 0:
+            raise RuntimeError("❌ Sensors could not be enabled.")
+        print("✅ Device initialized and started.")
+        return device, sensors, godirect
+    else:
+        raise RuntimeError("❌ Sensor not found or failed to open.")
 
-            print("✅ Device initialized and started.")
-            return device, sensors, godirect
-        else:
-            raise RuntimeError("❌ Sensor not found or failed to open.")
-
-    except Exception as e:
-        print("⚠️ Real sensor connection failed, using fake sensor.")
-        print(f"⚠️ Exception: {e}")
-        from fake_sensor import FakeDevice, FakeSensor, FakeGoDirect
-        return FakeDevice(), [FakeSensor()], FakeGoDirect()
-
-
-    
 
 
 class Window(QMainWindow, Ui_MainWindow):
 
-    
+   
     def __init__(self, testing=False):
-        """initialise app, calls main function 
-        
+        """initialise app, calls main function
+       
         Args:
             testing (bool, optional): whether we are in testing mode (no physical system connected) or not. Defaults to False.
         """
-        
+       
         self.ion_timer = None
         super().__init__()
-        self.setupUi(self) 
+        self.setupUi(self)
         from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
         from matplotlib.figure import Figure
         #grpah
-        
+       
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
         self.axes = self.figure.add_subplot(111)
 
-        
+       
 
 # Add canvas to layout or set its geometry manually
         layout = QVBoxLayout(self.graph_frame)
@@ -133,27 +124,27 @@ class Window(QMainWindow, Ui_MainWindow):
 
 
 
-        # --- initialising attributes --- # 
+        # --- initialising attributes --- #
         self.testing = testing # bool whether we are just testing the app or not (set to False when using)
 
-        # system connection 
+        # system connection
         self.rawFileName = str(SAVE_DIR / "rawDataset_SAL.xlsx")
         self.plotMode = "Potential"
         self.ionTableData = {}
-        self.measurementData = None   
+        self.measurementData = None  
         self.stddata = None    
         self.rawGraphData = None    
 
-        # calibrations 
+        # calibrations
         self.time = 0.0
         self.ionUpdateTimer = float('nan')
         self.ion_data = []
         self.rawData = []
         self.period = 0.1
         self.samplingPeriod = 0.2
-        self.stabilityError = 0.01 
+        self.stabilityError = 0.01
         self.std10ppm = None    
-        self.std100ppm  = None   
+        self.std100ppm  = None  
         self.std1000ppm  = None    
         self.std5000ppm = None    
         self.STDValues = [[float('nan'), float('nan'), float('nan'), float('nan')], [10, 100, 1000, 5000]]
@@ -163,21 +154,21 @@ class Window(QMainWindow, Ui_MainWindow):
         self.rsquared = None    
         self.ionEquation = float('nan')
 
-        # guideline selection 
+        # guideline selection
         self.index = None    
         self.cl_criteria = None    
         self.guidelineType = None    
         self.mainParameter = None    
         self.subParameter = None    
-        self.depth1value  = None   
+        self.depth1value  = None  
         self.depth2value   = None  
         self.topDepthSetting = None    
         self.bottomDepthSetting = None    
 
-        # measurement condition 
+        # measurement condition
         self.guideline  = None  
         self.buffer = None    
-        self.moisture  = None   
+        self.moisture  = None  
         self.lower_val = 50
         self.higher_val = 5000
         self.baseline = 100
@@ -186,27 +177,27 @@ class Window(QMainWindow, Ui_MainWindow):
         self.liquidCarbonFactor = 20/18
         self.stdPotential = None    
         self.stdCheck = None    
-        self.samplePotential  = None   
-        self.rawSample  = None   
-        self.rawSample_liquid    = None 
-        self.rawSample_soil  = None 
-        self.sampleConc  = None 
+        self.samplePotential  = None  
+        self.rawSample  = None  
+        self.rawSample_liquid    = None
+        self.rawSample_soil  = None
+        self.sampleConc  = None
 
-        # data export 
-        self.check = True 
+        # data export
+        self.check = True
         self.date = None  
-        self.projectName  = None 
-        self.sampleNo  = None 
-        self.sampleID  = None 
-        self.replication  = None 
-        self.stabilizationTime  = None 
-        self.filename = None 
+        self.projectName  = None
+        self.sampleNo  = None
+        self.sampleID  = None
+        self.replication  = None
+        self.stabilizationTime  = None
+        self.filename = None
 
         self.enforce_auto_sample_naming = False
         self.session_only_rows = []
         self.session_only_data_indices = []
 
-        
+       
         print("✅ btn_system_connect found:", self.btn_system_connect is not None)
         print("✅ indicator_connection found:", self.indicator_connection is not None)
         print("✅ txt_system_note found:", self.txt_system_note is not None)
@@ -214,7 +205,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.refresh_plot_button.setEnabled(False)
         self.std_check_button.setEnabled(False)
         self.measurement_button.setEnabled(False)
-        self.recalculation_button.setEnabled(False) 
+        self.recalculation_button.setEnabled(False)
         self.measurement_button.setEnabled(False)
         self.std_check_button.setEnabled(False)
         self.recalculation_button.setEnabled(False) # start with Refresh disabled
@@ -259,15 +250,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.sample_no_spinbox.setValue(1)
 
 
-        
+       
 
 
-      
+     
        
         self.main()
 
 
-    def main(self): 
+    def main(self):
         """_summary_
         """
         self.btn_system_connect.clicked.connect(self.systemConnectionButtonPushed)
@@ -326,9 +317,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.bar_progress.setValue(value)
         self.lbl_progress_status.setText(message)
         QCoreApplication.processEvents()  # Force UI to update
-        
+       
         time.sleep(0.5)  # Give user time to see the update
-    
+   
     def cl_read(self):
         """Mimics the MATLAB cl_read() function — reads latest data from sensors."""
         if self.device is None or self.sensors is None:
@@ -361,7 +352,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
 
 
-    
+   
     def try_sensor_restart(self):
         """Simulate reconnect attempt."""
         self.device, self.sensors, self.godirect = cl_startup(self.period * 1000)
@@ -433,7 +424,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ion_timer = QTimer()
         self.ion_timer.timeout.connect(update_ion_plot)
         self.ion_timer.start(int(self.period * 1000))  # milliseconds
-    
+   
     def loadDataFrameIntoTable(self, dataframe):
         self.sample_table.setRowCount(0)
         self.sample_table.setColumnCount(len(dataframe.columns))
@@ -453,7 +444,7 @@ class Window(QMainWindow, Ui_MainWindow):
             background-color: {color};
             border-radius: {widget.width()//2}px;
         """)
-    
+   
     # Python version of MATLAB's btn_system_connectPushed
 
     def systemConnectionButtonPushed(self):
@@ -508,7 +499,7 @@ class Window(QMainWindow, Ui_MainWindow):
                     self.measurement_data = pd.read_excel(self.rawFileName, sheet_name="Measurement Conditions", skiprows=1)
                 else:
                     self.measurement_data = pd.DataFrame()
-                
+               
                 if "STD value" in xls.sheet_names:
                     self.std_data = pd.read_excel(xls, sheet_name="STD value", skiprows=1)
                 else:
@@ -517,7 +508,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.stddata                  = self.std_data.values.tolist()
                 self.session_only_rows        = list(range(self.sample_table.rowCount()))
                 self.session_only_data_indices = list(range(len(self.measurementData)))
-                
+               
                 if not self.std_data.empty:
                     self.STD10ppmEditField.setPlainText(str(float(self.std_data.iloc[-1, 5])))
                     self.STD100ppmEditField.setPlainText(str(float(self.std_data.iloc[-1, 6])))
@@ -534,7 +525,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
                 self.CalibrationCurveFittingButton.setEnabled(True)
 
-                
+               
                 self.sample_no_spinbox.setValue(len(self.ion_table_data) + 1)
                 dlg.close()
 
@@ -562,9 +553,9 @@ class Window(QMainWindow, Ui_MainWindow):
         QTimer.singleShot(500, lambda: None)
         self.update_progress(20, "Skipping Python check (manual config)")
 
-        
+       
             # I'm on (mac) subprocess.call(["reload.cmd"], shell=True)
-        
+       
         self.update_progress(40,"Checking for godirect python module")
         QTimer.singleShot(500, lambda: None)
 
@@ -586,14 +577,11 @@ class Window(QMainWindow, Ui_MainWindow):
 
         try:
             self.device, self.sensors, self.godirect = cl_startup(self.period * 1000)
-            
-            print("🧪 self.device:", self.device)
-            print("🧪 self.sensors:", self.sensors)
 
             if self.device is None or self.sensors is None:
                 raise RuntimeError("Device or sensors not initialized")
 
-            self.startPlotting()  # Start plotting immediately now that connection is confirmed
+            self.startPlotting()
 
         except RuntimeError as e:
             QMessageBox.warning(self, "Sensor Not Found", f"Sensor connection error [code 01.02]\n\n{str(e)}")
@@ -614,6 +602,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.lbl_progress_status.setVisible(False)
             self.btn_system_connect.setEnabled(True)
             return
+
 
 
         self.update_progress(80, "Wrapping up startup processes")
@@ -730,11 +719,11 @@ class Window(QMainWindow, Ui_MainWindow):
         # ❹  build the converter mV → mg L-1
         self.ionEquation = lambda x: 10 ** (self.coeff[0]*x + self.coeff[1])
 
-    
+   
     def CalibrationCurveFittingButtonPushed(self):
         if not self.ReadyForCalibration():
             QMessageBox.warning(self, "Calibration", "Collect all four STD points first.")
-            
+           
             return
 
         # ---- maths stays the same ----
@@ -767,7 +756,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # flip mode
         self.calibration_mode = True
         self.refresh_plot_button.setEnabled(True)   # user can go back to live feed
-        
+       
     def refreshPlotButtonPushed(self):
         self.calibration_mode = False
         self.axes.clear()
@@ -803,14 +792,14 @@ class Window(QMainWindow, Ui_MainWindow):
             self.measurement_button,            # “Measure” / “Predict”
         ):
             w.setEnabled(enabled)
-    
+   
     def SetEnableButtonsIon(self, mode):
         state = mode.lower() == "on"
         self.STD10MeasurementButton.setEnabled(state)
         self.STD100MeasurementButton.setEnabled(state)
         self.STD1000MeasurementButton.setEnabled(state)
         self.STD5000MeasurementButton.setEnabled(state)
-    
+   
     def STD10MeasurementButtonPushed(self):
         # Disable Buttons for Update
         self.SetEnableButtonsIon("off")
@@ -864,7 +853,7 @@ class Window(QMainWindow, Ui_MainWindow):
             dlg.setValue(self.StabilizationTimeEditField.value())
             dlg.setLabelText("Finishing...")
             time.sleep(1)
-        
+       
             if canceled:
                 QMessageBox.information(self, "Timer Cancelled", "Timer was stopped. Proceeding to calibration anyway.")
 
@@ -957,7 +946,7 @@ class Window(QMainWindow, Ui_MainWindow):
                     time.sleep(self.samplingPeriod)
 
 
-                
+               
                 self.rawData = [row[1] for row in self.ion_data[-100:] if not np.isnan(row[1])]
 
                 # Check if we have enough valid data
@@ -1204,7 +1193,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD100MeasurementButton.setEnabled(True)
         self.STD1000MeasurementButton.setEnabled(True)
         self.STD5000MeasurementButton.setEnabled(True)
-    
+   
     def STD1000MeasurementButtonPushed(self):
         # Disable Buttons for Update
         self.SetEnableButtonsIon("off")
@@ -1298,7 +1287,7 @@ class Window(QMainWindow, Ui_MainWindow):
         err = np.abs(self.rawData - avg) / avg
 
         while np.all(err > self.stabilityError):
-            retry = QMessageBox.question(self, "Sensor Stabilization", 
+            retry = QMessageBox.question(self, "Sensor Stabilization",
                                         "Sensor was not stable during the measurement.\nDo you want to remeasure the sample?",
                                         QMessageBox.Yes | QMessageBox.No)
             if retry == QMessageBox.No:
@@ -1584,7 +1573,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.std_check_button.setEnabled(True)
         self.measurement_button.setEnabled(True)
         self.recalculation_button.setEnabled(True)
-        
+       
 
 
 
@@ -1607,7 +1596,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.axes.clear(); self.canvas.draw()
         self.startPlotting()
 
-    
+   
     def sampleTypeDropdownValueChanged(self):
         selected = self.sample_type_combobox_2.currentText()
 
@@ -1623,7 +1612,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.salt_in_liquid_label.setText("Cl Conc. in SW (mg/L)")
             self.salt_in_ground_label.setText("Cl Conc. in SW (mg/L)")
             self.cl_criteria_label.setText("Cl Criteria (mg/L)")
-    
+   
     def autoSampleNamingCheckboxValueChanged(self):
         is_checked = self.auto_sample_naming_checkbox.isChecked()
 
@@ -1686,7 +1675,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.cl_criteria_input.setText(str(self.cl_zone2.value()))
             else:
                 self.cl_criteria_input.setText(str(self.cl_zone3.value()))
-    
+   
     def bottomDepthFieldValueChanged(self):
         self.topDepthSetting = top_depth = self.top_depth_input.value()
 
@@ -1756,9 +1745,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.cl_zone3.setVisible(False)
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
-            self.rd_zone_label.setText("3rd Zone") 
+            self.rd_zone_label.setText("3rd Zone")
             self.cl_criteria_input.setText(str(self.cl_zone1.value()))
-    
+   
     def showMessage(self, title, message):
         QMessageBox.information(self, title, message)
 
@@ -1825,7 +1814,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
             self.chloride_input.setValue(50)
             self.cl_criteria_input.setText(str(50))
-    
+   
     def applyButtonPushed(self):
         self.depth1value = self.top_depth1.value()
         self.depth2value = self.top_depth2.value()
@@ -1861,7 +1850,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.cl_zone3.setEnabled(False)
         self.rd_zone_checkbox.setEnabled(False)
         self.apply_button_guideline.setEnabled(False)
-    
+   
     def resetButtonPushed(self):
         # Activate the edit
         self.reset_button_guideline.setEnabled(False)
@@ -1875,7 +1864,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.top_depth_input.setValue(0)
         self.bottom_depth_input.setValue(0.1)
-    
+   
     def rdZoneCheckboxValueChanged(self):
         rd_zone_active = self.rd_zone_checkbox.isChecked()
 
@@ -1888,7 +1877,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.st_zone_label.setText("1st Zone")
             self.nd_zone_label.setText("2nd Zone")
             self.rd_zone_label.setText("3rd Zone")
-    
+   
     def advancedParametersCheckboxValueChanged(self):
         value_of_advanced_parameters = self.advanced_parameters_checkbox.isChecked()
         self.options_frame.setVisible(value_of_advanced_parameters)
@@ -1913,7 +1902,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.canvas.draw()
 
-    
+   
    
     def STDcheckButtonPushed(self):
             # Disable buttons
@@ -2022,7 +2011,7 @@ class Window(QMainWindow, Ui_MainWindow):
                     self.ion_data.append([time.time(), self.cl_read(), np.nan])
                     progress.setValue(i + 1)
                     time.sleep(self.samplingPeriod)
-                    
+                   
                 raw = np.array([x[1] for x in self.ion_data[-100:]])
                 avg = np.mean(raw)
                 err = np.abs(raw - avg) / avg
@@ -2057,7 +2046,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Re-enable buttons
         self.setEnableButtons(True)
-    
+   
     def determine_color_from_value(self, val):
         try:
             if isinstance(val, str):
@@ -2093,11 +2082,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD1000MeasurementButton.setEnabled(False)
         self.STD5000MeasurementButton.setEnabled(False)
         self.setEnableButtons(False)
-        
+       
 
 
-        self.setCircleColour(self.indicator_note_status, "grey") 
-        self.lbl_system_note.setText("") 
+        self.setCircleColour(self.indicator_note_status, "grey")
+        self.lbl_system_note.setText("")
         self.average_potential_input.setPlainText("0.00")  
         if not self.cl_criteria_input.toPlainText():
             self.cl_criteria_input.setPlainText("100")
@@ -2139,7 +2128,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.STD100MeasurementButton.setEnabled(True)
             self.STD1000MeasurementButton.setEnabled(True)
             self.STD5000MeasurementButton.setEnabled(True)
-    
+   
             return
 
         # Measurement conditions
@@ -2327,7 +2316,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.salt_in_ground_input.setText(result)
         self.setCircleColour(self.measurement_circle, color)
-    
+   
         # Save to table and Excel — implementation would follow same as your exportToExcel() or related
         # Code for storing/appending to dataframes or writing to Excel goes here...
 
@@ -2344,7 +2333,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setCircleColour(self.indicator_note_status, "green")
 
         self.setEnableButtons(True)
-    
+   
     # Sample Data Row
         sampledata = [
             self.check,
@@ -2417,7 +2406,7 @@ class Window(QMainWindow, Ui_MainWindow):
         append_or_create_excel(self.rawFileName, "AISCT_SAL", [sampledata], header_sample, color_hex_list=color_list)
         append_or_create_excel(self.rawFileName, "Measurement Conditions", [measurementdata], header_measurement)
         append_or_create_excel(self.rawFileName, "STD value", [stddata], header_std)
-        
+       
         row_position = self.sample_table.rowCount()
         self.sample_table.insertRow(row_position)
         self.session_only_rows.append(row_position)
@@ -2433,7 +2422,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         if self.sample_table.rowCount() > 0:
             self.export_data_button.setEnabled(True)
-        
+       
         row = self.sample_table.rowCount() - 1
         soil_col_index = 6  # "Chloride in Soil (mg/kg)"
 
@@ -2462,7 +2451,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.STD100MeasurementButton.setEnabled(True)
         self.STD1000MeasurementButton.setEnabled(True)
         self.STD5000MeasurementButton.setEnabled(True)
-    
+   
     def recalculateButtonPushed(self):
         self.setEnableButtons(False)
 
@@ -2584,7 +2573,7 @@ class Window(QMainWindow, Ui_MainWindow):
         header_sample = ["Check", "Date", "ProjectName", "SampleNo", "SampleID", "Replication", "Chloride in Soil (mg/kg)", "Chloride in Liquid (mg/L)", "Potential (mV)", "Cl Criteria (mg/kg)"]
         header_measurement = ["Date", "ProjectName", "SampleNo", "SampleID", "Replication", "Guideline Type", "MainParameter", "SubParameter", "Cl Criteria (mg/kg)", "Moisture(%)", "Buffer Range (%)", "Stabilization Time (s)", "Baseline"]
         header_std = [ "Date", "ProjectName", "SampleNo", "SampleID", "Replication", "STD 10ppm", "STD 100ppm", "STD 1000ppm", "STD 5000ppm","STD check (100ppm)", "STD check potential (mV)"]
-        
+       
         color_list = []
         val = sampledata[header_sample.index("Chloride in Soil (mg/kg)")]
         color = self.determine_color_from_value(val)
@@ -2605,7 +2594,7 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.sample_table.rowCount() > 0:
             self.export_data_button.setEnabled(True)
 
-        
+       
         self.measurementData.append(measurementdata)
         self.stddata.append(stddata)
         # keep the correct index for export
@@ -2716,7 +2705,7 @@ f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
         # delete if already exists
         if os.path.exists(self.filename):
             os.remove(self.filename)
-        
+       
         color_list = []
         for row in data:
             try:
@@ -2743,11 +2732,11 @@ f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
 
 
 
-        
+       
 
         # 2. Then reopen and apply color
         append_or_create_excel(self.filename, "AISCT_SAL", data, header_sample, color_hex_list=color_list, df_measure=df_measure, df_std=df_std)
-        
+       
         # feedback
         self.txt_system_note.setText("Selected rows exported successfully.")
         self.lbl_system_note.setText("EXPORTED")
@@ -2804,7 +2793,7 @@ f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
             self.close()  # ✅ only closes when OK is clicked
         else:
             pass  # Do nothing, stay open
-        
+       
     def closeEvent(self, event):
         reply = QMessageBox.question(
             self,
@@ -2822,7 +2811,7 @@ f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
         else:
             event.ignore()  # <-- This prevents the window from closing
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     app = QApplication([])
     window = Window()
     window.show()
