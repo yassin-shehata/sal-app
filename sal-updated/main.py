@@ -77,31 +77,30 @@ except ImportError as e: # if one of the required packages wasn't found, try to 
         sys.exit()
 
 def cl_startup(period_ms):
-    print("⚠️ Using FakeSensor for simulation...")
-    device = FakeDevice()
-    sensor = FakeSensor()
-    sensors = [sensor]
-    godirect = FakeGoDirect()
-    device.open()  # Simulate open
-    device.start(period_ms)
-    return device, sensors, godirect
-   # print("🔍 Attempting to connect to GoDirect sensors...")
-   # from godirect import GoDirect
-# 
-#    godirect = GoDirect(use_ble=False)
- #   device = godirect.get_device()
+    # print("⚠️ Using FakeSensor for simulation...")
+    # device = FakeDevice()
+    # sensor = FakeSensor()
+    # sensors = [sensor]
+    # godirect = FakeGoDirect()
+    # device.open()  # Simulate open
+    # device.start(period_ms)
+    # return device, sensors, godirect
+    print("🔍 Attempting to connect to GoDirect sensors...")
+    from godirect import GoDirect
 
-  #  if device is not None and device.open():
-   #     device.start(period=period_ms)
-    #    sensors = device.get_enabled_sensors()
+    godirect = GoDirect(use_ble=False)
+    device = godirect.get_device()
 
-     #   if sensors is None or len(sensors) == 0:
-      #      raise RuntimeError("❌ Sensors could not be enabled.")
-       # print("✅ Device initialized and started.")
-        #return device, sensors, godirect
-    #else:
-     #   raise RuntimeError("❌ Sensor not found or failed to open.")
+    if device is not None and device.open():
+        device.start(period=period_ms)
+        sensors = device.get_enabled_sensors()
 
+        if sensors is None or len(sensors) == 0:
+            raise RuntimeError("❌ Sensors could not be enabled.")
+        print("✅ Device initialized and started.")
+        return device, sensors, godirect
+    else:
+        raise RuntimeError("❌ Sensor not found or failed to open.")
 
 
 class Window(QMainWindow, Ui_MainWindow):
