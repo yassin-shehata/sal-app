@@ -15,6 +15,7 @@ COLOR_NAME_TO_HEX = {
     "#EDA500": "EDA500",
     "#FFEDA500": "FFEDA500"
 }
+from fake_sensor import FakeDevice, FakeSensor, FakeGoDirect
 
 
 # from fake_sensor import cl_startup
@@ -76,21 +77,30 @@ except ImportError as e: # if one of the required packages wasn't found, try to 
         sys.exit()
 
 def cl_startup(period_ms):
-    print("🔍 Attempting to connect to GoDirect sensors...")
-    from godirect import GoDirect
-    godirect = GoDirect(use_ble=False)
-    device = godirect.get_device()
+    print("⚠️ Using FakeSensor for simulation...")
+    device = FakeDevice()
+    sensor = FakeSensor()
+    sensors = [sensor]
+    godirect = FakeGoDirect()
+    device.open()  # Simulate open
+    device.start(period_ms)
+    return device, sensors, godirect
+   # print("🔍 Attempting to connect to GoDirect sensors...")
+   # from godirect import GoDirect
+# 
+#    godirect = GoDirect(use_ble=False)
+ #   device = godirect.get_device()
 
-    if device is not None and device.open():
-        device.start(period=period_ms)
-        sensors = device.get_enabled_sensors()
+  #  if device is not None and device.open():
+   #     device.start(period=period_ms)
+    #    sensors = device.get_enabled_sensors()
 
-        if sensors is None or len(sensors) == 0:
-            raise RuntimeError("❌ Sensors could not be enabled.")
-        print("✅ Device initialized and started.")
-        return device, sensors, godirect
-    else:
-        raise RuntimeError("❌ Sensor not found or failed to open.")
+     #   if sensors is None or len(sensors) == 0:
+      #      raise RuntimeError("❌ Sensors could not be enabled.")
+       # print("✅ Device initialized and started.")
+        #return device, sensors, godirect
+    #else:
+     #   raise RuntimeError("❌ Sensor not found or failed to open.")
 
 
 
@@ -122,6 +132,7 @@ class Window(QMainWindow, Ui_MainWindow):
         layout.setContentsMargins(0, 0, 0, 0)  # Optional: remove padding
         layout.addWidget(self.canvas)
 
+        self.sensor_error_shown = False
 
 
         # --- initialising attributes --- #
@@ -342,6 +353,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 return float('nan')
         except Exception as e:
             print("❌ cl_read() error:", e)
+            self.sensor_error_shown = True
             return float('nan')
 
 
@@ -383,12 +395,14 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.refresh_plot_button.setEnabled(False)
 
                 # Attempt reconnect (replace cl_startup logic)
-                if self.try_sensor_restart():
-                    reading = self.get_sensor_voltage()
-                    self.setCircleColour(self.indicator_connection, "green")
-                    self.refresh_plot_button.setEnabled(True)
-                else:
-                    return
+                try:
+                    if self.try_sensor_restart():
+                        return  # or continue
+                except RuntimeError as e:
+                    print(e)
+                    self.lbl_system_note.setText("Sensor disconnected. Please reconnect.")
+                    self.setCircleColour(self.indicator_note_status, "red")
+                    return  # skip plotting
 
             # Time relative to start
             t = time.time() - self.start_time
@@ -789,7 +803,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.apply_button_measurement,      # ← that’s the one you wired up earlier
 
             # core sample-measurement actions
-            self.measurement_button,            # “Measure” / “Predict”
+            self.measurement_button,
+            self.recalculation_button, 
+            self.std_check_button,        # “Measure” / “Predict”
         ):
             w.setEnabled(enabled)
    
@@ -1907,6 +1923,9 @@ class Window(QMainWindow, Ui_MainWindow):
     def STDcheckButtonPushed(self):
             # Disable buttons
         self.setEnableButtons(False)
+   
+
+
 
         # Confirm standard placement
         confirm = QMessageBox.question(
@@ -1919,6 +1938,12 @@ class Window(QMainWindow, Ui_MainWindow):
             self.txt_system_note.setText("Place the correct 100 ppm standard solution before proceeding with the STD check.")
             self.setCircleColour(self.indicator_note_status, "yellow")
             self.setEnableButtons(True)
+            self.STD10MeasurementButton.setEnabled(False)
+            self.STD100MeasurementButton.setEnabled(False)
+            self.STD1000MeasurementButton.setEnabled(False)
+            self.STD5000MeasurementButton.setEnabled(False)
+            self.apply_button_measurement.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
             return
 
 
@@ -2022,6 +2047,13 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.showMessage("Error", "Calibration equation not available.")
             self.setEnableButtons(True)
+            self.STD10MeasurementButton.setEnabled(False)
+            self.STD100MeasurementButton.setEnabled(False)
+            self.STD1000MeasurementButton.setEnabled(False)
+            self.STD5000MeasurementButton.setEnabled(False)
+            self.apply_button_measurement.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
+
             return
 
         # Validation of STD result
@@ -2037,6 +2069,12 @@ class Window(QMainWindow, Ui_MainWindow):
             self.txt_system_note.setText(message)
             self.setCircleColour(self.indicator_note_status, "yellow")
             self.setEnableButtons(True)
+            self.STD10MeasurementButton.setEnabled(False)
+            self.STD100MeasurementButton.setEnabled(False)
+            self.STD1000MeasurementButton.setEnabled(False)
+            self.STD5000MeasurementButton.setEnabled(False)
+            self.apply_button_measurement.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
             return
 
         # If valid
@@ -2045,7 +2083,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.showMessage("STD Check", f"The standard solution is valid.\nCurrent STD value: {self.stdCheck:.2f}")
 
         # Re-enable buttons
-        self.setEnableButtons(True)
+       # self.setEnableButtons(True)
    
     def determine_color_from_value(self, val):
         try:
@@ -2124,10 +2162,13 @@ class Window(QMainWindow, Ui_MainWindow):
             self.setEnableButtons(True)
             self.recalculation_button.setEnabled(True)
             self.std_check_button.setEnabled(True)
-            self.STD10MeasurementButton.setEnabled(True)
-            self.STD100MeasurementButton.setEnabled(True)
-            self.STD1000MeasurementButton.setEnabled(True)
-            self.STD5000MeasurementButton.setEnabled(True)
+            self.STD10MeasurementButton.setEnabled(False)
+            self.STD100MeasurementButton.setEnabled(False)
+            self.STD1000MeasurementButton.setEnabled(False)
+            self.STD5000MeasurementButton.setEnabled(False)
+            self.apply_button_measurement.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
+            
    
             return
 
@@ -2332,7 +2373,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.lbl_system_note.setText("NORMAL")
         self.setCircleColour(self.indicator_note_status, "green")
 
-        self.setEnableButtons(True)
+      #  self.setEnableButtons(True)
    
     # Sample Data Row
         sampledata = [
@@ -2447,14 +2488,12 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.recalculation_button.setEnabled(True)
         self.std_check_button.setEnabled(True)
-        self.STD10MeasurementButton.setEnabled(True)
-        self.STD100MeasurementButton.setEnabled(True)
-        self.STD1000MeasurementButton.setEnabled(True)
-        self.STD5000MeasurementButton.setEnabled(True)
+        self.measurement_button.setEnabled(True)
+
    
     def recalculateButtonPushed(self):
         self.setEnableButtons(False)
-
+        
             # Reset
         self.txt_system_note.setText("")
         self.setCircleColour(self.indicator_note_status, "grey")
@@ -2486,6 +2525,12 @@ class Window(QMainWindow, Ui_MainWindow):
         confirm = QMessageBox.question(self, "Sample Info", f"Sample ID: {self.sampleID}\nConfirm this info?", QMessageBox.Yes | QMessageBox.Retry)
         if confirm == QMessageBox.Retry:
             self.setEnableButtons(True)
+            self.STD10MeasurementButton.setEnabled(False)
+            self.STD100MeasurementButton.setEnabled(False)
+            self.STD1000MeasurementButton.setEnabled(False)
+            self.STD5000MeasurementButton.setEnabled(False)
+            self.apply_button_measurement.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
             return
 
         self.date = datetime.now()
@@ -2517,6 +2562,13 @@ class Window(QMainWindow, Ui_MainWindow):
             choice = QMessageBox.question(self, "Guideline Warning", "Current criteria < 50. Reset?", QMessageBox.Yes | QMessageBox.Ignore)
             if choice == QMessageBox.Yes:
                 self.setEnableButtons(True)
+                self.STD10MeasurementButton.setEnabled(False)
+                self.STD100MeasurementButton.setEnabled(False)
+                self.STD1000MeasurementButton.setEnabled(False)
+                self.STD5000MeasurementButton.setEnabled(False)
+                self.apply_button_measurement.setEnabled(False)
+                self.CalibrationCurveFittingButton.setEnabled(False)
+                
                 return
         print("📉 self.coeff before ionEquation call:", self.coeff)
         print("🧪 ionEquation:", self.ionEquation)
@@ -2530,6 +2582,12 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.samplePotential is None:
             QMessageBox.warning(self, "Missing Data", "Sample potential is missing. Please measure the sample first.")
             self.setEnableButtons(True)
+            self.STD10MeasurementButton.setEnabled(False)
+            self.STD100MeasurementButton.setEnabled(False)
+            self.STD1000MeasurementButton.setEnabled(False)
+            self.STD5000MeasurementButton.setEnabled(False)
+            self.apply_button_measurement.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
             return
 
 
@@ -2591,6 +2649,12 @@ class Window(QMainWindow, Ui_MainWindow):
         self.lbl_system_note.setText("NORMAL")
         self.setCircleColour(self.indicator_note_status, "green")
         self.setEnableButtons(True)
+        self.STD10MeasurementButton.setEnabled(False)
+        self.STD100MeasurementButton.setEnabled(False)
+        self.STD1000MeasurementButton.setEnabled(False)
+        self.STD5000MeasurementButton.setEnabled(False)
+        self.apply_button_measurement.setEnabled(False)
+        self.CalibrationCurveFittingButton.setEnabled(False)
         if self.sample_table.rowCount() > 0:
             self.export_data_button.setEnabled(True)
 
@@ -2666,6 +2730,12 @@ class Window(QMainWindow, Ui_MainWindow):
             QMessageBox.information(self, "Export",
                                     "No rows matched that filter – nothing exported.")
             self.setEnableButtons(True)
+            self.STD10MeasurementButton.setEnabled(False)
+            self.STD100MeasurementButton.setEnabled(False)
+            self.STD1000MeasurementButton.setEnabled(False)
+            self.STD5000MeasurementButton.setEnabled(False)
+            self.apply_button_measurement.setEnabled(False)
+            self.CalibrationCurveFittingButton.setEnabled(False)
             return
 
         # ---------- build the three DataFrames ----------
@@ -2696,6 +2766,12 @@ class Window(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(self, "Missing Filename",
                                     "Please enter a valid file name.")
                 self.setEnableButtons(True)
+                self.STD10MeasurementButton.setEnabled(False)
+                self.STD100MeasurementButton.setEnabled(False)
+                self.STD1000MeasurementButton.setEnabled(False)
+                self.STD5000MeasurementButton.setEnabled(False)
+                self.apply_button_measurement.setEnabled(False)
+                self.CalibrationCurveFittingButton.setEnabled(False)
                 return
             self.filename = str(SAVE_DIR / (file_name + ".xlsx"))
         else:
@@ -2742,6 +2818,12 @@ f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
         self.lbl_system_note.setText("EXPORTED")
         self.setCircleColour(self.indicator_note_status, "green")
         self.setEnableButtons(True)
+        self.STD10MeasurementButton.setEnabled(False)
+        self.STD100MeasurementButton.setEnabled(False)
+        self.STD1000MeasurementButton.setEnabled(False)
+        self.STD5000MeasurementButton.setEnabled(False)
+        self.apply_button_measurement.setEnabled(False)
+        self.CalibrationCurveFittingButton.setEnabled(False)
        
 
     def AISCTSALUI_Close(self):
