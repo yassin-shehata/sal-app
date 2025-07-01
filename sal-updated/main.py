@@ -77,30 +77,30 @@ except ImportError as e: # if one of the required packages wasn't found, try to 
         sys.exit()
 
 def cl_startup(period_ms):
-    # print("⚠️ Using FakeSensor for simulation...")
-    # device = FakeDevice()
-    # sensor = FakeSensor()
-    # sensors = [sensor]
-    # godirect = FakeGoDirect()
-    # device.open()  # Simulate open
-    # device.start(period_ms)
-    # return device, sensors, godirect
-    print("🔍 Attempting to connect to GoDirect sensors...")
-    from godirect import GoDirect
+    print("⚠️ Using FakeSensor for simulation...")
+    device = FakeDevice()
+    sensor = FakeSensor()
+    sensors = [sensor]
+    godirect = FakeGoDirect()
+    device.open()  # Simulate open
+    device.start(period_ms)
+    return device, sensors, godirect
+    # print("🔍 Attempting to connect to GoDirect sensors...")
+    # from godirect import GoDirect
 
-    godirect = GoDirect(use_ble=False)
-    device = godirect.get_device()
+    # godirect = GoDirect(use_ble=False)
+    # device = godirect.get_device()
 
-    if device is not None and device.open():
-        device.start(period=period_ms)
-        sensors = device.get_enabled_sensors()
+    # if device is not None and device.open():
+    #     device.start(period=period_ms)
+    #     sensors = device.get_enabled_sensors()
 
-        if sensors is None or len(sensors) == 0:
-            raise RuntimeError("❌ Sensors could not be enabled.")
-        print("✅ Device initialized and started.")
-        return device, sensors, godirect
-    else:
-        raise RuntimeError("❌ Sensor not found or failed to open.")
+    #     if sensors is None or len(sensors) == 0:
+    #         raise RuntimeError("❌ Sensors could not be enabled.")
+    #     print("✅ Device initialized and started.")
+    #     return device, sensors, godirect
+    # else:
+    #     raise RuntimeError("❌ Sensor not found or failed to open.")
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -2709,8 +2709,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         col_count = self.sample_table.columnCount()
         data = []
-        selected_row_pairs = []   # (tableRow , sessionIdx) for later alignment
-
+    
         for table_row in self.session_only_rows:
             check_val = self.sample_table.item(table_row, 0)
             check_text = check_val.text().strip().lower() if check_val and check_val.text() else ""
@@ -2752,11 +2751,19 @@ class Window(QMainWindow, Ui_MainWindow):
                     "STD check (100ppm)", "STD check potential (mV)"]
 
         df_sample = pd.DataFrame(data, columns=header_sample)
-        keep_idx = [p[1] for p in selected_row_pairs]
-        df_measure = pd.DataFrame([self.measurementData[i] for i in keep_idx],
-                                columns=header_measurement)
-        df_std = pd.DataFrame([self.stddata[i] for i in keep_idx],
-                            columns=header_std)
+        
+        valid_indices = []
+        for table_row in self.session_only_rows:
+            check_val = self.sample_table.item(table_row, 0)
+            check_text = check_val.text().strip().lower() if check_val and check_val.text() else ""
+            if export_true_only and check_text != "true":
+                continue
+            if table_row < len(self.measurementData) and table_row < len(self.stddata):
+                valid_indices.append(table_row)
+
+        df_measure = pd.DataFrame([self.measurementData[i] for i in valid_indices], columns=header_measurement)
+        df_std = pd.DataFrame([self.stddata[i] for i in valid_indices], columns=header_std)
+
 
         # ---------- filename logic (unchanged) ----------
         if not self.auto_file_naming_checkbox.isChecked():
